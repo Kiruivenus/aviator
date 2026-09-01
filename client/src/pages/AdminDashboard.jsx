@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api/client';
-import { Shield, Users, Wallet, CheckCircle, XCircle, Edit3, Save, RefreshCw, AlertCircle, ArrowDownLeft, ArrowUpRight } from 'lucide-react';
+import { Shield, RefreshCw, AlertCircle, ArrowDownLeft, ArrowUpRight, Save, Edit3, CheckCircle, XCircle } from 'lucide-react';
 
 export const AdminDashboard = () => {
   const [stats, setStats] = useState({ totalUsers: 0, pendingDeposits: 0, pendingWithdrawals: 0, totalBetsCount: 0 });
@@ -65,10 +65,10 @@ export const AdminDashboard = () => {
         balance: editBalance !== '' ? parseFloat(editBalance) : undefined
       });
       setEditingUserId(null);
-      setMessage('User updated successfully!');
+      setMessage('User details updated successfully!');
       loadDashboardData();
     } catch (err) {
-      setMessage('Failed to update user.');
+      setMessage('Failed to update user details.');
     }
   };
 
@@ -84,98 +84,98 @@ export const AdminDashboard = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
       {/* Header Banner */}
-      <div className="card-panel p-6 bg-gradient-to-r from-purple-950 via-[#181a2e] to-[#0e121d] flex flex-col sm:flex-row items-center justify-between gap-4 border-purple-900/40">
+      <div className="bg-[#101622] border border-slate-800 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-lg">
         <div>
           <h1 className="text-2xl font-black text-white font-['Outfit'] flex items-center gap-2">
             <Shield className="w-6 h-6 text-purple-400" />
             SYSTEM ADMIN PORTAL
           </h1>
-          <p className="text-xs text-purple-300/80 mt-0.5">
-            Role-Based Management: Configure USDT TRC20 deposit address, approve transactions & manage users.
+          <p className="text-xs text-slate-400 mt-1">
+            Configure USDT TRC20 deposit address, manage users, and approve/reject transaction queue.
           </p>
         </div>
 
         <button
           onClick={loadDashboardData}
-          className="bg-purple-900/60 hover:bg-purple-800/80 text-purple-200 border border-purple-700/60 font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-2 transition-all shrink-0"
+          className="bg-purple-950/60 hover:bg-purple-900/80 text-purple-300 border border-purple-800/60 font-extrabold text-xs px-4 py-2.5 rounded-xl flex items-center gap-2 transition-all shrink-0 min-h-[40px] font-['Outfit']"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-          REFRESH SYSTEM DATA
+          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          REFRESH DATA
         </button>
       </div>
 
       {/* Metric Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="card-panel p-4 bg-[#141b29] border-[#202d45]">
-          <div className="text-[10px] font-bold text-gray-400 uppercase">Total Users</div>
-          <div className="text-2xl font-black text-white font-['Outfit'] mt-1">{stats.totalUsers}</div>
+        <div className="bg-[#101622] border border-slate-800 rounded-2xl p-4 shadow-sm">
+          <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider font-['Outfit']">Total Users</div>
+          <div className="text-2xl font-black text-white font-mono mt-1">{stats.totalUsers}</div>
         </div>
 
-        <div className="card-panel p-4 bg-[#141b29] border-[#202d45]">
-          <div className="text-[10px] font-bold text-yellow-400 uppercase">Pending Deposits</div>
-          <div className="text-2xl font-black text-yellow-400 font-['Outfit'] mt-1">{stats.pendingDeposits}</div>
+        <div className="bg-[#101622] border border-slate-800 rounded-2xl p-4 shadow-sm">
+          <div className="text-[10px] font-extrabold text-amber-400 uppercase tracking-wider font-['Outfit']">Pending Deposits</div>
+          <div className="text-2xl font-black text-amber-400 font-mono mt-1">{stats.pendingDeposits}</div>
         </div>
 
-        <div className="card-panel p-4 bg-[#141b29] border-[#202d45]">
-          <div className="text-[10px] font-bold text-orange-400 uppercase">Pending Withdrawals</div>
-          <div className="text-2xl font-black text-orange-400 font-['Outfit'] mt-1">{stats.pendingWithdrawals}</div>
+        <div className="bg-[#101622] border border-slate-800 rounded-2xl p-4 shadow-sm">
+          <div className="text-[10px] font-extrabold text-orange-400 uppercase tracking-wider font-['Outfit']">Pending Withdrawals</div>
+          <div className="text-2xl font-black text-orange-400 font-mono mt-1">{stats.pendingWithdrawals}</div>
         </div>
 
-        <div className="card-panel p-4 bg-[#141b29] border-[#202d45]">
-          <div className="text-[10px] font-bold text-emerald-400 uppercase">Total Game Bets</div>
-          <div className="text-2xl font-black text-emerald-400 font-['Outfit'] mt-1">{stats.totalBetsCount}</div>
+        <div className="bg-[#101622] border border-slate-800 rounded-2xl p-4 shadow-sm">
+          <div className="text-[10px] font-extrabold text-emerald-400 uppercase tracking-wider font-['Outfit']">Total Game Bets</div>
+          <div className="text-2xl font-black text-emerald-400 font-mono mt-1">{stats.totalBetsCount}</div>
         </div>
       </div>
 
       {message && (
-        <div className="p-3 bg-purple-950/80 border border-purple-800 text-purple-200 rounded-xl text-xs flex items-center gap-2">
+        <div className="p-3.5 bg-purple-950/80 border border-purple-800 text-purple-200 rounded-xl text-xs flex items-center gap-2.5">
           <AlertCircle className="w-4 h-4 shrink-0 text-purple-400" />
           <span>{message}</span>
         </div>
       )}
 
       {/* Main Content Area */}
-      <div className="card-panel p-6 space-y-6">
+      <div className="bg-[#101622] border border-slate-800 rounded-2xl p-6 space-y-6 shadow-lg">
         {/* Navigation Tabs */}
-        <div className="flex border-b border-[#1c2638]">
+        <div className="flex border-b border-slate-800">
           <button
             onClick={() => setActiveTab('settings')}
-            className={`px-5 py-3 font-extrabold text-xs sm:text-sm border-b-2 transition-all font-['Outfit'] ${
-              activeTab === 'settings' ? 'border-purple-500 text-purple-400' : 'border-transparent text-gray-400 hover:text-white'
+            className={`px-5 py-3 font-extrabold text-xs sm:text-sm border-b-2 transition-all font-['Outfit'] min-h-[44px] ${
+              activeTab === 'settings' ? 'border-purple-500 text-purple-400' : 'border-transparent text-slate-400 hover:text-white'
             }`}
           >
-            USDT TRC20 DEPOSIT ADDRESS
+            USDT TRC20 SETTINGS
           </button>
           <button
             onClick={() => setActiveTab('users')}
-            className={`px-5 py-3 font-extrabold text-xs sm:text-sm border-b-2 transition-all font-['Outfit'] ${
-              activeTab === 'users' ? 'border-purple-500 text-purple-400' : 'border-transparent text-gray-400 hover:text-white'
+            className={`px-5 py-3 font-extrabold text-xs sm:text-sm border-b-2 transition-all font-['Outfit'] min-h-[44px] ${
+              activeTab === 'users' ? 'border-purple-500 text-purple-400' : 'border-transparent text-slate-400 hover:text-white'
             }`}
           >
             USER MANAGEMENT ({users.length})
           </button>
           <button
             onClick={() => setActiveTab('transactions')}
-            className={`px-5 py-3 font-extrabold text-xs sm:text-sm border-b-2 transition-all font-['Outfit'] ${
-              activeTab === 'transactions' ? 'border-purple-500 text-purple-400' : 'border-transparent text-gray-400 hover:text-white'
+            className={`px-5 py-3 font-extrabold text-xs sm:text-sm border-b-2 transition-all font-['Outfit'] min-h-[44px] ${
+              activeTab === 'transactions' ? 'border-purple-500 text-purple-400' : 'border-transparent text-slate-400 hover:text-white'
             }`}
           >
-            DEPOSIT & WITHDRAWAL QUEUE ({transactions.length})
+            TRANSACTION QUEUE ({transactions.length})
           </button>
         </div>
 
         {/* Tab 1: USDT TRC-20 Settings */}
         {activeTab === 'settings' && (
-          <div className="max-w-2xl py-4 space-y-6">
+          <div className="max-w-2xl py-2 space-y-6">
             <div className="bg-purple-950/20 border border-purple-800/40 rounded-xl p-4 text-xs text-purple-300">
-              This USDT TRC20 address will be dynamically displayed to all users on the deposit page.
+              This USDT TRC20 address is dynamically fetched and displayed to users on the deposit page.
             </div>
 
             <form onSubmit={handleUpdateUSDT} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-gray-400 mb-1.5">
+                <label className="block text-xs font-extrabold text-slate-300 mb-1.5 font-['Outfit'] uppercase">
                   OFFICIAL USDT TRC-20 WALLET ADDRESS
                 </label>
                 <input
@@ -184,13 +184,13 @@ export const AdminDashboard = () => {
                   value={newUsdtAddress}
                   onChange={(e) => setNewUsdtAddress(e.target.value)}
                   placeholder="e.g. T9x2PzQ1K9aM8bC3dE4fG5hJ6kL7mN8pQ9"
-                  className="w-full bg-[#172030] border border-[#273754] rounded-xl px-4 py-3 text-sm font-mono text-white focus:outline-none focus:border-purple-500"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm font-mono text-white focus:outline-none focus:border-purple-500 min-h-[44px]"
                 />
               </div>
 
               <button
                 type="submit"
-                className="bg-purple-600 hover:bg-purple-500 text-white font-extrabold text-xs px-6 py-3 rounded-xl transition-all shadow-md flex items-center gap-2 font-['Outfit']"
+                className="bg-purple-600 hover:bg-purple-500 text-white font-extrabold text-xs px-6 py-3 rounded-xl transition-all shadow-md flex items-center gap-2 font-['Outfit'] uppercase tracking-wider min-h-[44px]"
               >
                 <Save className="w-4 h-4" />
                 UPDATE USDT ADDRESS IN DATABASE
@@ -203,7 +203,7 @@ export const AdminDashboard = () => {
         {activeTab === 'users' && (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#121927] text-gray-400 uppercase font-bold border-b border-[#1c2638]">
+              <thead className="bg-slate-950 text-slate-400 uppercase font-extrabold border-b border-slate-800 font-['Outfit']">
                 <tr>
                   <th className="p-3">User</th>
                   <th className="p-3">Phone</th>
@@ -213,28 +213,28 @@ export const AdminDashboard = () => {
                   <th className="p-3 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#172030]">
+              <tbody className="divide-y divide-slate-800/50">
                 {users.map((u) => {
                   const isEditing = editingUserId === u._id;
                   return (
-                    <tr key={u._id} className="hover:bg-[#141c2c] transition-colors">
+                    <tr key={u._id} className="hover:bg-slate-900/60 transition-colors">
                       <td className="p-3 font-bold text-white">{u.fullName}</td>
-                      <td className="p-3 font-mono text-gray-300">{u.phone}</td>
+                      <td className="p-3 font-mono text-slate-300">{u.phone}</td>
                       <td className="p-3">
                         {isEditing ? (
                           <select
                             value={editRole}
                             onChange={(e) => setEditRole(e.target.value)}
-                            className="bg-[#1a2538] border border-[#273857] text-white p-1 rounded font-bold"
+                            className="bg-slate-950 border border-slate-800 text-white p-1.5 rounded-lg font-bold min-h-[36px]"
                           >
                             <option value="user">USER</option>
                             <option value="admin">ADMIN</option>
                           </select>
                         ) : (
-                          <span className={`px-2 py-0.5 rounded font-bold text-[10px] ${
-                            u.role === 'admin' ? 'bg-purple-950 text-purple-300 border border-purple-800' : 'bg-blue-950 text-blue-300 border border-blue-800'
+                          <span className={`px-2.5 py-0.5 rounded font-extrabold text-[10px] font-['Outfit'] uppercase ${
+                            u.role === 'admin' ? 'bg-purple-950 text-purple-300 border border-purple-800' : 'bg-slate-900 text-slate-300 border border-slate-800'
                           }`}>
-                            {u.role.toUpperCase()}
+                            {u.role}
                           </span>
                         )}
                       </td>
@@ -244,25 +244,25 @@ export const AdminDashboard = () => {
                             type="number"
                             value={editBalance}
                             onChange={(e) => setEditBalance(e.target.value)}
-                            className="w-28 bg-[#1a2538] border border-[#273857] text-white p-1 rounded font-mono"
+                            className="w-28 bg-slate-950 border border-slate-800 text-white p-1.5 rounded-lg font-mono min-h-[36px]"
                           />
                         ) : (
                           `KES ${u.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
                         )}
                       </td>
-                      <td className="p-3 text-gray-400">{new Date(u.createdAt).toLocaleDateString()}</td>
+                      <td className="p-3 text-slate-400">{new Date(u.createdAt).toLocaleDateString()}</td>
                       <td className="p-3 text-right">
                         {isEditing ? (
-                          <div className="flex items-center justify-end gap-1">
+                          <div className="flex items-center justify-end gap-1.5">
                             <button
                               onClick={() => handleSaveUser(u._id)}
-                              className="bg-emerald-600 text-black px-2.5 py-1 rounded font-bold text-[10px]"
+                              className="bg-emerald-500 text-slate-950 px-3 py-1.5 rounded-lg font-bold text-[10px] min-h-[32px]"
                             >
                               SAVE
                             </button>
                             <button
                               onClick={() => setEditingUserId(null)}
-                              className="bg-gray-700 text-gray-300 px-2.5 py-1 rounded font-bold text-[10px]"
+                              className="bg-slate-800 text-slate-300 px-3 py-1.5 rounded-lg font-bold text-[10px] min-h-[32px]"
                             >
                               CANCEL
                             </button>
@@ -274,9 +274,9 @@ export const AdminDashboard = () => {
                               setEditRole(u.role);
                               setEditBalance(u.balance);
                             }}
-                            className="bg-[#1c273c] hover:bg-[#283857] text-gray-200 px-3 py-1 rounded font-bold text-[10px] flex items-center gap-1 ml-auto"
+                            className="bg-slate-900 hover:bg-slate-800 text-slate-200 px-3 py-1.5 rounded-lg font-bold text-[10px] flex items-center gap-1 ml-auto border border-slate-800 min-h-[32px]"
                           >
-                            <Edit3 className="w-3 h-3" />
+                            <Edit3 className="w-3.5 h-3.5" />
                             EDIT
                           </button>
                         )}
@@ -293,7 +293,7 @@ export const AdminDashboard = () => {
         {activeTab === 'transactions' && (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#121927] text-gray-400 uppercase font-bold border-b border-[#1c2638]">
+              <thead className="bg-slate-950 text-slate-400 uppercase font-extrabold border-b border-slate-800 font-['Outfit']">
                 <tr>
                   <th className="p-3">Type</th>
                   <th className="p-3">User / Phone</th>
@@ -304,38 +304,38 @@ export const AdminDashboard = () => {
                   <th className="p-3 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#172030]">
+              <tbody className="divide-y divide-slate-800/50">
                 {transactions.map((tx) => (
-                  <tr key={tx._id} className="hover:bg-[#141c2c] transition-colors">
+                  <tr key={tx._id} className="hover:bg-slate-900/60 transition-colors">
                     <td className="p-3 font-bold uppercase">
                       {tx.type === 'deposit' ? (
-                        <span className="text-emerald-400 flex items-center gap-1">
+                        <span className="text-emerald-400 flex items-center gap-1 font-['Outfit']">
                           <ArrowDownLeft className="w-3.5 h-3.5" /> DEPOSIT
                         </span>
                       ) : (
-                        <span className="text-orange-400 flex items-center gap-1">
+                        <span className="text-amber-400 flex items-center gap-1 font-['Outfit']">
                           <ArrowUpRight className="w-3.5 h-3.5" /> WITHDRAWAL
                         </span>
                       )}
                     </td>
                     <td className="p-3">
                       <div className="font-bold text-white">{tx.userName || 'User'}</div>
-                      <div className="text-gray-400 font-mono text-[10px]">{tx.userPhone || tx.phone}</div>
+                      <div className="text-slate-400 font-mono text-[10px]">{tx.userPhone || tx.phone}</div>
                     </td>
-                    <td className="p-3 font-bold uppercase">{tx.method}</td>
+                    <td className="p-3 font-bold uppercase font-['Outfit']">{tx.method}</td>
                     <td className="p-3 font-mono font-bold text-white">KES {tx.amount.toLocaleString()}</td>
-                    <td className="p-3 font-mono text-gray-400 text-[10px] max-w-xs truncate">
+                    <td className="p-3 font-mono text-slate-400 text-[10px] max-w-xs truncate">
                       {tx.txHash || tx.mpesaReceipt || tx.checkoutRequestId || '-'}
                     </td>
                     <td className="p-3">
-                      <span className={`px-2 py-0.5 rounded font-bold text-[10px] ${
+                      <span className={`px-2.5 py-0.5 rounded font-extrabold text-[10px] uppercase font-['Outfit'] ${
                         tx.status === 'completed'
-                          ? 'bg-green-950 text-green-400 border border-green-800'
+                          ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
                           : tx.status === 'rejected'
-                          ? 'bg-red-950 text-red-400 border border-red-800'
-                          : 'bg-yellow-950 text-yellow-400 border border-yellow-800 animate-pulse'
+                          ? 'bg-rose-950 text-rose-400 border border-rose-800'
+                          : 'bg-amber-950 text-amber-400 border border-amber-800'
                       }`}>
-                        {tx.status.toUpperCase()}
+                        {tx.status}
                       </span>
                     </td>
                     <td className="p-3 text-right">
@@ -343,19 +343,19 @@ export const AdminDashboard = () => {
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => handleTransactionAction(tx._id, 'approve')}
-                            className="bg-emerald-600 hover:bg-emerald-500 text-black px-3 py-1 rounded font-bold text-[10px] flex items-center gap-1"
+                            className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-3 py-1.5 rounded-lg font-extrabold text-[10px] flex items-center gap-1 min-h-[32px] font-['Outfit']"
                           >
-                            <CheckCircle className="w-3 h-3" /> APPROVE
+                            <CheckCircle className="w-3.5 h-3.5" /> APPROVE
                           </button>
                           <button
                             onClick={() => handleTransactionAction(tx._id, 'reject')}
-                            className="bg-red-700 hover:bg-red-600 text-white px-3 py-1 rounded font-bold text-[10px] flex items-center gap-1"
+                            className="bg-rose-600 hover:bg-rose-500 text-white px-3 py-1.5 rounded-lg font-extrabold text-[10px] flex items-center gap-1 min-h-[32px] font-['Outfit']"
                           >
-                            <XCircle className="w-3 h-3" /> REJECT
+                            <XCircle className="w-3.5 h-3.5" /> REJECT
                           </button>
                         </div>
                       ) : (
-                        <span className="text-gray-500 text-[10px] font-bold">SETTLED</span>
+                        <span className="text-slate-500 text-[10px] font-bold">SETTLED</span>
                       )}
                     </td>
                   </tr>

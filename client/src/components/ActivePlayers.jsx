@@ -14,13 +14,13 @@ export const ActivePlayers = ({ activeBets, myBets }) => {
   const displayedBets = getDisplayedBets();
 
   return (
-    <div className="w-full lg:w-80 bg-[#0a0e17] border-r border-slate-800/80 flex flex-col h-full shrink-0">
+    <div className="w-full lg:w-80 bg-[#080b11] border-r border-slate-800/80 flex flex-col h-full shrink-0">
       {/* Header Tabs */}
       <div className="p-3 border-b border-slate-800/80">
         <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800">
           <button
             onClick={() => setTab('ALL')}
-            className={`flex-1 py-1.5 text-[11px] font-extrabold rounded-lg transition-all font-['Outfit'] ${
+            className={`flex-1 py-1.5 text-[11px] font-extrabold rounded-lg transition-all font-['Outfit'] min-h-[32px] ${
               tab === 'ALL'
                 ? 'bg-slate-800 text-white shadow-sm'
                 : 'text-slate-400 hover:text-slate-200'
@@ -30,7 +30,7 @@ export const ActivePlayers = ({ activeBets, myBets }) => {
           </button>
           <button
             onClick={() => setTab('MY BETS')}
-            className={`flex-1 py-1.5 text-[11px] font-extrabold rounded-lg transition-all font-['Outfit'] ${
+            className={`flex-1 py-1.5 text-[11px] font-extrabold rounded-lg transition-all font-['Outfit'] min-h-[32px] ${
               tab === 'MY BETS'
                 ? 'bg-slate-800 text-white shadow-sm'
                 : 'text-slate-400 hover:text-slate-200'
@@ -40,7 +40,7 @@ export const ActivePlayers = ({ activeBets, myBets }) => {
           </button>
           <button
             onClick={() => setTab('TOP')}
-            className={`flex-1 py-1.5 text-[11px] font-extrabold rounded-lg transition-all font-['Outfit'] ${
+            className={`flex-1 py-1.5 text-[11px] font-extrabold rounded-lg transition-all font-['Outfit'] min-h-[32px] ${
               tab === 'TOP'
                 ? 'bg-slate-800 text-white shadow-sm'
                 : 'text-slate-400 hover:text-slate-200'
@@ -50,7 +50,7 @@ export const ActivePlayers = ({ activeBets, myBets }) => {
           </button>
           <button
             onClick={() => setTab('WINS')}
-            className={`flex-1 py-1.5 text-[11px] font-extrabold rounded-lg transition-all font-['Outfit'] ${
+            className={`flex-1 py-1.5 text-[11px] font-extrabold rounded-lg transition-all font-['Outfit'] min-h-[32px] ${
               tab === 'WINS'
                 ? 'bg-slate-800 text-white shadow-sm'
                 : 'text-slate-400 hover:text-slate-200'

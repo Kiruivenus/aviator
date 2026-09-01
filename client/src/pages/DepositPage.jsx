@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import api from '../api/client';
-import { Wallet, Smartphone, Copy, Check, QrCode, ArrowRight, CheckCircle2, AlertCircle, ShieldCheck } from 'lucide-react';
+import { Wallet, Smartphone, Copy, Check, QrCode, CheckCircle2, AlertCircle, ShieldCheck } from 'lucide-react';
 
 export const DepositPage = () => {
   const { user, updateUserBalance } = useContext(AuthContext);
@@ -13,7 +13,7 @@ export const DepositPage = () => {
   const [mpesaAmount, setMpesaAmount] = useState(500);
 
   // USDT state
-  const [usdtAddress, setUsdtAddress] = useState('Loading...');
+  const [usdtAddress, setUsdtAddress] = useState('Loading address...');
   const [usdtAmount, setUsdtAmount] = useState(50);
   const [txHash, setTxHash] = useState('');
   const [copied, setCopied] = useState(false);
@@ -54,7 +54,7 @@ export const DepositPage = () => {
 
       setMessage({
         type: 'success',
-        text: res.data.message || 'STK Push sent to your phone! Please enter your M-Pesa PIN.'
+        text: res.data.message || 'STK Push notification sent! Check your phone and enter your M-Pesa PIN.'
       });
 
       if (res.data.newBalance !== undefined) {
@@ -85,7 +85,7 @@ export const DepositPage = () => {
 
       setMessage({
         type: 'success',
-        text: res.data.message || 'USDT deposit submitted! Admin will verify and credit your balance.'
+        text: res.data.message || 'USDT deposit submitted! Admin will verify and update your balance.'
       });
 
       setTxHash('');
@@ -100,36 +100,36 @@ export const DepositPage = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
-      {/* Top Title Banner */}
-      <div className="card-panel p-6 bg-gradient-to-r from-[#131b2a] to-[#0d131f] flex items-center justify-between">
+    <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
+      {/* Top Banner Card */}
+      <div className="bg-[#101622] border border-slate-800 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-lg">
         <div>
           <h1 className="text-2xl font-black text-white font-['Outfit'] flex items-center gap-2">
-            <Wallet className="w-6 h-6 text-[#22c55e]" />
+            <Wallet className="w-6 h-6 text-emerald-400" />
             DEPOSIT FUNDS
           </h1>
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-slate-400 mt-1">
             Top up your account balance securely via Safaricom M-Pesa or USDT TRC20 Crypto.
           </p>
         </div>
 
-        <div className="text-right">
-          <div className="text-[10px] font-bold text-gray-400 tracking-wider">CURRENT BALANCE</div>
-          <div className="text-xl font-black text-[#22c55e] font-['Outfit']">
+        <div className="text-left sm:text-right bg-slate-950 px-4 py-2 rounded-xl border border-slate-800 w-full sm:w-auto">
+          <div className="text-[10px] font-extrabold text-slate-400 tracking-wider font-['Outfit']">CURRENT BALANCE</div>
+          <div className="text-xl font-black text-emerald-400 font-mono">
             KES {user?.balance ? user.balance.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '0.00'}
           </div>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="card-panel p-6 space-y-6">
-        <div className="flex bg-[#101726] p-1.5 rounded-xl border border-[#1e2a3f]">
+      {/* Main Tabs Container */}
+      <div className="bg-[#101622] border border-slate-800 rounded-2xl p-6 space-y-6 shadow-lg">
+        <div className="flex bg-slate-950 p-1.5 rounded-xl border border-slate-800">
           <button
             onClick={() => { setActiveTab('mpesa'); setMessage({ type: '', text: '' }); }}
-            className={`flex-1 py-3 font-extrabold text-xs sm:text-sm rounded-lg transition-all flex items-center justify-center gap-2 font-['Outfit'] ${
+            className={`flex-1 py-3 font-extrabold text-xs sm:text-sm rounded-lg transition-all flex items-center justify-center gap-2 font-['Outfit'] min-h-[44px] ${
               activeTab === 'mpesa'
-                ? 'bg-[#22c55e] text-black shadow-lg shadow-green-950/40'
-                : 'text-gray-400 hover:text-white'
+                ? 'bg-emerald-500 text-slate-950 shadow-md'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
             <Smartphone className="w-4 h-4" />
@@ -137,10 +137,10 @@ export const DepositPage = () => {
           </button>
           <button
             onClick={() => { setActiveTab('usdt'); setMessage({ type: '', text: '' }); }}
-            className={`flex-1 py-3 font-extrabold text-xs sm:text-sm rounded-lg transition-all flex items-center justify-center gap-2 font-['Outfit'] ${
+            className={`flex-1 py-3 font-extrabold text-xs sm:text-sm rounded-lg transition-all flex items-center justify-center gap-2 font-['Outfit'] min-h-[44px] ${
               activeTab === 'usdt'
-                ? 'bg-teal-500 text-black shadow-lg shadow-teal-950/40'
-                : 'text-gray-400 hover:text-white'
+                ? 'bg-teal-500 text-slate-950 shadow-md'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
             <QrCode className="w-4 h-4" />
@@ -151,7 +151,7 @@ export const DepositPage = () => {
         {/* Feedback Alert */}
         {message.text && (
           <div className={`p-4 rounded-xl text-xs flex items-center gap-3 border ${
-            message.type === 'success' ? 'bg-green-950/80 border-green-800 text-green-300' : 'bg-red-950/80 border-red-800 text-red-300'
+            message.type === 'success' ? 'bg-emerald-950/80 border-emerald-800 text-emerald-300' : 'bg-rose-950/80 border-rose-800 text-rose-300'
           }`}>
             {message.type === 'success' ? <CheckCircle2 className="w-5 h-5 shrink-0" /> : <AlertCircle className="w-5 h-5 shrink-0" />}
             <span className="font-semibold text-sm">{message.text}</span>
@@ -162,39 +162,39 @@ export const DepositPage = () => {
         {activeTab === 'mpesa' && (
           <form onSubmit={handleMpesaDeposit} className="space-y-6 max-w-xl mx-auto py-2">
             <div>
-              <label className="block text-xs font-bold text-gray-400 mb-1.5">M-PESA PHONE NUMBER</label>
+              <label className="block text-xs font-extrabold text-slate-300 mb-1.5 font-['Outfit'] uppercase">M-PESA PHONE NUMBER</label>
               <input
                 type="tel"
                 required
                 value={mpesaPhone}
                 onChange={(e) => setMpesaPhone(e.target.value)}
-                placeholder="e.g. 0712345678 or 254712345678"
-                className="w-full bg-[#172030] border border-[#26354f] rounded-xl px-4 py-3 text-sm text-white font-mono focus:outline-none focus:border-[#22c55e]"
+                placeholder="0712345678 or 254712345678"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white font-mono focus:outline-none focus:border-emerald-500 min-h-[44px]"
               />
-              <span className="text-[10px] text-gray-500 mt-1 block">
-                The STK prompt will be sent directly to this phone number.
+              <span className="text-[10px] text-slate-400 mt-1 block">
+                An M-Pesa payment prompt will be displayed directly on your mobile device.
               </span>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-400 mb-1.5">DEPOSIT AMOUNT (KES)</label>
+              <label className="block text-xs font-extrabold text-slate-300 mb-1.5 font-['Outfit'] uppercase">DEPOSIT AMOUNT (KES)</label>
               <input
                 type="number"
                 required
                 min="10"
                 value={mpesaAmount}
                 onChange={(e) => setMpesaAmount(parseFloat(e.target.value) || 0)}
-                className="w-full bg-[#172030] border border-[#26354f] rounded-xl px-4 py-3 text-lg font-black text-white font-['Outfit'] focus:outline-none focus:border-[#22c55e]"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-lg font-black text-white font-mono focus:outline-none focus:border-emerald-500 min-h-[48px]"
               />
 
-              {/* Quick Amount Selector Pills */}
+              {/* Quick Amount Pills */}
               <div className="grid grid-cols-4 gap-2 mt-3">
                 {[100, 500, 1000, 5000].map((amt) => (
                   <button
                     key={amt}
                     type="button"
                     onClick={() => setMpesaAmount(amt)}
-                    className="bg-[#192437] hover:bg-[#253552] text-gray-300 font-bold text-xs py-2 rounded-lg border border-[#283957] transition-all"
+                    className="bg-slate-950 hover:bg-slate-900 text-slate-300 font-extrabold text-xs py-2 rounded-xl border border-slate-800 transition-all font-mono min-h-[36px]"
                   >
                     KES {amt.toLocaleString()}
                   </button>
@@ -205,30 +205,29 @@ export const DepositPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#22c55e] hover:bg-[#16a34a] text-black font-extrabold text-base py-3.5 rounded-xl transition-all shadow-lg shadow-green-950/50 flex items-center justify-center gap-2 font-['Outfit']"
+              className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-sm py-3.5 rounded-xl transition-all shadow-md shadow-emerald-950/40 flex items-center justify-center gap-2 font-['Outfit'] tracking-wider uppercase min-h-[46px]"
             >
               {loading ? 'SENDING STK PROMPT...' : `TOP UP KES ${mpesaAmount.toLocaleString()} VIA M-PESA`}
             </button>
           </form>
         )}
 
-        {/* Tab 2: USDT TRC-20 Address managed by Admin */}
+        {/* Tab 2: USDT TRC-20 Address */}
         {activeTab === 'usdt' && (
           <div className="space-y-6 max-w-2xl mx-auto py-2">
-            {/* USDT Deposit Address Display Box */}
-            <div className="bg-[#0f1624] border border-[#212e47] rounded-2xl p-6 text-center space-y-4">
+            <div className="bg-slate-950 border border-slate-800 rounded-2xl p-6 text-center space-y-4">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-950/80 border border-teal-800 text-teal-300 text-xs font-bold">
                 <ShieldCheck className="w-4 h-4" />
                 OFFICIAL DEPOSIT ADDRESS (TRC-20)
               </div>
 
               <div>
-                <div className="text-xs text-gray-400 mb-1">USDT TRC20 Wallet Address (Managed by Admin):</div>
-                <div className="bg-[#162033] border border-[#273857] rounded-xl px-4 py-3 font-mono font-bold text-sm text-teal-300 break-all select-all flex items-center justify-between gap-2">
+                <div className="text-xs text-slate-400 mb-1">USDT TRC20 Wallet Address (Managed by Admin):</div>
+                <div className="bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 font-mono font-bold text-sm text-teal-300 break-all flex items-center justify-between gap-2">
                   <span>{usdtAddress}</span>
                   <button
                     onClick={handleCopyAddress}
-                    className="bg-teal-500 hover:bg-teal-400 text-black px-3 py-1.5 rounded-lg text-xs font-extrabold flex items-center gap-1 shrink-0 transition-all"
+                    className="bg-teal-500 hover:bg-teal-400 text-slate-950 px-3 py-1.5 rounded-lg text-xs font-extrabold flex items-center gap-1 shrink-0 transition-all min-h-[32px]"
                   >
                     {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                     {copied ? 'COPIED' : 'COPY'}
@@ -236,39 +235,38 @@ export const DepositPage = () => {
                 </div>
               </div>
 
-              <p className="text-[11px] text-gray-400 leading-relaxed max-w-lg mx-auto">
-                Send only <strong className="text-white">USDT via the TRON (TRC-20) network</strong> to this address. Transfers via other chains (ERC-20, BEP-20) will result in permanent loss.
+              <p className="text-[11px] text-slate-400 leading-relaxed max-w-lg mx-auto">
+                Send only <strong className="text-white">USDT via TRON (TRC-20)</strong> network to this address. Transfers via other chains will result in lost funds.
               </p>
             </div>
 
-            {/* Submission Form */}
             <form onSubmit={handleUsdtSubmit} className="space-y-4">
-              <h3 className="text-sm font-extrabold text-white font-['Outfit']">
+              <h3 className="text-sm font-extrabold text-white font-['Outfit'] uppercase tracking-wider">
                 SUBMIT DEPOSIT VERIFICATION (TxID)
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-gray-400 mb-1">USDT AMOUNT SENT</label>
+                  <label className="block text-xs font-extrabold text-slate-300 mb-1 font-['Outfit'] uppercase">USDT AMOUNT SENT</label>
                   <input
                     type="number"
                     required
                     min="1"
                     value={usdtAmount}
                     onChange={(e) => setUsdtAmount(parseFloat(e.target.value) || 0)}
-                    className="w-full bg-[#172030] border border-[#26354f] rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-teal-400"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-teal-400 min-h-[44px]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-400 mb-1">TRANSACTION HASH (TxID)</label>
+                  <label className="block text-xs font-extrabold text-slate-300 mb-1 font-['Outfit'] uppercase">TRANSACTION HASH (TxID)</label>
                   <input
                     type="text"
                     required
-                    placeholder="Enter blockchain TxID / hash"
+                    placeholder="Enter blockchain TxID"
                     value={txHash}
                     onChange={(e) => setTxHash(e.target.value)}
-                    className="w-full bg-[#172030] border border-[#26354f] rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-teal-400"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-teal-400 min-h-[44px]"
                   />
                 </div>
               </div>
@@ -276,7 +274,7 @@ export const DepositPage = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-teal-500 hover:bg-teal-400 text-black font-extrabold text-sm py-3 rounded-xl transition-all shadow-lg shadow-teal-950/50 font-['Outfit']"
+                className="w-full bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-sm py-3.5 rounded-xl transition-all shadow-md shadow-teal-950/40 font-['Outfit'] tracking-wider uppercase min-h-[46px]"
               >
                 {loading ? 'SUBMITTING...' : 'SUBMIT DEPOSIT FOR ADMIN VERIFICATION'}
               </button>

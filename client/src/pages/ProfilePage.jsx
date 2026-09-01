@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import api from '../api/client';
-import { User, Phone, Shield, Wallet, History, ArrowDownLeft, ArrowUpRight, Save, CheckCircle } from 'lucide-react';
+import { User, Save, CheckCircle, ArrowDownLeft, ArrowUpRight } from 'lucide-react';
 
 export const ProfilePage = ({ setCurrentView }) => {
   const { user, fetchUser } = useContext(AuthContext);
@@ -45,7 +45,7 @@ export const ProfilePage = ({ setCurrentView }) => {
     setMessage('');
     try {
       await api.put('/auth/profile', { fullName, newPassword });
-      setMessage('Profile updated successfully!');
+      setMessage('Profile details updated successfully!');
       fetchUser();
       setNewPassword('');
     } catch (err) {
@@ -57,51 +57,51 @@ export const ProfilePage = ({ setCurrentView }) => {
 
   if (!user) {
     return (
-      <div className="p-8 text-center text-gray-400">
+      <div className="p-12 text-center text-slate-400 font-medium">
         Please log in to view your profile management portal.
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+    <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
       {/* Top Banner Card */}
-      <div className="card-panel p-6 bg-gradient-to-r from-[#131a29] via-[#1a2336] to-[#121824] flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="bg-[#101622] border border-slate-800 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 shadow-lg">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-700 border-2 border-emerald-400 flex items-center justify-center text-white font-extrabold text-2xl shadow-xl">
-            {user.fullName.charAt(0).toUpperCase()}
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 border border-emerald-400/40 flex items-center justify-center text-slate-950 font-black text-xl shadow-md">
+            {user.fullName ? user.fullName.charAt(0).toUpperCase() : 'U'}
           </div>
           <div>
             <h1 className="text-2xl font-black text-white font-['Outfit'] flex items-center gap-2">
               {user.fullName}
-              <span className={`text-xs px-2.5 py-0.5 rounded-full font-bold uppercase ${
-                user.role === 'admin' ? 'bg-purple-900/80 text-purple-300 border border-purple-700' : 'bg-blue-900/80 text-blue-300 border border-blue-700'
+              <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-extrabold uppercase font-['Outfit'] ${
+                user.role === 'admin' ? 'bg-purple-950/80 text-purple-300 border border-purple-800' : 'bg-slate-800 text-slate-300 border border-slate-700'
               }`}>
                 {user.role}
               </span>
             </h1>
-            <p className="text-sm text-gray-400 font-mono mt-0.5">{user.phone}</p>
+            <p className="text-xs text-slate-400 font-mono mt-0.5">{user.phone}</p>
           </div>
         </div>
 
         {/* Balance Card */}
-        <div className="bg-[#0b0f17] border border-[#1f2b3e] rounded-xl px-6 py-4 flex items-center gap-6 shadow-inner">
+        <div className="bg-slate-950 border border-slate-800 rounded-2xl px-6 py-4 flex items-center gap-6 shadow-inner w-full md:w-auto justify-between md:justify-start">
           <div>
-            <div className="text-xs font-bold text-gray-400 tracking-wider">AVAILABLE BALANCE</div>
-            <div className="text-2xl font-black text-[#22c55e] font-['Outfit']">
+            <div className="text-[10px] font-extrabold text-slate-400 tracking-wider font-['Outfit']">AVAILABLE BALANCE</div>
+            <div className="text-xl font-black text-emerald-400 font-mono">
               KES {user.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </div>
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1.5">
             <button
               onClick={() => setCurrentView('deposit')}
-              className="bg-[#22c55e] hover:bg-[#16a34a] text-black font-extrabold text-xs px-4 py-1.5 rounded-lg transition-all"
+              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs px-3.5 py-1.5 rounded-xl transition-all font-['Outfit'] min-h-[32px]"
             >
               DEPOSIT
             </button>
             <button
               onClick={() => setCurrentView('withdrawal')}
-              className="bg-[#1b2538] hover:bg-[#26354f] text-gray-200 font-extrabold text-xs px-4 py-1.5 rounded-lg border border-[#273752] transition-all"
+              className="bg-slate-900 hover:bg-slate-800 text-slate-200 font-extrabold text-xs px-3.5 py-1.5 rounded-xl border border-slate-800 transition-all font-['Outfit'] min-h-[32px]"
             >
               WITHDRAW
             </button>
@@ -110,16 +110,16 @@ export const ProfilePage = ({ setCurrentView }) => {
       </div>
 
       {/* Main Grid: Edit Profile & History Tabs */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Update Details */}
-        <div className="lg:col-span-5 card-panel p-6 space-y-6">
-          <h2 className="text-lg font-extrabold text-white font-['Outfit'] flex items-center gap-2 border-b border-[#1c2638] pb-3">
-            <User className="w-5 h-5 text-[#22c55e]" />
+        <div className="lg:col-span-5 bg-[#101622] border border-slate-800 rounded-2xl p-6 space-y-6 shadow-lg">
+          <h2 className="text-base font-extrabold text-white font-['Outfit'] flex items-center gap-2 border-b border-slate-800 pb-3">
+            <User className="w-5 h-5 text-emerald-400" />
             ACCOUNT DETAILS
           </h2>
 
           {message && (
-            <div className="p-3 bg-green-950/80 border border-green-800 text-green-300 rounded-lg text-xs flex items-center gap-2">
+            <div className="p-3 bg-emerald-950/80 border border-emerald-800 text-emerald-300 rounded-xl text-xs flex items-center gap-2">
               <CheckCircle className="w-4 h-4" />
               <span>{message}</span>
             </div>
@@ -127,40 +127,40 @@ export const ProfilePage = ({ setCurrentView }) => {
 
           <form onSubmit={handleUpdateProfile} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-gray-400 mb-1">FULL NAME</label>
+              <label className="block text-xs font-extrabold text-slate-300 mb-1 font-['Outfit'] uppercase">FULL NAME</label>
               <input
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="w-full bg-[#172030] border border-[#26354f] rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#22c55e]"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 min-h-[44px]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-400 mb-1">REGISTERED PHONE (LOCKED)</label>
+              <label className="block text-xs font-extrabold text-slate-300 mb-1 font-['Outfit'] uppercase">REGISTERED PHONE (LOCKED)</label>
               <input
                 type="text"
                 disabled
                 value={user.phone}
-                className="w-full bg-[#0f1522] border border-[#1d273a] rounded-lg px-3.5 py-2.5 text-sm text-gray-500 font-mono cursor-not-allowed"
+                className="w-full bg-slate-900 border border-slate-800/60 rounded-xl px-4 py-2.5 text-sm text-slate-500 font-mono cursor-not-allowed min-h-[44px]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-400 mb-1">NEW PASSWORD (OPTIONAL)</label>
+              <label className="block text-xs font-extrabold text-slate-300 mb-1 font-['Outfit'] uppercase">NEW PASSWORD (OPTIONAL)</label>
               <input
                 type="password"
                 placeholder="Leave blank to keep current"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full bg-[#172030] border border-[#26354f] rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#22c55e]"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 min-h-[44px]"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#22c55e] hover:bg-[#16a34a] text-black font-extrabold text-sm py-2.5 rounded-lg transition-all flex items-center justify-center gap-2 font-['Outfit'] shadow-md"
+              className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs py-3 rounded-xl transition-all flex items-center justify-center gap-2 font-['Outfit'] shadow-md min-h-[44px] uppercase tracking-wider"
             >
               <Save className="w-4 h-4" />
               {loading ? 'SAVING...' : 'SAVE CHANGES'}
@@ -169,29 +169,29 @@ export const ProfilePage = ({ setCurrentView }) => {
         </div>
 
         {/* Right Column: History Log Tabs */}
-        <div className="lg:col-span-7 card-panel p-6 flex flex-col">
+        <div className="lg:col-span-7 bg-[#101622] border border-slate-800 rounded-2xl p-6 flex flex-col shadow-lg">
           {/* Tabs */}
-          <div className="flex border-b border-[#1c2638] mb-4">
+          <div className="flex border-b border-slate-800 mb-4">
             <button
               onClick={() => setActiveTab('bets')}
-              className={`px-4 py-2.5 font-bold text-xs border-b-2 transition-all font-['Outfit'] ${
-                activeTab === 'bets' ? 'border-[#22c55e] text-[#22c55e]' : 'border-transparent text-gray-400 hover:text-gray-200'
+              className={`px-4 py-2.5 font-extrabold text-xs border-b-2 transition-all font-['Outfit'] min-h-[40px] ${
+                activeTab === 'bets' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-slate-400 hover:text-slate-200'
               }`}
             >
               BET HISTORY ({bets.length})
             </button>
             <button
               onClick={() => setActiveTab('deposits')}
-              className={`px-4 py-2.5 font-bold text-xs border-b-2 transition-all font-['Outfit'] ${
-                activeTab === 'deposits' ? 'border-[#22c55e] text-[#22c55e]' : 'border-transparent text-gray-400 hover:text-gray-200'
+              className={`px-4 py-2.5 font-extrabold text-xs border-b-2 transition-all font-['Outfit'] min-h-[40px] ${
+                activeTab === 'deposits' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-slate-400 hover:text-slate-200'
               }`}
             >
               DEPOSITS ({deposits.length})
             </button>
             <button
               onClick={() => setActiveTab('withdrawals')}
-              className={`px-4 py-2.5 font-bold text-xs border-b-2 transition-all font-['Outfit'] ${
-                activeTab === 'withdrawals' ? 'border-[#22c55e] text-[#22c55e]' : 'border-transparent text-gray-400 hover:text-gray-200'
+              className={`px-4 py-2.5 font-extrabold text-xs border-b-2 transition-all font-['Outfit'] min-h-[40px] ${
+                activeTab === 'withdrawals' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-slate-400 hover:text-slate-200'
               }`}
             >
               WITHDRAWALS ({withdrawals.length})
@@ -199,25 +199,25 @@ export const ProfilePage = ({ setCurrentView }) => {
           </div>
 
           {/* History Content */}
-          <div className="flex-1 overflow-y-auto max-h-96 divide-y divide-[#172030] text-xs">
+          <div className="flex-1 overflow-y-auto max-h-96 divide-y divide-slate-800/40 text-xs no-scrollbar">
             {activeTab === 'bets' && (
               bets.length === 0 ? (
-                <div className="p-8 text-center text-gray-500">No bets placed yet.</div>
+                <div className="p-8 text-center text-slate-500">No bets placed yet.</div>
               ) : (
                 bets.map((b) => (
                   <div key={b._id} className="py-3 px-2 flex items-center justify-between">
                     <div>
-                      <div className="font-bold text-white">Round: {b.roundId}</div>
-                      <div className="text-[10px] text-gray-400">{new Date(b.createdAt).toLocaleString()}</div>
+                      <div className="font-bold text-white font-mono text-[11px]">Round: {b.roundId}</div>
+                      <div className="text-[10px] text-slate-400">{new Date(b.createdAt).toLocaleString()}</div>
                     </div>
                     <div className="text-right">
-                      <div className="font-mono text-gray-300">Bet: KES {b.amount.toFixed(2)}</div>
+                      <div className="font-mono text-slate-300">Bet: KES {b.amount.toFixed(2)}</div>
                       {b.status === 'cashed_out' ? (
-                        <div className="font-bold text-green-400">
+                        <div className="font-bold text-emerald-400 font-mono">
                           Won KES {b.winAmount.toFixed(2)} ({b.cashoutMultiplier.toFixed(2)}x)
                         </div>
                       ) : (
-                        <div className="font-semibold text-red-400">Lost</div>
+                        <div className="font-semibold text-rose-400">Lost</div>
                       )}
                     </div>
                   </div>
@@ -227,21 +227,21 @@ export const ProfilePage = ({ setCurrentView }) => {
 
             {activeTab === 'deposits' && (
               deposits.length === 0 ? (
-                <div className="p-8 text-center text-gray-500">No deposits recorded.</div>
+                <div className="p-8 text-center text-slate-500">No deposits recorded.</div>
               ) : (
                 deposits.map((d) => (
                   <div key={d._id} className="py-3 px-2 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <ArrowDownLeft className="w-4 h-4 text-green-400" />
+                      <ArrowDownLeft className="w-4 h-4 text-emerald-400" />
                       <div>
-                        <div className="font-bold text-white uppercase">{d.method} DEPOSIT</div>
-                        <div className="text-[10px] text-gray-400">{new Date(d.createdAt).toLocaleString()}</div>
+                        <div className="font-bold text-white uppercase font-['Outfit']">{d.method} DEPOSIT</div>
+                        <div className="text-[10px] text-slate-400">{new Date(d.createdAt).toLocaleString()}</div>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-mono font-bold text-green-400">+ KES {d.amount.toFixed(2)}</div>
+                      <div className="font-mono font-bold text-emerald-400">+ KES {d.amount.toFixed(2)}</div>
                       <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                        d.status === 'completed' ? 'bg-green-950 text-green-400' : 'bg-yellow-950 text-yellow-400'
+                        d.status === 'completed' ? 'bg-emerald-950 text-emerald-400' : 'bg-amber-950 text-amber-400'
                       }`}>
                         {d.status.toUpperCase()}
                       </span>
@@ -253,21 +253,21 @@ export const ProfilePage = ({ setCurrentView }) => {
 
             {activeTab === 'withdrawals' && (
               withdrawals.length === 0 ? (
-                <div className="p-8 text-center text-gray-500">No withdrawal history.</div>
+                <div className="p-8 text-center text-slate-500">No withdrawal history.</div>
               ) : (
                 withdrawals.map((w) => (
                   <div key={w._id} className="py-3 px-2 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <ArrowUpRight className="w-4 h-4 text-orange-400" />
+                      <ArrowUpRight className="w-4 h-4 text-amber-400" />
                       <div>
-                        <div className="font-bold text-white uppercase">{w.method} WITHDRAWAL</div>
-                        <div className="text-[10px] text-gray-400">{new Date(w.createdAt).toLocaleString()}</div>
+                        <div className="font-bold text-white uppercase font-['Outfit']">{w.method} WITHDRAWAL</div>
+                        <div className="text-[10px] text-slate-400">{new Date(w.createdAt).toLocaleString()}</div>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-mono font-bold text-orange-400">- KES {w.amount.toFixed(2)}</div>
+                      <div className="font-mono font-bold text-amber-400">- KES {w.amount.toFixed(2)}</div>
                       <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                        w.status === 'completed' ? 'bg-green-950 text-green-400' : w.status === 'rejected' ? 'bg-red-950 text-red-400' : 'bg-yellow-950 text-yellow-400'
+                        w.status === 'completed' ? 'bg-emerald-950 text-emerald-400' : w.status === 'rejected' ? 'bg-rose-950 text-rose-400' : 'bg-amber-950 text-amber-400'
                       }`}>
                         {w.status.toUpperCase()}
                       </span>

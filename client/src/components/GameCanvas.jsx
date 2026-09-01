@@ -12,34 +12,34 @@ export const GameCanvas = ({ status, multiplier, countdown, crashPoint }) => {
     let width = (canvas.width = canvas.parentElement.clientWidth);
     let height = (canvas.height = canvas.parentElement.clientHeight);
 
-    // Particle system for airplane exhaust / stars
-    const particles = Array.from({ length: 35 }, () => ({
+    // Subtle background particles
+    const particles = Array.from({ length: 30 }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
-      size: Math.random() * 1.8 + 0.5,
-      alpha: Math.random() * 0.5 + 0.2,
-      speed: Math.random() * 0.5 + 0.1,
+      size: Math.random() * 1.5 + 0.5,
+      alpha: Math.random() * 0.4 + 0.1,
+      speed: Math.random() * 0.4 + 0.1,
     }));
 
     const render = () => {
       ctx.clearRect(0, 0, width, height);
 
-      // Deep dark space background gradient
+      // Deep dark navy/charcoal background gradient
       const centerX = width / 2;
       const centerY = height / 2;
       const radius = Math.max(width, height);
 
       const bgGradient = ctx.createRadialGradient(centerX, centerY, 40, centerX, centerY, radius);
-      bgGradient.addColorStop(0, '#131126');
-      bgGradient.addColorStop(0.6, '#0b0d17');
-      bgGradient.addColorStop(1, '#06070a');
+      bgGradient.addColorStop(0, '#101422');
+      bgGradient.addColorStop(0.6, '#090c15');
+      bgGradient.addColorStop(1, '#05070c');
       ctx.fillStyle = bgGradient;
       ctx.fillRect(0, 0, width, height);
 
-      // Subtle Background Grid Lines
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.025)';
+      // Grid Environment
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.02)';
       ctx.lineWidth = 1;
-      const gridSize = 45;
+      const gridSize = 40;
       for (let x = 0; x < width; x += gridSize) {
         ctx.beginPath();
         ctx.moveTo(x, 0);
@@ -53,7 +53,7 @@ export const GameCanvas = ({ status, multiplier, countdown, crashPoint }) => {
         ctx.stroke();
       }
 
-      // Draw subtle background star particles
+      // Background Stars
       particles.forEach((p) => {
         p.x -= p.speed;
         if (p.x < 0) p.x = width;
@@ -63,7 +63,7 @@ export const GameCanvas = ({ status, multiplier, countdown, crashPoint }) => {
         ctx.fill();
       });
 
-      // Draw flight curve physics when running or crashed
+      // Flight Curve Trajectory
       if (status === 'running' || status === 'crashed') {
         const progress = Math.min(1, (multiplier - 1) / Math.max(3, (crashPoint || 5) - 1));
 
@@ -75,11 +75,11 @@ export const GameCanvas = ({ status, multiplier, countdown, crashPoint }) => {
         const controlX = startX + (endX - startX) * 0.45;
         const controlY = startY;
 
-        // Curved Flight Area Fill Gradient
+        // Curved Flight Fill Gradient
         const fillGradient = ctx.createLinearGradient(startX, startY, endX, endY);
         fillGradient.addColorStop(0, 'rgba(225, 29, 72, 0.01)');
-        fillGradient.addColorStop(0.7, 'rgba(225, 29, 72, 0.18)');
-        fillGradient.addColorStop(1, 'rgba(244, 63, 94, 0.35)');
+        fillGradient.addColorStop(0.7, 'rgba(225, 29, 72, 0.15)');
+        fillGradient.addColorStop(1, 'rgba(244, 63, 94, 0.3)');
 
         ctx.beginPath();
         ctx.moveTo(startX, startY);
@@ -96,46 +96,45 @@ export const GameCanvas = ({ status, multiplier, countdown, crashPoint }) => {
         ctx.strokeStyle = status === 'crashed' ? '#ef4444' : '#f43f5e';
         ctx.lineWidth = 4;
         ctx.shadowColor = status === 'crashed' ? '#ef4444' : '#f43f5e';
-        ctx.shadowBlur = 18;
+        ctx.shadowBlur = 12;
         ctx.stroke();
-        ctx.shadowBlur = 0; // reset glow shadow
+        ctx.shadowBlur = 0;
 
-        // Render Animated Jet Plane Sprite at tip
+        // Jet Plane Sprite Animation
         if (status === 'running') {
           ctx.save();
           ctx.translate(endX, endY);
 
-          // Calculate rotation angle matching curve tangent
           const angle = Math.atan2(endY - controlY, endX - controlX);
           ctx.rotate(angle);
 
-          // Glowing jet thruster trail
-          const thrusterGrad = ctx.createLinearGradient(-30, 0, -8, 0);
+          // Jet Thruster Flame
+          const thrusterGrad = ctx.createLinearGradient(-25, 0, -6, 0);
           thrusterGrad.addColorStop(0, 'rgba(244, 63, 94, 0)');
-          thrusterGrad.addColorStop(1, 'rgba(251, 146, 60, 0.9)');
+          thrusterGrad.addColorStop(1, 'rgba(251, 146, 60, 0.8)');
           ctx.fillStyle = thrusterGrad;
           ctx.beginPath();
-          ctx.moveTo(-25, 0);
-          ctx.lineTo(-8, -4);
-          ctx.lineTo(-8, 4);
+          ctx.moveTo(-22, 0);
+          ctx.lineTo(-6, -4);
+          ctx.lineTo(-6, 4);
           ctx.closePath();
           ctx.fill();
 
-          // Main Plane Fuselage Body
+          // Plane Fuselage
           ctx.fillStyle = '#f43f5e';
           ctx.beginPath();
-          ctx.moveTo(20, 0);
-          ctx.lineTo(-10, -9);
+          ctx.moveTo(18, 0);
+          ctx.lineTo(-10, -8);
           ctx.lineTo(-4, 0);
-          ctx.lineTo(-10, 9);
+          ctx.lineTo(-10, 8);
           ctx.closePath();
           ctx.fill();
 
           // Plane Wing Highlight
           ctx.fillStyle = '#fecdd3';
           ctx.beginPath();
-          ctx.moveTo(4, -15);
-          ctx.lineTo(10, 0);
+          ctx.moveTo(3, -14);
+          ctx.lineTo(9, 0);
           ctx.lineTo(-2, 0);
           ctx.closePath();
           ctx.fill();
@@ -164,14 +163,14 @@ export const GameCanvas = ({ status, multiplier, countdown, crashPoint }) => {
   }, [status, multiplier, countdown, crashPoint]);
 
   return (
-    <div className="relative w-full h-full min-h-[300px] sm:min-h-[400px] bg-[#07090e] flex items-center justify-center overflow-hidden select-none">
-      {/* Canvas Element */}
+    <div className="relative w-full h-full min-h-[300px] sm:min-h-[380px] bg-[#06080e] flex items-center justify-center overflow-hidden select-none">
+      {/* HTML5 Canvas */}
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full z-0" />
 
       {/* Screen Overlay Content */}
       <div className="relative z-10 text-center flex flex-col items-center justify-center px-4">
         {status === 'waiting' && (
-          <div className="flex flex-col items-center gap-3 animate-in fade-in zoom-in-95 duration-200">
+          <div className="flex flex-col items-center gap-3 animate-in fade-in duration-200">
             {/* SVG Circular Ring Progress Timer */}
             <div className="relative w-20 h-20 flex items-center justify-center">
               <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
@@ -179,7 +178,7 @@ export const GameCanvas = ({ status, multiplier, countdown, crashPoint }) => {
                   cx="50"
                   cy="50"
                   r="42"
-                  stroke="#1a2436"
+                  stroke="#162032"
                   strokeWidth="8"
                   fill="transparent"
                 />
@@ -212,7 +211,7 @@ export const GameCanvas = ({ status, multiplier, countdown, crashPoint }) => {
 
         {status === 'running' && (
           <div className="flex flex-col items-center">
-            <h1 className="text-6xl sm:text-7xl md:text-8xl font-black text-white tracking-tight drop-shadow-[0_12px_24px_rgba(0,0,0,0.9)] font-['Outfit']">
+            <h1 className="text-6xl sm:text-7xl md:text-8xl font-black text-white tracking-tight drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] font-['Outfit']">
               {multiplier.toFixed(2)}x
             </h1>
           </div>
@@ -220,12 +219,12 @@ export const GameCanvas = ({ status, multiplier, countdown, crashPoint }) => {
 
         {status === 'crashed' && (
           <div className="flex flex-col items-center animate-in zoom-in-95 duration-200">
-            <div className="bg-rose-950/80 border border-rose-600/60 px-6 py-2 rounded-full mb-3 shadow-2xl backdrop-blur-md">
-              <span className="text-rose-400 font-black text-sm sm:text-lg tracking-widest uppercase font-['Outfit']">
+            <div className="bg-rose-950/80 border border-rose-600/50 px-6 py-2 rounded-full mb-3 shadow-xl backdrop-blur-md">
+              <span className="text-rose-400 font-black text-sm sm:text-base tracking-widest uppercase font-['Outfit']">
                 FLEW AWAY!
               </span>
             </div>
-            <h1 className="text-6xl sm:text-7xl font-black text-rose-500 tracking-tight font-['Outfit'] drop-shadow-[0_10px_20px_rgba(225,29,72,0.4)]">
+            <h1 className="text-6xl sm:text-7xl font-black text-rose-500 tracking-tight font-['Outfit']">
               {multiplier.toFixed(2)}x
             </h1>
           </div>

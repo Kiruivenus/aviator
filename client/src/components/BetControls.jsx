@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { Minus, Plus, Zap, Check } from 'lucide-react';
+import { Minus, Plus, Check } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
@@ -76,8 +76,8 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
     });
 
     confetti({
-      particleCount: 60,
-      spread: 70,
+      particleCount: 50,
+      spread: 60,
       origin: { y: 0.8 },
     });
   };
@@ -120,13 +120,13 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
   const isCashedOut = myActiveBet && myActiveBet.status === 'cashed_out';
 
   return (
-    <div className="flex-1 bg-slate-900/90 border border-slate-800 rounded-2xl p-3 sm:p-4 flex flex-col justify-between shadow-xl backdrop-blur-sm">
+    <div className="flex-1 bg-slate-950/90 border border-slate-800 rounded-2xl p-3 sm:p-4 flex flex-col justify-between shadow-lg">
       {/* Header Tabs: Bet vs Auto */}
       <div className="flex items-center justify-between mb-3">
-        <div className="bg-slate-950 p-1 rounded-xl flex border border-slate-800/80">
+        <div className="bg-slate-900 p-1 rounded-xl flex border border-slate-800">
           <button
             onClick={() => setTab('Bet')}
-            className={`px-4 py-1 text-xs font-extrabold rounded-lg transition-all font-['Outfit'] ${
+            className={`px-4 py-1.5 text-xs font-extrabold rounded-lg transition-all font-['Outfit'] min-h-[36px] ${
               tab === 'Bet'
                 ? 'bg-slate-800 text-white shadow-sm'
                 : 'text-slate-400 hover:text-slate-200'
@@ -136,7 +136,7 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
           </button>
           <button
             onClick={() => setTab('Auto')}
-            className={`px-4 py-1 text-xs font-extrabold rounded-lg transition-all font-['Outfit'] ${
+            className={`px-4 py-1.5 text-xs font-extrabold rounded-lg transition-all font-['Outfit'] min-h-[36px] ${
               tab === 'Auto'
                 ? 'bg-slate-800 text-white shadow-sm'
                 : 'text-slate-400 hover:text-slate-200'
@@ -156,7 +156,7 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
                 min="1.1"
                 value={autoCashout}
                 onChange={(e) => setAutoCashout(parseFloat(e.target.value) || 1.1)}
-                className="w-16 bg-slate-950 border border-slate-800 text-emerald-400 font-extrabold text-center py-1 rounded-lg focus:outline-none focus:border-emerald-500 font-mono text-xs"
+                className="w-16 bg-slate-900 border border-slate-800 text-emerald-400 font-extrabold text-center py-1 rounded-lg focus:outline-none focus:border-emerald-500 font-mono text-xs min-h-[36px]"
               />
               <span className="ml-1 text-slate-400 font-bold text-xs">x</span>
             </div>
@@ -169,13 +169,14 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
         {/* Steppers & Quick Chips */}
         <div className="col-span-7 flex flex-col gap-2">
           {/* Amount Stepper Control Box */}
-          <div className="bg-slate-950 border border-slate-800 rounded-xl p-1.5 flex items-center justify-between">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-1.5 flex items-center justify-between">
             <button
               onClick={() => adjustAmount(-10)}
               disabled={isBetActive}
-              className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center font-extrabold transition-colors disabled:opacity-40"
+              className="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center font-extrabold transition-colors disabled:opacity-40 min-w-[36px] min-h-[36px]"
+              aria-label="Decrease bet amount by 10"
             >
-              <Minus className="w-3.5 h-3.5" />
+              <Minus className="w-4 h-4" />
             </button>
 
             <div className="flex flex-col items-center">
@@ -195,20 +196,21 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
             <button
               onClick={() => adjustAmount(10)}
               disabled={isBetActive}
-              className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center font-extrabold transition-colors disabled:opacity-40"
+              className="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center font-extrabold transition-colors disabled:opacity-40 min-w-[36px] min-h-[36px]"
+              aria-label="Increase bet amount by 10"
             >
-              <Plus className="w-3.5 h-3.5" />
+              <Plus className="w-4 h-4" />
             </button>
           </div>
 
           {/* Quick Preset Amount Buttons */}
-          <div className="grid grid-cols-4 gap-1">
+          <div className="grid grid-cols-4 gap-1.5">
             {[100, 200, 500, 1000].map((val) => (
               <button
                 key={val}
                 onClick={() => setQuickAmount(val)}
                 disabled={isBetActive}
-                className="bg-slate-950 hover:bg-slate-800 text-slate-300 font-extrabold text-[11px] py-1 rounded-lg border border-slate-800 transition-all font-mono disabled:opacity-40 active:scale-95"
+                className="bg-slate-900 hover:bg-slate-800 text-slate-300 font-extrabold text-[11px] py-1.5 rounded-lg border border-slate-800 transition-all font-mono disabled:opacity-40 active:scale-95 min-h-[32px]"
               >
                 {val}
               </button>
@@ -217,15 +219,15 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
         </div>
 
         {/* Right Stateful Action Button */}
-        <div className="col-span-5 h-full min-h-[76px] flex flex-col">
+        <div className="col-span-5 h-full min-h-[80px] flex flex-col">
           {!isBetActive ? (
             <button
               onClick={handlePlaceBet}
               disabled={loading || gameState.status === 'running'}
-              className={`w-full h-full rounded-2xl flex flex-col items-center justify-center font-black transition-all shadow-lg font-['Outfit'] ${
+              className={`w-full h-full rounded-2xl flex flex-col items-center justify-center font-black transition-all shadow-md font-['Outfit'] min-h-[76px] ${
                 gameState.status === 'running'
                   ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'
-                  : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 shadow-emerald-950/60 active:scale-95'
+                  : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 shadow-emerald-950/40 active:scale-95'
               }`}
             >
               <span className="text-base sm:text-lg tracking-wider">BET</span>
@@ -236,7 +238,7 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
           ) : isRoundRunning ? (
             <button
               onClick={handleCashOut}
-              className="w-full h-full bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-400 hover:to-amber-400 text-slate-950 rounded-2xl flex flex-col items-center justify-center font-black transition-all shadow-xl shadow-orange-950/80 active:scale-95 animate-pulse font-['Outfit']"
+              className="w-full h-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-2xl flex flex-col items-center justify-center font-black transition-all shadow-lg shadow-orange-950/80 active:scale-95 animate-pulse font-['Outfit'] min-h-[76px]"
             >
               <span className="text-xs sm:text-sm tracking-wider">CASH OUT</span>
               <span className="text-sm sm:text-base font-extrabold font-mono">
@@ -244,7 +246,7 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
               </span>
             </button>
           ) : isCashedOut ? (
-            <div className="w-full h-full bg-emerald-950/80 border border-emerald-500/50 rounded-2xl flex flex-col items-center justify-center p-2 text-center">
+            <div className="w-full h-full bg-emerald-950/80 border border-emerald-500/40 rounded-2xl flex flex-col items-center justify-center p-2 text-center min-h-[76px]">
               <span className="text-[10px] font-extrabold text-emerald-400 uppercase font-['Outfit'] flex items-center gap-1">
                 <Check className="w-3 h-3" /> CASHED OUT!
               </span>
@@ -253,7 +255,7 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
               </span>
             </div>
           ) : (
-            <div className="w-full h-full bg-slate-950 border border-slate-800 rounded-2xl flex flex-col items-center justify-center p-2 text-center">
+            <div className="w-full h-full bg-slate-900 border border-slate-800 rounded-2xl flex flex-col items-center justify-center p-2 text-center min-h-[76px]">
               <span className="text-xs font-extrabold text-teal-400 font-['Outfit']">BET ACCEPTED</span>
               <span className="text-[10px] text-slate-400 font-medium">Waiting for flight...</span>
             </div>
@@ -272,7 +274,7 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
 
 export const BetControls = ({ gameState, socket, onPlaceBetSuccess }) => {
   return (
-    <div className="w-full bg-[#0a0e17] border-t border-slate-800/80 p-3 sm:p-4 grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+    <div className="w-full bg-[#080b11] border-t border-slate-800/80 p-3 sm:p-4 grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
       <SingleBetPanel
         panelId={1}
         gameState={gameState}

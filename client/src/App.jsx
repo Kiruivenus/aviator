@@ -114,7 +114,7 @@ const MainApp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#07090e] text-slate-100 flex flex-col font-['Inter'] select-none overflow-x-hidden">
+    <div className="min-h-screen bg-[#080b11] text-slate-100 flex flex-col font-['Inter'] select-none overflow-x-hidden">
       {/* Top Header Navbar */}
       <Navbar currentView={currentView} setCurrentView={setCurrentView} />
 
@@ -125,12 +125,12 @@ const MainApp = () => {
           <MultiplierHistory history={gameState.history} />
 
           {/* Mobile View Switcher Tabs (Game Flight vs Active Players) */}
-          <div className="lg:hidden flex bg-[#0a0e17] border-b border-slate-800 p-1">
+          <div className="lg:hidden flex bg-[#080b11] border-b border-slate-800 p-1">
             <button
               onClick={() => setMobileTab('game')}
-              className={`flex-1 py-2 text-xs font-extrabold rounded-lg flex items-center justify-center gap-2 font-['Outfit'] transition-all ${
+              className={`flex-1 py-2.5 text-xs font-extrabold rounded-xl flex items-center justify-center gap-2 font-['Outfit'] transition-all min-h-[40px] ${
                 mobileTab === 'game'
-                  ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-950/40'
+                  ? 'bg-emerald-500 text-slate-950 shadow-sm'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -139,9 +139,9 @@ const MainApp = () => {
             </button>
             <button
               onClick={() => setMobileTab('players')}
-              className={`flex-1 py-2 text-xs font-extrabold rounded-lg flex items-center justify-center gap-2 font-['Outfit'] transition-all ${
+              className={`flex-1 py-2.5 text-xs font-extrabold rounded-xl flex items-center justify-center gap-2 font-['Outfit'] transition-all min-h-[40px] ${
                 mobileTab === 'players'
-                  ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-950/40'
+                  ? 'bg-emerald-500 text-slate-950 shadow-sm'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -158,7 +158,7 @@ const MainApp = () => {
             </div>
 
             {/* Center Flight Canvas & Twin Bet Control Panels (Shown on desktop OR when mobileTab === 'game') */}
-            <div className={`${mobileTab === 'game' ? 'flex' : 'hidden'} lg:flex flex-1 flex-col h-full overflow-hidden bg-[#06070a]`}>
+            <div className={`${mobileTab === 'game' ? 'flex' : 'hidden'} lg:flex flex-1 flex-col h-full overflow-hidden bg-[#05070c]`}>
               {/* HTML5 Canvas Flight Simulation */}
               <div className="flex-1 relative min-h-[280px] sm:min-h-[380px]">
                 <GameCanvas
