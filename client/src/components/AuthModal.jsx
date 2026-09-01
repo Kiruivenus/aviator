@@ -54,12 +54,12 @@ export const AuthModal = () => {
         </button>
 
         {/* Top Brand Header */}
-        <div className="flex items-center gap-2.5 mb-6">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-600 via-pink-600 to-rose-700 flex items-center justify-center text-white font-black text-lg shadow-md shadow-rose-900/30">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-600 via-pink-600 to-rose-700 flex items-center justify-center text-white font-black text-xl shadow-md shadow-rose-900/30">
             M
           </div>
           <div>
-            <h2 className="text-lg font-extrabold text-white tracking-wider font-['Outfit'] leading-none">
+            <h2 className="text-xl font-extrabold text-white tracking-wider font-['Outfit'] leading-none">
               METRIC<span className="text-emerald-400">WIN</span>
             </h2>
             <span className="text-[10px] text-slate-400 font-semibold tracking-wider uppercase">AUTHENTICATION PORTAL</span>
@@ -67,11 +67,11 @@ export const AuthModal = () => {
         </div>
 
         {/* Custom Segmented Tabs */}
-        <div className="grid grid-cols-2 p-1 bg-slate-950/80 border border-slate-800 rounded-xl mb-6">
+        <div className="grid grid-cols-2 p-1 bg-slate-950 border border-slate-800 rounded-xl mb-6">
           <button
             type="button"
             onClick={() => { setAuthTab('login'); setError(''); setSuccess(''); }}
-            className={`py-2.5 text-xs font-extrabold rounded-lg transition-all font-['Outfit'] min-h-[40px] ${
+            className={`py-2.5 text-xs font-extrabold rounded-lg transition-all font-['Outfit'] min-h-[42px] ${
               authTab === 'login'
                 ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md shadow-emerald-950/40'
                 : 'text-slate-400 hover:text-white'
@@ -82,7 +82,7 @@ export const AuthModal = () => {
           <button
             type="button"
             onClick={() => { setAuthTab('register'); setError(''); setSuccess(''); }}
-            className={`py-2.5 text-xs font-extrabold rounded-lg transition-all font-['Outfit'] min-h-[40px] ${
+            className={`py-2.5 text-xs font-extrabold rounded-lg transition-all font-['Outfit'] min-h-[42px] ${
               authTab === 'register'
                 ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md shadow-emerald-950/40'
                 : 'text-slate-400 hover:text-white'
@@ -94,7 +94,7 @@ export const AuthModal = () => {
 
         {/* Welcome Bonus Highlight */}
         {authTab === 'register' && (
-          <div className="mb-5 p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/30 flex items-center gap-3">
+          <div className="mb-6 p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-500/30 flex items-center gap-3">
             <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
               <Sparkles className="w-4 h-4" />
             </div>
@@ -107,7 +107,7 @@ export const AuthModal = () => {
 
         {/* Error Alert */}
         {error && (
-          <div className="mb-4 p-3 bg-rose-950/60 border border-rose-500/40 text-rose-200 rounded-xl text-xs flex items-center gap-2.5">
+          <div className="mb-5 p-3.5 bg-rose-950/60 border border-rose-500/40 text-rose-200 rounded-xl text-xs flex items-center gap-2.5">
             <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
             <span>{error}</span>
           </div>
@@ -115,68 +115,71 @@ export const AuthModal = () => {
 
         {/* Success Alert */}
         {success && (
-          <div className="mb-4 p-3 bg-emerald-950/60 border border-emerald-500/40 text-emerald-200 rounded-xl text-xs flex items-center gap-2.5">
+          <div className="mb-5 p-3.5 bg-emerald-950/60 border border-emerald-500/40 text-emerald-200 rounded-xl text-xs flex items-center gap-2.5">
             <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
             <span>{success}</span>
           </div>
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {authTab === 'register' && (
             <div>
-              <label className="block text-[11px] font-extrabold text-slate-300 mb-1.5 uppercase tracking-wider font-['Outfit']">
+              <label className="block text-xs font-extrabold text-slate-300 mb-2 uppercase tracking-wider font-['Outfit']">
                 Full Name
               </label>
-              <div className="relative">
-                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+              <div className="relative flex items-center">
+                <User className="absolute left-4 w-4 h-4 text-slate-400 pointer-events-none z-10" />
                 <input
                   type="text"
                   required
                   placeholder="John Doe"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full bg-slate-950/90 border border-slate-800 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all font-medium min-h-[44px]"
+                  style={{ paddingLeft: '3.25rem', paddingRight: '1rem' }}
+                  className="w-full bg-slate-950 border border-slate-700/80 rounded-xl py-3.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all font-medium min-h-[48px]"
                 />
               </div>
             </div>
           )}
 
           <div>
-            <label className="block text-[11px] font-extrabold text-slate-300 mb-1.5 uppercase tracking-wider font-['Outfit']">
+            <label className="block text-xs font-extrabold text-slate-300 mb-2 uppercase tracking-wider font-['Outfit']">
               Phone Number
             </label>
-            <div className="relative">
-              <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+            <div className="relative flex items-center">
+              <Phone className="absolute left-4 w-4 h-4 text-slate-400 pointer-events-none z-10" />
               <input
                 type="tel"
                 required
                 placeholder="0712345678 or 254712345678"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full bg-slate-950/90 border border-slate-800 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all font-medium min-h-[44px]"
+                style={{ paddingLeft: '3.25rem', paddingRight: '1rem' }}
+                className="w-full bg-slate-950 border border-slate-700/80 rounded-xl py-3.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all font-medium min-h-[48px]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-[11px] font-extrabold text-slate-300 mb-1.5 uppercase tracking-wider font-['Outfit']">
+            <label className="block text-xs font-extrabold text-slate-300 mb-2 uppercase tracking-wider font-['Outfit']">
               Password
             </label>
-            <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+            <div className="relative flex items-center">
+              <Lock className="absolute left-4 w-4 h-4 text-slate-400 pointer-events-none z-10" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 required
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-slate-950/90 border border-slate-800 rounded-xl pl-11 pr-11 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all font-medium min-h-[44px]"
+                style={{ paddingLeft: '3.25rem', paddingRight: '3rem' }}
+                className="w-full bg-slate-950 border border-slate-700/80 rounded-xl py-3.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all font-medium min-h-[48px]"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 focus:outline-none p-1 min-w-[32px] min-h-[32px] flex items-center justify-center"
+                className="absolute right-3.5 text-slate-400 hover:text-slate-200 focus:outline-none p-1.5 min-w-[36px] min-h-[36px] flex items-center justify-center z-10"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -187,7 +190,7 @@ export const AuthModal = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-sm py-3.5 rounded-xl transition-all shadow-md shadow-emerald-950/50 active:scale-[0.99] disabled:opacity-50 font-['Outfit'] tracking-wider uppercase flex items-center justify-center gap-2 min-h-[46px]"
+            className="w-full mt-3 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-sm py-4 rounded-xl transition-all shadow-md shadow-emerald-950/50 active:scale-[0.99] disabled:opacity-50 font-['Outfit'] tracking-wider uppercase flex items-center justify-center gap-2 min-h-[48px]"
           >
             {loading ? (
               <span className="inline-block w-5 h-5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin"></span>
@@ -201,7 +204,7 @@ export const AuthModal = () => {
         </form>
 
         {/* Footer Navigation */}
-        <div className="mt-5 text-center text-xs text-slate-400">
+        <div className="mt-6 text-center text-xs text-slate-400">
           {authTab === 'login' ? (
             <span>
               Don't have an account?{' '}
