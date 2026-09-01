@@ -120,9 +120,9 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
   const isCashedOut = myActiveBet && myActiveBet.status === 'cashed_out';
 
   return (
-    <div className="flex-1 bg-slate-950/90 border border-slate-800 rounded-2xl p-3 sm:p-4 flex flex-col justify-between shadow-lg">
-      {/* Header Tabs: Bet vs Auto */}
-      <div className="flex items-center justify-between mb-3">
+    <div className="flex-1 bg-slate-950 border border-slate-800/90 rounded-2xl p-4 sm:p-5 flex flex-col justify-between shadow-xl">
+      {/* Segmented Header Tabs: Bet vs Auto */}
+      <div className="flex items-center justify-between mb-4">
         <div className="bg-slate-900 p-1 rounded-xl flex border border-slate-800">
           <button
             onClick={() => setTab('Bet')}
@@ -147,7 +147,7 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
         </div>
 
         {tab === 'Auto' && (
-          <div className="flex items-center gap-1.5 text-xs text-slate-400 font-bold">
+          <div className="flex items-center gap-2 text-xs text-slate-400 font-bold">
             <span className="text-[11px] font-extrabold uppercase text-slate-400 font-['Outfit']">Auto Cashout:</span>
             <div className="relative flex items-center">
               <input
@@ -165,38 +165,38 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
       </div>
 
       {/* Main Controls Grid */}
-      <div className="grid grid-cols-12 gap-3 items-center">
+      <div className="grid grid-cols-12 gap-3 sm:gap-4 items-center">
         {/* Steppers & Quick Chips */}
-        <div className="col-span-7 flex flex-col gap-2">
+        <div className="col-span-12 sm:col-span-7 flex flex-col gap-3">
           {/* Amount Stepper Control Box */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-1.5 flex items-center justify-between">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-2 flex items-center justify-between">
             <button
               onClick={() => adjustAmount(-10)}
               disabled={isBetActive}
-              className="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center font-extrabold transition-colors disabled:opacity-40 min-w-[36px] min-h-[36px]"
+              className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center font-extrabold transition-colors disabled:opacity-40 min-w-[40px] min-h-[40px]"
               aria-label="Decrease bet amount by 10"
             >
               <Minus className="w-4 h-4" />
             </button>
 
             <div className="flex flex-col items-center">
-              <span className="text-[9px] text-slate-400 font-extrabold tracking-wider font-['Outfit']">BET AMOUNT</span>
-              <div className="flex items-center gap-1">
+              <span className="text-[10px] text-slate-400 font-extrabold tracking-wider uppercase font-['Outfit'] mb-0.5">BET AMOUNT</span>
+              <div className="flex items-center gap-1.5">
                 <input
                   type="number"
                   value={amount}
                   disabled={isBetActive}
                   onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
-                  className="w-20 bg-transparent text-center text-white font-black text-sm focus:outline-none font-mono"
+                  className="w-24 bg-transparent text-center text-white font-black text-base focus:outline-none font-mono"
                 />
-                <span className="text-[10px] font-extrabold text-slate-400">KES</span>
+                <span className="text-xs font-extrabold text-slate-400">KES</span>
               </div>
             </div>
 
             <button
               onClick={() => adjustAmount(10)}
               disabled={isBetActive}
-              className="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center font-extrabold transition-colors disabled:opacity-40 min-w-[36px] min-h-[36px]"
+              className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center font-extrabold transition-colors disabled:opacity-40 min-w-[40px] min-h-[40px]"
               aria-label="Increase bet amount by 10"
             >
               <Plus className="w-4 h-4" />
@@ -204,13 +204,13 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
           </div>
 
           {/* Quick Preset Amount Buttons */}
-          <div className="grid grid-cols-4 gap-1.5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {[100, 200, 500, 1000].map((val) => (
               <button
                 key={val}
                 onClick={() => setQuickAmount(val)}
                 disabled={isBetActive}
-                className="bg-slate-900 hover:bg-slate-800 text-slate-300 font-extrabold text-[11px] py-1.5 rounded-lg border border-slate-800 transition-all font-mono disabled:opacity-40 active:scale-95 min-h-[32px]"
+                className="bg-slate-900 hover:bg-slate-800 text-slate-300 font-extrabold text-xs py-2 rounded-xl border border-slate-800 transition-all font-mono disabled:opacity-40 active:scale-95 min-h-[38px]"
               >
                 {val}
               </button>
@@ -219,12 +219,12 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
         </div>
 
         {/* Right Stateful Action Button */}
-        <div className="col-span-5 h-full min-h-[80px] flex flex-col">
+        <div className="col-span-12 sm:col-span-5 h-full min-h-[72px] sm:min-h-[84px] flex flex-col">
           {!isBetActive ? (
             <button
               onClick={handlePlaceBet}
               disabled={loading || gameState.status === 'running'}
-              className={`w-full h-full rounded-2xl flex flex-col items-center justify-center font-black transition-all shadow-md font-['Outfit'] min-h-[76px] ${
+              className={`w-full h-full rounded-2xl flex flex-col items-center justify-center font-black transition-all shadow-md font-['Outfit'] min-h-[72px] sm:min-h-[84px] py-2.5 ${
                 gameState.status === 'running'
                   ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'
                   : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 shadow-emerald-950/40 active:scale-95'
@@ -238,7 +238,7 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
           ) : isRoundRunning ? (
             <button
               onClick={handleCashOut}
-              className="w-full h-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-2xl flex flex-col items-center justify-center font-black transition-all shadow-lg shadow-orange-950/80 active:scale-95 animate-pulse font-['Outfit'] min-h-[76px]"
+              className="w-full h-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-2xl flex flex-col items-center justify-center font-black transition-all shadow-lg shadow-orange-950/80 active:scale-95 animate-pulse font-['Outfit'] min-h-[72px] sm:min-h-[84px] py-2.5"
             >
               <span className="text-xs sm:text-sm tracking-wider">CASH OUT</span>
               <span className="text-sm sm:text-base font-extrabold font-mono">
@@ -246,25 +246,25 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
               </span>
             </button>
           ) : isCashedOut ? (
-            <div className="w-full h-full bg-emerald-950/80 border border-emerald-500/40 rounded-2xl flex flex-col items-center justify-center p-2 text-center min-h-[76px]">
+            <div className="w-full h-full bg-emerald-950/80 border border-emerald-500/40 rounded-2xl flex flex-col items-center justify-center p-2 text-center min-h-[72px] sm:min-h-[84px]">
               <span className="text-[10px] font-extrabold text-emerald-400 uppercase font-['Outfit'] flex items-center gap-1">
-                <Check className="w-3 h-3" /> CASHED OUT!
+                <Check className="w-3.5 h-3.5" /> CASHED OUT!
               </span>
               <span className="text-sm font-black text-emerald-300 font-mono">
                 +{myActiveBet.winAmount.toFixed(2)} KES
               </span>
             </div>
           ) : (
-            <div className="w-full h-full bg-slate-900 border border-slate-800 rounded-2xl flex flex-col items-center justify-center p-2 text-center min-h-[76px]">
+            <div className="w-full h-full bg-slate-900 border border-slate-800 rounded-2xl flex flex-col items-center justify-center p-2 text-center min-h-[72px] sm:min-h-[84px]">
               <span className="text-xs font-extrabold text-teal-400 font-['Outfit']">BET ACCEPTED</span>
-              <span className="text-[10px] text-slate-400 font-medium">Waiting for flight...</span>
+              <span className="text-[10px] text-slate-400 font-medium">Waiting for flight takeoff...</span>
             </div>
           )}
         </div>
       </div>
 
       {errorMessage && (
-        <div className="mt-2 text-center text-[11px] font-bold text-rose-300 bg-rose-950/80 py-1.5 px-3 rounded-xl border border-rose-800/60 font-['Outfit']">
+        <div className="mt-3 text-center text-[11px] font-bold text-rose-300 bg-rose-950/80 py-2 px-3 rounded-xl border border-rose-800/60 font-['Outfit']">
           {errorMessage}
         </div>
       )}
@@ -274,7 +274,7 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
 
 export const BetControls = ({ gameState, socket, onPlaceBetSuccess }) => {
   return (
-    <div className="w-full bg-[#080b11] border-t border-slate-800/80 p-3 sm:p-4 grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+    <div className="w-full bg-[#080b11] border-t border-slate-800/80 p-3 sm:p-5 flex flex-col md:grid md:grid-cols-2 gap-4">
       <SingleBetPanel
         panelId={1}
         gameState={gameState}
