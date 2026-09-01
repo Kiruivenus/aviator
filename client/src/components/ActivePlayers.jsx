@@ -114,7 +114,7 @@ export const ActivePlayers = ({ activeBets = [], myBets = [] }) => {
       </div>
 
       {/* 4. Table Rows with Independent Scroll Isolation */}
-      <div className="flex-1 overflow-y-auto max-h-[380px] lg:max-h-none space-y-1.5 pr-1 no-scrollbar overscroll-contain select-none">
+      <div className="flex-1 overflow-y-auto max-h-[380px] lg:max-h-[500px] xl:max-h-[620px] space-y-1.5 pr-1 overscroll-contain">
         {displayedBets.map((bet, index) => {
           const isCashedOut = bet.status === 'cashed_out';
           return (

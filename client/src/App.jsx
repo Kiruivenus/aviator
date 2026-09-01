@@ -130,7 +130,7 @@ const MainApp = () => {
           <div className="flex-1 flex flex-col lg:flex-row bg-[#05070c] items-start">
             
             {/* Desktop-only Left Sidebar (Hidden on mobile) */}
-            <div className="hidden lg:block w-80 h-full shrink-0">
+            <div className="hidden lg:block w-80 shrink-0 sticky top-[65px] h-[calc(100vh-75px)] p-2">
               <ActivePlayers activeBets={gameState.activeBets} myBets={myBets} />
             </div>
 
