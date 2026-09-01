@@ -160,9 +160,9 @@ export const WithdrawalPage = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-[#dcebca] hover:bg-[#d2e4bd] text-[#3d630d] font-black text-sm sm:text-base py-4 px-4 rounded-xl transition-all shadow-md flex items-center justify-center gap-2.5 font-['Outfit'] active:scale-95 min-h-[52px]"
+                  className="w-full bg-[#4d7c0f] hover:bg-[#598516] text-white font-black text-sm sm:text-base py-4 px-4 rounded-xl transition-all shadow-md flex items-center justify-center gap-2.5 font-['Outfit'] active:scale-95 min-h-[52px]"
                 >
-                  <Smartphone className="w-5 h-5 shrink-0 text-[#3d630d]" />
+                  <Smartphone className="w-5 h-5 shrink-0 text-white" />
                   <span>{loading ? 'Submitting Request...' : 'Withdraw with Mpesa'}</span>
                 </button>
               </div>

@@ -165,7 +165,7 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
             <button
               onClick={handlePlaceBet}
               disabled={loading || gameState.status === 'running'}
-              className="w-full h-full bg-[#28c700] hover:bg-[#2edb00] border-2 border-[#3eff12]/40 text-white rounded-xl p-2 flex flex-col items-center justify-center font-black shadow-md shadow-green-950/40 transition-transform active:scale-95 min-h-[64px]"
+              className="w-full h-full bg-[#4d7c0f] hover:bg-[#598516] border-2 border-[#659e18]/40 text-white rounded-xl p-2 flex flex-col items-center justify-center font-black shadow-md shadow-green-950/40 transition-transform active:scale-95 min-h-[64px]"
             >
               <span className="text-base sm:text-lg font-black font-['Outfit'] leading-none">
                 {gameState.status === 'running' ? 'WAITING' : 'Bet'}

@@ -41,7 +41,7 @@ export const Navbar = ({ currentView, setCurrentView }) => {
           <button
             onClick={() => handleNavClick('deposit')}
             className={`px-3.5 py-1.5 text-xs font-extrabold rounded-xl transition-all font-['Outfit'] min-h-[36px] ${
-              currentView === 'deposit' ? 'bg-emerald-500 text-slate-950 shadow-md' : 'text-slate-300 hover:text-white'
+              currentView === 'deposit' ? 'bg-[#4d7c0f] text-white shadow-md' : 'text-slate-300 hover:text-white'
             }`}
           >
             DEPOSIT
@@ -50,7 +50,7 @@ export const Navbar = ({ currentView, setCurrentView }) => {
           <button
             onClick={() => handleNavClick('withdrawal')}
             className={`px-3.5 py-1.5 text-xs font-extrabold rounded-xl transition-all font-['Outfit'] min-h-[36px] ${
-              currentView === 'withdrawal' ? 'bg-emerald-500 text-slate-950 shadow-md' : 'text-slate-300 hover:text-white'
+              currentView === 'withdrawal' ? 'bg-[#4d7c0f] text-white shadow-md' : 'text-slate-300 hover:text-white'
             }`}
           >
             WITHDRAW
@@ -95,7 +95,7 @@ export const Navbar = ({ currentView, setCurrentView }) => {
           <button
             onClick={() => handleNavClick('profile')}
             className={`px-3.5 py-1.5 text-xs font-extrabold rounded-xl transition-all font-['Outfit'] min-h-[36px] ${
-              currentView === 'profile' ? 'bg-emerald-500 text-slate-950 shadow-md' : 'text-slate-300 hover:text-white'
+              currentView === 'profile' ? 'bg-[#4d7c0f] text-white shadow-md' : 'text-slate-300 hover:text-white'
             }`}
           >
             PROFILE

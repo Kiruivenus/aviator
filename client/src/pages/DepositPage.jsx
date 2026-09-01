@@ -94,7 +94,7 @@ export const DepositPage = () => {
         <div className="lg:col-span-7 space-y-5">
           {/* Top User Phone Badge */}
           <div className="flex items-center justify-center lg:justify-start gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#589b14] text-white flex items-center justify-center shadow-md">
+            <div className="w-10 h-10 rounded-full bg-[#4d7c0f] text-white flex items-center justify-center shadow-md">
               <User className="w-5 h-5" />
             </div>
             <span className="text-base font-extrabold text-white font-mono tracking-wide">
@@ -177,7 +177,7 @@ export const DepositPage = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-[#517d17] hover:bg-[#5e911b] text-white font-extrabold text-sm sm:text-base py-4 px-4 rounded-xl transition-all shadow-md flex items-center justify-center gap-2.5 font-['Outfit'] active:scale-95 min-h-[52px]"
+                  className="w-full bg-[#4d7c0f] hover:bg-[#598516] text-white font-extrabold text-sm sm:text-base py-4 px-4 rounded-xl transition-all shadow-md flex items-center justify-center gap-2.5 font-['Outfit'] active:scale-95 min-h-[52px]"
                 >
                   <Smartphone className="w-5 h-5 shrink-0" />
                   <span>{loading ? 'Processing STK Push...' : 'Deposit with Mpesa'}</span>
