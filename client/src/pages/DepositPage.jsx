@@ -119,7 +119,7 @@ export const DepositPage = () => {
                 Deposit
               </h2>
               <p className="text-xs sm:text-sm text-slate-400 mt-1 font-medium">
-                Send money into your MetricWin account
+                Send money into your AviatorX account
               </p>
             </div>
 

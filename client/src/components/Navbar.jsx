@@ -20,19 +20,21 @@ export const Navbar = ({ currentView, setCurrentView }) => {
     <header className="sticky top-0 z-50 bg-[#080b11]/95 backdrop-blur-xl border-b border-slate-800/80 shadow-2xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
         
-        {/* Left: Brand Logo */}
+        {/* Left: AviatorX Brand Logo */}
         <div 
           onClick={() => setCurrentView('game')} 
           className="flex items-center gap-2.5 cursor-pointer group shrink-0"
         >
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-rose-600 via-rose-500 to-pink-500 flex items-center justify-center font-black text-white text-base shadow-lg shadow-rose-950/60 group-hover:scale-105 transition-transform font-['Outfit']">
-            M
-          </div>
+          <img 
+            src="/aviatorx_logo.jpg" 
+            alt="AviatorX" 
+            className="w-9 h-9 rounded-xl object-cover border border-rose-500/40 shadow-lg shadow-rose-950/60 group-hover:scale-105 transition-transform" 
+          />
           <div className="flex flex-col">
             <span className="font-extrabold text-base sm:text-lg tracking-wider text-white font-['Outfit'] leading-none">
-              METRIC<span className="text-[#4d7c0f]">WIN</span>
+              AVIATOR<span className="text-rose-500 font-black">X</span>
             </span>
-            <span className="text-[9px] font-bold text-slate-400 tracking-widest uppercase">AVIATOR PRO</span>
+            <span className="text-[9px] font-bold text-slate-400 tracking-widest uppercase">NEXT-GEN PLATFORM</span>
           </div>
         </div>
 
