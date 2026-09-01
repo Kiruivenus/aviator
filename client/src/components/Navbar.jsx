@@ -36,7 +36,7 @@ export const Navbar = ({ currentView, setCurrentView }) => {
           </div>
         </div>
 
-        {/* Center Navigation Links (Rearranged: Deposit, Withdraw, Profile, Chat/Rain Drop, Predictor, Play Game) */}
+        {/* Center Navigation Links (AVIATOR in middle, PROFILE in corner) */}
         <nav className="hidden md:flex items-center justify-center gap-1.5 mx-auto bg-slate-950/80 p-1.5 rounded-2xl border border-slate-800/80 shadow-inner">
           <button
             onClick={() => handleNavClick('deposit')}
@@ -56,13 +56,16 @@ export const Navbar = ({ currentView, setCurrentView }) => {
             WITHDRAW
           </button>
 
+          {/* AVIATOR (Renamed from PLAY GAME and positioned in the middle!) */}
           <button
-            onClick={() => handleNavClick('profile')}
-            className={`px-3.5 py-1.5 text-xs font-extrabold rounded-xl transition-all font-['Outfit'] min-h-[36px] ${
-              currentView === 'profile' ? 'bg-emerald-500 text-slate-950 shadow-md' : 'text-slate-300 hover:text-white'
+            onClick={() => handleNavClick('game')}
+            className={`px-4 py-1.5 text-xs font-black rounded-xl transition-all font-['Outfit'] min-h-[36px] ${
+              currentView === 'game' 
+                ? 'bg-rose-600 text-white shadow-lg shadow-rose-950/80' 
+                : 'bg-rose-950/60 border border-rose-600/40 text-rose-300 hover:bg-rose-900/80 hover:text-white'
             }`}
           >
-            PROFILE
+            AVIATOR
           </button>
 
           <button
@@ -83,15 +86,14 @@ export const Navbar = ({ currentView, setCurrentView }) => {
             PREDICTOR
           </button>
 
+          {/* PROFILE (Moved to corner!) */}
           <button
-            onClick={() => handleNavClick('game')}
+            onClick={() => handleNavClick('profile')}
             className={`px-3.5 py-1.5 text-xs font-extrabold rounded-xl transition-all font-['Outfit'] min-h-[36px] ${
-              currentView === 'game' 
-                ? 'bg-emerald-500 text-slate-950 shadow-md' 
-                : 'text-slate-300 hover:text-white'
+              currentView === 'profile' ? 'bg-emerald-500 text-slate-950 shadow-md' : 'text-slate-300 hover:text-white'
             }`}
           >
-            PLAY GAME
+            PROFILE
           </button>
 
           {user?.role === 'admin' && (
@@ -214,6 +216,14 @@ export const Navbar = ({ currentView, setCurrentView }) => {
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-slate-800 bg-[#080b11] px-4 py-4 space-y-2 animate-in slide-in-from-top-4 duration-200">
           <button
+            onClick={() => handleNavClick('game')}
+            className={`w-full text-left px-4 py-2.5 rounded-xl font-extrabold text-xs font-['Outfit'] min-h-[40px] ${
+              currentView === 'game' ? 'bg-rose-600 text-white font-black' : 'text-rose-400 hover:bg-slate-900'
+            }`}
+          >
+            AVIATOR
+          </button>
+          <button
             onClick={() => handleNavClick('deposit')}
             className={`w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs font-['Outfit'] min-h-[40px] ${
               currentView === 'deposit' ? 'bg-emerald-500 text-slate-950 font-black' : 'text-slate-300 hover:bg-slate-900'
@@ -228,14 +238,6 @@ export const Navbar = ({ currentView, setCurrentView }) => {
             }`}
           >
             WITHDRAW
-          </button>
-          <button
-            onClick={() => handleNavClick('profile')}
-            className={`w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs font-['Outfit'] min-h-[40px] ${
-              currentView === 'profile' ? 'bg-emerald-500 text-slate-950 font-black' : 'text-slate-300 hover:bg-slate-900'
-            }`}
-          >
-            PROFILE
           </button>
           <button
             onClick={() => handleNavClick('chat')}
@@ -254,12 +256,12 @@ export const Navbar = ({ currentView, setCurrentView }) => {
             PREDICTOR
           </button>
           <button
-            onClick={() => handleNavClick('game')}
+            onClick={() => handleNavClick('profile')}
             className={`w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs font-['Outfit'] min-h-[40px] ${
-              currentView === 'game' ? 'bg-emerald-500 text-slate-950 font-black' : 'text-slate-300 hover:bg-slate-900'
+              currentView === 'profile' ? 'bg-emerald-500 text-slate-950 font-black' : 'text-slate-300 hover:bg-slate-900'
             }`}
           >
-            PLAY GAME
+            PROFILE
           </button>
 
           {user && (
