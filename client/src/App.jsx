@@ -14,13 +14,11 @@ import { DepositPage } from './pages/DepositPage';
 import { WithdrawalPage } from './pages/WithdrawalPage';
 import { ChatRainPage } from './pages/ChatRainPage';
 import { AdminDashboard } from './pages/AdminDashboard';
-import { Gamepad2, Users } from 'lucide-react';
 
 const MainApp = () => {
   const { user } = useContext(AuthContext);
 
   const [currentView, setCurrentView] = useState('game'); // 'game', 'deposit', 'withdrawal', 'profile', 'chat', 'admin'
-  const [mobileTab, setMobileTab] = useState('game'); // 'game' or 'players'
   const [socket, setSocket] = useState(null);
 
   // Real-time game engine state
@@ -122,47 +120,24 @@ const MainApp = () => {
 
       {/* Main View Router */}
       {currentView === 'game' && (
-        <main className="flex-1 flex flex-col min-h-[calc(100vh-57px)] overflow-hidden">
+        <main className="flex-1 flex flex-col min-h-[calc(100vh-57px)]">
           {/* Top Multiplier History Bar */}
           <MultiplierHistory history={gameState.history} />
 
-          {/* Mobile View Switcher Tabs (Game Flight vs Active Players) */}
-          <div className="lg:hidden flex bg-[#080b11] border-b border-slate-800 p-1">
-            <button
-              onClick={() => setMobileTab('game')}
-              className={`flex-1 py-2.5 text-xs font-extrabold rounded-xl flex items-center justify-center gap-2 font-['Outfit'] transition-all min-h-[40px] ${
-                mobileTab === 'game'
-                  ? 'bg-emerald-500 text-slate-950 shadow-sm'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Gamepad2 className="w-4 h-4" />
-              <span>FLIGHT & BETS</span>
-            </button>
-            <button
-              onClick={() => setMobileTab('players')}
-              className={`flex-1 py-2.5 text-xs font-extrabold rounded-xl flex items-center justify-center gap-2 font-['Outfit'] transition-all min-h-[40px] ${
-                mobileTab === 'players'
-                  ? 'bg-emerald-500 text-slate-950 shadow-sm'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Users className="w-4 h-4" />
-              <span>LIVE BETS ({gameState.activeBets.length > 0 ? gameState.activeBets.length : 2466})</span>
-            </button>
-          </div>
-
-          {/* Core Game Body Grid: Left Sidebar + Center Flight Screen */}
-          <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-            {/* Active Players Sidebar (Shown on desktop OR when mobileTab === 'players') */}
-            <div className={`${mobileTab === 'players' ? 'block' : 'hidden'} lg:block w-full lg:w-80 h-full`}>
+          {/* Core Game Body Layout */}
+          {/* Desktop Layout: Left Active Players Sidebar + Right Flight Canvas & Bet Controls */}
+          {/* Smartphone Layout: Stacked (Flight Canvas -> Bet Controls -> Active Players Below) */}
+          <div className="flex-1 flex flex-col lg:flex-row bg-[#05070c] items-start">
+            
+            {/* Desktop-only Left Sidebar (Hidden on mobile) */}
+            <div className="hidden lg:block w-80 h-full shrink-0">
               <ActivePlayers activeBets={gameState.activeBets} myBets={myBets} />
             </div>
 
-            {/* Center Flight Canvas & Twin Bet Control Panels (Shown on desktop OR when mobileTab === 'game') */}
-            <div className={`${mobileTab === 'game' ? 'flex' : 'hidden'} lg:flex flex-1 flex-col h-full overflow-hidden bg-[#05070c]`}>
+            {/* Flight Canvas & Twin Bet Controls */}
+            <div className="flex-1 flex flex-col w-full h-full bg-[#05070c]">
               {/* HTML5 Canvas Flight Simulation */}
-              <div className="flex-1 relative min-h-[280px] sm:min-h-[380px]">
+              <div className="relative min-h-[260px] sm:min-h-[360px] flex-1">
                 <GameCanvas
                   status={gameState.status}
                   multiplier={gameState.multiplier}
@@ -171,14 +146,20 @@ const MainApp = () => {
                 />
               </div>
 
-              {/* Bottom Twin Bet Control Panels */}
+              {/* Twin Bet Control Panels */}
               <BetControls
                 gameState={gameState}
                 socket={socket}
                 onPlaceBetSuccess={handlePlaceBetSuccess}
                 openChatRain={() => setCurrentView('chat')}
               />
+
+              {/* Mobile-only Active Players Leaderboard (Positioned directly below betting buttons on smartphone) */}
+              <div className="block lg:hidden w-full p-2">
+                <ActivePlayers activeBets={gameState.activeBets} myBets={myBets} />
+              </div>
             </div>
+
           </div>
         </main>
       )}
