@@ -1,7 +1,7 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import api from '../api/client';
-import { User, Wallet, Gift, Smartphone, CheckCircle2, AlertCircle, Plus, Minus } from 'lucide-react';
+import { User, Wallet, Gift, Smartphone, CheckCircle2, AlertCircle, ChevronRight, ChevronDown } from 'lucide-react';
 
 export const DepositPage = () => {
   const { user, updateUserBalance } = useContext(AuthContext);
@@ -10,7 +10,30 @@ export const DepositPage = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
 
-  // Format phone number to (254) 7XX-XXXXXX style
+  const [transactionsOpen, setTransactionsOpen] = useState(false);
+  const [transactions, setTransactions] = useState([]);
+
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
+
+  const fetchTransactions = async () => {
+    try {
+      const [depRes, withRes] = await Promise.all([
+        api.get('/deposit/my-deposits'),
+        api.get('/withdrawal/my-withdrawals')
+      ]);
+
+      const deps = (depRes.data.deposits || []).map(d => ({ ...d, txType: 'Deposit' }));
+      const withs = (withRes.data.withdrawals || []).map(w => ({ ...w, txType: 'Withdrawal' }));
+      
+      const combined = [...deps, ...withs].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setTransactions(combined);
+    } catch (err) {
+      console.error('Failed to fetch transactions:', err);
+    }
+  };
+
   const formatUserPhone = (rawPhone) => {
     if (!rawPhone) return '(254) 700-000000';
     let p = rawPhone.toString().trim().replace(/\D/g, '');
@@ -50,6 +73,8 @@ export const DepositPage = () => {
       if (res.data.newBalance !== undefined) {
         updateUserBalance(res.data.newBalance);
       }
+
+      fetchTransactions();
 
     } catch (err) {
       setMessage({
@@ -184,6 +209,64 @@ export const DepositPage = () => {
             </button>
           </div>
         </form>
+      </div>
+
+      {/* 4. My Transactions Card */}
+      <div className="bg-[#1c2530] border border-slate-800/80 rounded-2xl p-5 shadow-xl space-y-4">
+        <div
+          onClick={() => setTransactionsOpen(!transactionsOpen)}
+          className="flex items-center justify-between cursor-pointer select-none"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#589b14]/20 border border-[#589b14]/40 text-[#589b14] flex items-center justify-center">
+              <Wallet className="w-5 h-5 text-[#589b14]" />
+            </div>
+            <div>
+              <h3 className="text-base font-extrabold text-white font-['Outfit']">
+                My Transactions
+              </h3>
+              <p className="text-xs text-slate-400 font-medium">
+                View all your debits and credits
+              </p>
+            </div>
+          </div>
+
+          <div className="text-slate-400 hover:text-white transition-colors">
+            {transactionsOpen ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+          </div>
+        </div>
+
+        {/* Expanded Transactions List Table */}
+        {transactionsOpen && (
+          <div className="pt-3 border-t border-slate-800/80 overflow-x-auto">
+            {transactions.length === 0 ? (
+              <p className="text-xs text-slate-500 italic text-center py-4">No recent transactions recorded.</p>
+            ) : (
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-900 text-slate-400 font-extrabold uppercase font-['Outfit'] border-b border-slate-800">
+                  <tr>
+                    <th className="p-2.5">Time</th>
+                    <th className="p-2.5">Type</th>
+                    <th className="p-2.5">Amount</th>
+                    <th className="p-2.5 text-right">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/50">
+                  {transactions.map((tx) => (
+                    <tr key={tx._id} className="hover:bg-slate-900/60">
+                      <td className="p-2.5 text-slate-400 font-mono">{new Date(tx.createdAt).toLocaleDateString()}</td>
+                      <td className="p-2.5 font-bold text-white uppercase font-['Outfit']">{tx.txType}</td>
+                      <td className={`p-2.5 font-mono font-bold ${tx.txType === 'Deposit' ? 'text-emerald-400' : 'text-amber-400'}`}>
+                        KES {tx.amount.toLocaleString()}
+                      </td>
+                      <td className="p-2.5 text-right font-extrabold uppercase text-emerald-400">{tx.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
