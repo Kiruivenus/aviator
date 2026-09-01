@@ -12,22 +12,24 @@ import { ProfilePage } from './pages/ProfilePage';
 import { DepositPage } from './pages/DepositPage';
 import { WithdrawalPage } from './pages/WithdrawalPage';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { Gamepad2, Users } from 'lucide-react';
 
 const MainApp = () => {
   const { user } = useContext(AuthContext);
 
   const [currentView, setCurrentView] = useState('game'); // 'game', 'deposit', 'withdrawal', 'profile', 'admin'
+  const [mobileTab, setMobileTab] = useState('game'); // 'game' or 'players'
   const [socket, setSocket] = useState(null);
 
   // Real-time game engine state
   const [gameState, setGameState] = useState({
     roundId: '',
     status: 'waiting', // waiting, running, crashed
-    multiplier: 1.00,
-    crashPoint: 1.00,
+    multiplier: 1.0,
+    crashPoint: 1.0,
     countdown: 5,
     activeBets: [],
-    history: [4.36, 1.08, 6.70, 2.02, 1.93, 4.11, 12.87, 1.42, 1.75, 4.03, 1.66]
+    history: [4.36, 1.08, 6.7, 2.02, 1.93, 4.11, 12.87, 1.42, 1.75, 4.03, 1.66],
   });
 
   const [myBets, setMyBets] = useState([]);
@@ -35,70 +37,70 @@ const MainApp = () => {
   useEffect(() => {
     // Connect socket to Node.js backend
     const newSocket = io('http://localhost:5000', {
-      transports: ['websocket', 'polling']
+      transports: ['websocket', 'polling'],
     });
     setSocket(newSocket);
 
     // Socket Event Handlers
     newSocket.on('game_state', (data) => {
-      setGameState(prev => ({ ...prev, ...data }));
+      setGameState((prev) => ({ ...prev, ...data }));
     });
 
     newSocket.on('round_waiting', (data) => {
-      setGameState(prev => ({
+      setGameState((prev) => ({
         ...prev,
         roundId: data.roundId,
         status: 'waiting',
         countdown: data.countdown,
-        multiplier: 1.00,
+        multiplier: 1.0,
         activeBets: data.activeBets || [],
-        history: data.history || prev.history
+        history: data.history || prev.history,
       }));
     });
 
     newSocket.on('countdown_tick', (data) => {
-      setGameState(prev => ({ ...prev, countdown: data.countdown }));
+      setGameState((prev) => ({ ...prev, countdown: data.countdown }));
     });
 
     newSocket.on('round_started', (data) => {
-      setGameState(prev => ({
+      setGameState((prev) => ({
         ...prev,
         roundId: data.roundId,
         status: 'running',
         crashPoint: data.crashPoint,
-        multiplier: 1.00
+        multiplier: 1.0,
       }));
     });
 
     newSocket.on('multiplier_tick', (data) => {
-      setGameState(prev => ({ ...prev, multiplier: data.multiplier }));
+      setGameState((prev) => ({ ...prev, multiplier: data.multiplier }));
     });
 
     newSocket.on('bet_placed', (data) => {
-      setGameState(prev => ({
+      setGameState((prev) => ({
         ...prev,
-        activeBets: data.activeBets
+        activeBets: data.activeBets,
       }));
     });
 
     newSocket.on('bet_cashed_out', (data) => {
-      setGameState(prev => ({
+      setGameState((prev) => ({
         ...prev,
-        activeBets: prev.activeBets.map(b => 
-          (b.id === data.betId || b.userId === data.userId)
+        activeBets: prev.activeBets.map((b) =>
+          b.id === data.betId || b.userId === data.userId
             ? { ...b, status: 'cashed_out', cashoutMultiplier: data.multiplier, winAmount: data.winAmount }
             : b
-        )
+        ),
       }));
     });
 
     newSocket.on('round_crashed', (data) => {
-      setGameState(prev => ({
+      setGameState((prev) => ({
         ...prev,
         status: 'crashed',
         crashPoint: data.crashPoint,
         multiplier: data.crashPoint,
-        history: data.history || [data.crashPoint, ...prev.history]
+        history: data.history || [data.crashPoint, ...prev.history],
       }));
     });
 
@@ -108,29 +110,57 @@ const MainApp = () => {
   }, []);
 
   const handlePlaceBetSuccess = (newBet) => {
-    setMyBets(prev => [newBet, ...prev]);
+    setMyBets((prev) => [newBet, ...prev]);
   };
 
   return (
-    <div className="min-h-screen bg-[#0b0e14] text-white flex flex-col font-['Inter'] select-none">
+    <div className="min-h-screen bg-[#07090e] text-slate-100 flex flex-col font-['Inter'] select-none overflow-x-hidden">
       {/* Top Header Navbar */}
       <Navbar currentView={currentView} setCurrentView={setCurrentView} />
 
       {/* Main View Router */}
       {currentView === 'game' && (
-        <main className="flex-1 flex flex-col h-[calc(100vh-57px)] overflow-hidden">
+        <main className="flex-1 flex flex-col min-h-[calc(100vh-57px)] overflow-hidden">
           {/* Top Multiplier History Bar */}
           <MultiplierHistory history={gameState.history} />
 
+          {/* Mobile View Switcher Tabs (Game Flight vs Active Players) */}
+          <div className="lg:hidden flex bg-[#0a0e17] border-b border-slate-800 p-1">
+            <button
+              onClick={() => setMobileTab('game')}
+              className={`flex-1 py-2 text-xs font-extrabold rounded-lg flex items-center justify-center gap-2 font-['Outfit'] transition-all ${
+                mobileTab === 'game'
+                  ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-950/40'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Gamepad2 className="w-4 h-4" />
+              <span>FLIGHT & BETS</span>
+            </button>
+            <button
+              onClick={() => setMobileTab('players')}
+              className={`flex-1 py-2 text-xs font-extrabold rounded-lg flex items-center justify-center gap-2 font-['Outfit'] transition-all ${
+                mobileTab === 'players'
+                  ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-950/40'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Users className="w-4 h-4" />
+              <span>LIVE BETS ({gameState.activeBets.length > 0 ? gameState.activeBets.length : 2466})</span>
+            </button>
+          </div>
+
           {/* Core Game Body Grid: Left Sidebar + Center Flight Screen */}
           <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-            {/* Active Players Leaderboard Sidebar */}
-            <ActivePlayers activeBets={gameState.activeBets} myBets={myBets} />
+            {/* Active Players Sidebar (Shown on desktop OR when mobileTab === 'players') */}
+            <div className={`${mobileTab === 'players' ? 'block' : 'hidden'} lg:block w-full lg:w-80 h-full`}>
+              <ActivePlayers activeBets={gameState.activeBets} myBets={myBets} />
+            </div>
 
-            {/* Center Canvas Flight View & Twin Bet Control Panels */}
-            <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#090b10]">
+            {/* Center Flight Canvas & Twin Bet Control Panels (Shown on desktop OR when mobileTab === 'game') */}
+            <div className={`${mobileTab === 'game' ? 'flex' : 'hidden'} lg:flex flex-1 flex-col h-full overflow-hidden bg-[#06070a]`}>
               {/* HTML5 Canvas Flight Simulation */}
-              <div className="flex-1 relative min-h-[300px]">
+              <div className="flex-1 relative min-h-[280px] sm:min-h-[380px]">
                 <GameCanvas
                   status={gameState.status}
                   multiplier={gameState.multiplier}
@@ -157,7 +187,7 @@ const MainApp = () => {
         user?.role === 'admin' ? (
           <AdminDashboard />
         ) : (
-          <div className="p-8 text-center text-red-400 font-bold">
+          <div className="p-12 text-center text-rose-400 font-extrabold font-['Outfit']">
             Access Restricted: Admin permission required.
           </div>
         )

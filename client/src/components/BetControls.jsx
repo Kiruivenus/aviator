@@ -1,6 +1,6 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { Minus, Plus } from 'lucide-react';
+import { Minus, Plus, Zap, Check } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
@@ -13,9 +13,9 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Handle amount quick changes
+  // Stepper adjustment
   const adjustAmount = (delta) => {
-    setAmount(prev => Math.max(10, parseFloat((prev + delta).toFixed(2))));
+    setAmount((prev) => Math.max(10, parseFloat((prev + delta).toFixed(2))));
   };
 
   const setQuickAmount = (val) => {
@@ -29,8 +29,8 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
     }
 
     if (user.balance < amount) {
-      setErrorMessage('Insufficient balance. Please deposit.');
-      setTimeout(() => setErrorMessage(''), 3000);
+      setErrorMessage('Insufficient balance. Please top up your account.');
+      setTimeout(() => setErrorMessage(''), 3500);
       return;
     }
 
@@ -42,12 +42,12 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('aviator_token')}`
+          Authorization: `Bearer ${localStorage.getItem('aviator_token')}`,
         },
         body: JSON.stringify({
           amount,
-          autoCashout: tab === 'Auto' ? autoCashout : 0
-        })
+          autoCashout: tab === 'Auto' ? autoCashout : 0,
+        }),
       });
 
       const data = await res.json();
@@ -58,10 +58,9 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
       setMyActiveBet(data.bet);
       updateUserBalance(data.newBalance);
       if (onPlaceBetSuccess) onPlaceBetSuccess(data.bet);
-
     } catch (err) {
       setErrorMessage(err.message);
-      setTimeout(() => setErrorMessage(''), 3000);
+      setTimeout(() => setErrorMessage(''), 3500);
     } finally {
       setLoading(false);
     }
@@ -73,31 +72,37 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
 
     socket.emit('cash_out', {
       userId: user.id || user._id,
-      betId: myActiveBet.id || myActiveBet._id
+      betId: myActiveBet.id || myActiveBet._id,
     });
 
-    // Trigger celebration confetti
     confetti({
-      particleCount: 50,
-      spread: 60,
-      origin: { y: 0.8 }
+      particleCount: 60,
+      spread: 70,
+      origin: { y: 0.8 },
     });
   };
 
-  // Reset bet state on new round waiting state
-  React.useEffect(() => {
+  // Reset bet on new round waiting state
+  useEffect(() => {
     if (gameState.status === 'waiting') {
       setMyActiveBet(null);
     }
   }, [gameState.status]);
 
-  // Listen for websocket cashout acknowledgement
-  React.useEffect(() => {
+  // Handle cashout socket acknowledgement
+  useEffect(() => {
     if (!socket) return;
 
     const handleCashOutSuccess = (data) => {
-      if (myActiveBet && (data.betId === myActiveBet.id || data.userId === (user?.id || user?._id))) {
-        setMyActiveBet(prev => prev ? ({ ...prev, status: 'cashed_out', winAmount: data.winAmount }) : null);
+      if (
+        myActiveBet &&
+        (data.betId === myActiveBet.id || data.userId === (user?.id || user?._id))
+      ) {
+        setMyActiveBet((prev) =>
+          prev
+            ? { ...prev, status: 'cashed_out', winAmount: data.winAmount }
+            : null
+        );
         if (data.newBalance !== undefined) {
           updateUserBalance(data.newBalance);
         }
@@ -115,22 +120,26 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
   const isCashedOut = myActiveBet && myActiveBet.status === 'cashed_out';
 
   return (
-    <div className="flex-1 bg-[#121824] border border-[#1d273a] rounded-xl p-3 flex flex-col justify-between shadow-lg">
-      {/* Header Tabs: Bet / Auto matching screenshot */}
+    <div className="flex-1 bg-slate-900/90 border border-slate-800 rounded-2xl p-3 sm:p-4 flex flex-col justify-between shadow-xl backdrop-blur-sm">
+      {/* Header Tabs: Bet vs Auto */}
       <div className="flex items-center justify-between mb-3">
-        <div className="bg-[#172133] p-0.5 rounded-lg flex border border-[#233149]">
+        <div className="bg-slate-950 p-1 rounded-xl flex border border-slate-800/80">
           <button
             onClick={() => setTab('Bet')}
-            className={`px-4 py-1 text-xs font-bold rounded-md transition-all ${
-              tab === 'Bet' ? 'bg-[#202e47] text-white shadow-sm' : 'text-gray-400 hover:text-gray-200'
+            className={`px-4 py-1 text-xs font-extrabold rounded-lg transition-all font-['Outfit'] ${
+              tab === 'Bet'
+                ? 'bg-slate-800 text-white shadow-sm'
+                : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             Bet
           </button>
           <button
             onClick={() => setTab('Auto')}
-            className={`px-4 py-1 text-xs font-bold rounded-md transition-all ${
-              tab === 'Auto' ? 'bg-[#202e47] text-white shadow-sm' : 'text-gray-400 hover:text-gray-200'
+            className={`px-4 py-1 text-xs font-extrabold rounded-lg transition-all font-['Outfit'] ${
+              tab === 'Auto'
+                ? 'bg-slate-800 text-white shadow-sm'
+                : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             Auto
@@ -138,115 +147,122 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
         </div>
 
         {tab === 'Auto' && (
-          <div className="flex items-center gap-1.5 text-xs text-gray-400 font-bold">
-            <span>Auto Cashout:</span>
-            <input
-              type="number"
-              step="0.1"
-              min="1.1"
-              value={autoCashout}
-              onChange={(e) => setAutoCashout(parseFloat(e.target.value) || 1.1)}
-              className="w-16 bg-[#1a2538] border border-[#263754] text-white font-bold text-center py-0.5 rounded focus:outline-none focus:border-[#22c55e]"
-            />
-            <span>x</span>
+          <div className="flex items-center gap-1.5 text-xs text-slate-400 font-bold">
+            <span className="text-[11px] font-extrabold uppercase text-slate-400 font-['Outfit']">Auto Cashout:</span>
+            <div className="relative flex items-center">
+              <input
+                type="number"
+                step="0.1"
+                min="1.1"
+                value={autoCashout}
+                onChange={(e) => setAutoCashout(parseFloat(e.target.value) || 1.1)}
+                className="w-16 bg-slate-950 border border-slate-800 text-emerald-400 font-extrabold text-center py-1 rounded-lg focus:outline-none focus:border-emerald-500 font-mono text-xs"
+              />
+              <span className="ml-1 text-slate-400 font-bold text-xs">x</span>
+            </div>
           </div>
         )}
       </div>
 
-      {/* Main Controls Area */}
+      {/* Main Controls Grid */}
       <div className="grid grid-cols-12 gap-3 items-center">
-        {/* Left Inputs: Stepper & Quick amount buttons */}
+        {/* Steppers & Quick Chips */}
         <div className="col-span-7 flex flex-col gap-2">
-          {/* Stepper control box */}
-          <div className="bg-[#172133] border border-[#24334d] rounded-lg p-1.5 flex items-center justify-between">
+          {/* Amount Stepper Control Box */}
+          <div className="bg-slate-950 border border-slate-800 rounded-xl p-1.5 flex items-center justify-between">
             <button
               onClick={() => adjustAmount(-10)}
               disabled={isBetActive}
-              className="w-8 h-8 rounded bg-[#202e47] hover:bg-[#2a3c5d] text-gray-300 flex items-center justify-center font-extrabold transition-colors disabled:opacity-50"
+              className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center font-extrabold transition-colors disabled:opacity-40"
             >
-              <Minus className="w-4 h-4" />
+              <Minus className="w-3.5 h-3.5" />
             </button>
 
             <div className="flex flex-col items-center">
-              <span className="text-[10px] text-gray-400 font-bold">BET AMOUNT</span>
-              <input
-                type="number"
-                value={amount}
-                disabled={isBetActive}
-                onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
-                className="w-20 bg-transparent text-center text-white font-extrabold text-sm focus:outline-none"
-              />
+              <span className="text-[9px] text-slate-400 font-extrabold tracking-wider font-['Outfit']">BET AMOUNT</span>
+              <div className="flex items-center gap-1">
+                <input
+                  type="number"
+                  value={amount}
+                  disabled={isBetActive}
+                  onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
+                  className="w-20 bg-transparent text-center text-white font-black text-sm focus:outline-none font-mono"
+                />
+                <span className="text-[10px] font-extrabold text-slate-400">KES</span>
+              </div>
             </div>
 
             <button
               onClick={() => adjustAmount(10)}
               disabled={isBetActive}
-              className="w-8 h-8 rounded bg-[#202e47] hover:bg-[#2a3c5d] text-gray-300 flex items-center justify-center font-extrabold transition-colors disabled:opacity-50"
+              className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center font-extrabold transition-colors disabled:opacity-40"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          {/* Quick Amount Pills matching screenshot */}
+          {/* Quick Preset Amount Buttons */}
           <div className="grid grid-cols-4 gap-1">
-            {[100, 200, 500, 10000].map((val) => (
+            {[100, 200, 500, 1000].map((val) => (
               <button
                 key={val}
                 onClick={() => setQuickAmount(val)}
                 disabled={isBetActive}
-                className="bg-[#182336] hover:bg-[#23334f] text-gray-300 font-bold text-[11px] py-1 rounded border border-[#233149] transition-all disabled:opacity-50"
+                className="bg-slate-950 hover:bg-slate-800 text-slate-300 font-extrabold text-[11px] py-1 rounded-lg border border-slate-800 transition-all font-mono disabled:opacity-40 active:scale-95"
               >
-                {val.toLocaleString()}
+                {val}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Right Action Button: Big Green BET or Big Orange CASH OUT */}
+        {/* Right Stateful Action Button */}
         <div className="col-span-5 h-full min-h-[76px] flex flex-col">
           {!isBetActive ? (
             <button
               onClick={handlePlaceBet}
               disabled={loading || gameState.status === 'running'}
-              className={`w-full h-full rounded-xl flex flex-col items-center justify-center font-black transition-all shadow-xl font-['Outfit'] ${
+              className={`w-full h-full rounded-2xl flex flex-col items-center justify-center font-black transition-all shadow-lg font-['Outfit'] ${
                 gameState.status === 'running'
-                  ? 'bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700'
-                  : 'bg-[#22c55e] hover:bg-[#16a34a] text-black shadow-green-950/60 active:scale-95'
+                  ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'
+                  : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 shadow-emerald-950/60 active:scale-95'
               }`}
             >
-              <span className="text-lg tracking-wider">BET</span>
-              <span className="text-xs font-bold opacity-90">
+              <span className="text-base sm:text-lg tracking-wider">BET</span>
+              <span className="text-xs font-mono font-bold opacity-90">
                 {amount.toFixed(2)} KES
               </span>
             </button>
           ) : isRoundRunning ? (
             <button
               onClick={handleCashOut}
-              className="w-full h-full bg-[#f97316] hover:bg-[#ea580c] text-white rounded-xl flex flex-col items-center justify-center font-black transition-all shadow-xl shadow-orange-950/80 active:scale-95 animate-pulse font-['Outfit']"
+              className="w-full h-full bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-400 hover:to-amber-400 text-slate-950 rounded-2xl flex flex-col items-center justify-center font-black transition-all shadow-xl shadow-orange-950/80 active:scale-95 animate-pulse font-['Outfit']"
             >
-              <span className="text-sm tracking-wider">CASH OUT</span>
-              <span className="text-sm font-extrabold font-mono">
+              <span className="text-xs sm:text-sm tracking-wider">CASH OUT</span>
+              <span className="text-sm sm:text-base font-extrabold font-mono">
                 {(amount * gameState.multiplier).toFixed(2)} KES
               </span>
             </button>
           ) : isCashedOut ? (
-            <div className="w-full h-full bg-emerald-950/80 border border-emerald-600/60 rounded-xl flex flex-col items-center justify-center p-2 text-center">
-              <span className="text-[10px] font-bold text-emerald-400 uppercase">CASHED OUT!</span>
-              <span className="text-sm font-extrabold text-emerald-300 font-mono">
+            <div className="w-full h-full bg-emerald-950/80 border border-emerald-500/50 rounded-2xl flex flex-col items-center justify-center p-2 text-center">
+              <span className="text-[10px] font-extrabold text-emerald-400 uppercase font-['Outfit'] flex items-center gap-1">
+                <Check className="w-3 h-3" /> CASHED OUT!
+              </span>
+              <span className="text-sm font-black text-emerald-300 font-mono">
                 +{myActiveBet.winAmount.toFixed(2)} KES
               </span>
             </div>
           ) : (
-            <div className="w-full h-full bg-[#1b2538] border border-[#283854] rounded-xl flex flex-col items-center justify-center p-2 text-center">
-              <span className="text-xs font-bold text-[#38bdf8]">BET ACCEPTED</span>
-              <span className="text-[10px] text-gray-400">Waiting for flight...</span>
+            <div className="w-full h-full bg-slate-950 border border-slate-800 rounded-2xl flex flex-col items-center justify-center p-2 text-center">
+              <span className="text-xs font-extrabold text-teal-400 font-['Outfit']">BET ACCEPTED</span>
+              <span className="text-[10px] text-slate-400 font-medium">Waiting for flight...</span>
             </div>
           )}
         </div>
       </div>
 
       {errorMessage && (
-        <div className="mt-2 text-center text-[11px] font-bold text-red-400 bg-red-950/60 py-1 px-2 rounded border border-red-800/40">
+        <div className="mt-2 text-center text-[11px] font-bold text-rose-300 bg-rose-950/80 py-1.5 px-3 rounded-xl border border-rose-800/60 font-['Outfit']">
           {errorMessage}
         </div>
       )}
@@ -256,7 +272,7 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
 
 export const BetControls = ({ gameState, socket, onPlaceBetSuccess }) => {
   return (
-    <div className="w-full bg-[#0d121c] border-t border-[#1b263b] p-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+    <div className="w-full bg-[#0a0e17] border-t border-slate-800/80 p-3 sm:p-4 grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
       <SingleBetPanel
         panelId={1}
         gameState={gameState}

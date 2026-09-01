@@ -1,193 +1,224 @@
 import React, { useContext, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { Bell, User as UserIcon, Menu, Wallet, ShieldAlert, LogOut, ChevronDown } from 'lucide-react';
+import { Menu, Wallet, ShieldCheck, LogOut, ChevronDown, User as UserIcon, ArrowDownCircle, ArrowUpCircle, Award } from 'lucide-react';
 
 export const Navbar = ({ currentView, setCurrentView }) => {
   const { user, openLogin, openRegister, logout } = useContext(AuthContext);
   const [profileDropdown, setProfileDropdown] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="w-full bg-[#0d121c] border-b border-[#1c2638] px-4 py-2.5 flex items-center justify-between sticky top-0 z-50">
-      {/* Left: Menu & Brand Logo */}
+    <header className="w-full bg-[#0a0e17]/90 backdrop-blur-md border-b border-slate-800/80 px-3 sm:px-6 py-2.5 flex items-center justify-between sticky top-0 z-50 shadow-md shadow-black/40">
+      {/* Left: Brand Logo & Navigation */}
       <div className="flex items-center gap-3">
-        <button className="text-gray-400 hover:text-white p-1 rounded-md transition-colors">
+        {/* Mobile Menu Toggle Button */}
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="md:hidden text-slate-400 hover:text-white p-1.5 rounded-lg bg-slate-800/50 border border-slate-700/50"
+        >
           <Menu className="w-5 h-5" />
         </button>
 
+        {/* Brand Logo */}
         <div 
           onClick={() => setCurrentView('game')}
-          className="flex items-center gap-2 cursor-pointer select-none"
+          className="flex items-center gap-2 cursor-pointer select-none group"
         >
-          {/* Logo Icon matching screenshot */}
-          <div className="w-7 h-7 bg-gradient-to-br from-red-600 via-pink-600 to-rose-700 rounded-md flex items-center justify-center font-black text-white text-base shadow-md shadow-red-900/40">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-red-600 via-pink-600 to-rose-700 flex items-center justify-center font-black text-white text-base shadow-lg shadow-rose-900/40 group-hover:scale-105 transition-transform">
             M
           </div>
-          <span className="font-extrabold text-lg tracking-wider text-white font-['Outfit']">
-            METRIC<span className="text-gray-400">WIN</span>
-          </span>
+          <div className="flex flex-col">
+            <span className="font-extrabold text-base sm:text-lg tracking-wider text-white font-['Outfit'] leading-none">
+              METRIC<span className="text-emerald-400">WIN</span>
+            </span>
+            <span className="text-[9px] font-bold text-slate-400 tracking-widest uppercase">AVIATOR PRO</span>
+          </div>
+        </div>
+
+        {/* Desktop Navigation Links */}
+        <div className="hidden md:flex items-center gap-1.5 ml-4 bg-slate-900/80 p-1 rounded-xl border border-slate-800">
+          <button
+            onClick={() => setCurrentView('game')}
+            className={`px-3.5 py-1.5 text-xs font-extrabold rounded-lg transition-all font-['Outfit'] ${
+              currentView === 'game' 
+                ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-950/50' 
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            AVIATOR GAME
+          </button>
+          {user && (
+            <>
+              <button
+                onClick={() => setCurrentView('deposit')}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all font-['Outfit'] ${
+                  currentView === 'deposit' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                DEPOSIT
+              </button>
+              <button
+                onClick={() => setCurrentView('withdrawal')}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all font-['Outfit'] ${
+                  currentView === 'withdrawal' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                WITHDRAWAL
+              </button>
+            </>
+          )}
         </div>
       </div>
 
-      {/* Center: Navigation Links */}
-      <div className="hidden md:flex items-center gap-2 bg-[#131a29] px-3 py-1 rounded-lg border border-[#1e2a3f]">
-        <button
-          onClick={() => setCurrentView('game')}
-          className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${
-            currentView === 'game' ? 'bg-[#22c55e] text-black shadow-sm' : 'text-gray-400 hover:text-white'
-          }`}
-        >
-          AVIATOR GAME
-        </button>
-
-        {user && (
-          <>
-            <button
-              onClick={() => setCurrentView('deposit')}
-              className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${
-                currentView === 'deposit' ? 'bg-[#22c55e] text-black shadow-sm' : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              DEPOSIT
-            </button>
-            <button
-              onClick={() => setCurrentView('withdrawal')}
-              className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${
-                currentView === 'withdrawal' ? 'bg-[#22c55e] text-black shadow-sm' : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              WITHDRAWAL
-            </button>
-            <button
-              onClick={() => setCurrentView('profile')}
-              className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${
-                currentView === 'profile' ? 'bg-[#22c55e] text-black shadow-sm' : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              MY PROFILE
-            </button>
-          </>
-        )}
-
-        {user?.role === 'admin' && (
-          <button
-            onClick={() => setCurrentView('admin')}
-            className={`px-3 py-1 text-xs font-bold rounded-md transition-all flex items-center gap-1 ${
-              currentView === 'admin' ? 'bg-purple-600 text-white shadow-sm' : 'bg-purple-950/60 text-purple-300 border border-purple-800/60 hover:bg-purple-900/60'
-            }`}
-          >
-            <ShieldAlert className="w-3.5 h-3.5" />
-            ADMIN PORTAL
-          </button>
-        )}
-      </div>
-
-      {/* Right: Balance & User Profile / Login */}
-      <div className="flex items-center gap-3">
+      {/* Right: Auth & User Balance Controls */}
+      <div className="flex items-center gap-2 sm:gap-3">
         {user ? (
-          <>
-            {/* Balance Badge matching screenshot */}
-            <div className="bg-[#141b29] border border-[#212d45] rounded-full px-3.5 py-1 flex items-center gap-2 shadow-inner">
-              <span className="text-[10px] font-bold text-gray-400 tracking-wider">BALANCE</span>
-              <span className="text-sm font-extrabold text-[#22c55e] font-['Outfit']">
-                KES {user.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </span>
-              <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
+          <div className="flex items-center gap-2">
+            {/* User Balance Counter Pill */}
+            <div className="bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-inner">
+              <Wallet className="w-4 h-4 text-emerald-400" />
+              <div className="flex flex-col">
+                <span className="text-[9px] font-bold text-slate-400 uppercase leading-none">BALANCE</span>
+                <span className="text-xs sm:text-sm font-extrabold text-emerald-400 font-mono leading-tight">
+                  KES {user.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                </span>
+              </div>
             </div>
 
-            {/* Quick Deposit button */}
+            {/* Deposit CTA Button */}
             <button
               onClick={() => setCurrentView('deposit')}
-              className="hidden sm:flex items-center gap-1 bg-[#22c55e] hover:bg-[#16a34a] text-black font-extrabold text-xs px-3 py-1.5 rounded-full transition-all shadow-md shadow-green-950/40"
+              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 px-3.5 py-2 rounded-xl text-xs font-extrabold shadow-md shadow-emerald-950/50 transition-all font-['Outfit'] flex items-center gap-1.5 active:scale-95"
             >
-              <Wallet className="w-3.5 h-3.5" />
-              DEPOSIT
+              <ArrowDownCircle className="w-4 h-4" />
+              <span className="hidden sm:inline">DEPOSIT</span>
             </button>
 
-            {/* Notification Bell */}
-            <button className="text-gray-400 hover:text-white bg-[#141b29] border border-[#212d45] p-2 rounded-full relative">
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full animate-ping"></span>
-            </button>
-
-            {/* Profile Dropdown */}
+            {/* Profile Dropdown Menu */}
             <div className="relative">
               <button
                 onClick={() => setProfileDropdown(!profileDropdown)}
-                className="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-800 border border-emerald-500/40 flex items-center justify-center text-white font-bold text-xs shadow-md"
+                className="flex items-center gap-1.5 p-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 transition-colors"
               >
-                {user.fullName ? user.fullName.charAt(0).toUpperCase() : 'U'}
+                <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-bold text-xs">
+                  <UserIcon className="w-4 h-4" />
+                </div>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
               </button>
 
+              {/* Profile Dropdown Content */}
               {profileDropdown && (
-                <div className="absolute right-0 mt-2 w-52 bg-[#131a29] border border-[#233148] rounded-xl shadow-2xl py-2 z-50 text-xs">
-                  <div className="px-4 py-2 border-b border-[#233148]">
-                    <div className="font-bold text-white truncate">{user.fullName}</div>
-                    <div className="text-gray-400 font-mono">{user.phone}</div>
-                    <div className="mt-1">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                        user.role === 'admin' ? 'bg-purple-900/60 text-purple-300' : 'bg-blue-900/60 text-blue-300'
-                      }`}>
-                        {user.role.toUpperCase()}
-                      </span>
-                    </div>
+                <div className="absolute right-0 mt-2 w-52 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="px-3 py-2 border-b border-slate-800 mb-1">
+                    <span className="block text-xs font-extrabold text-white truncate">{user.fullName || 'Player'}</span>
+                    <span className="block text-[10px] text-slate-400 truncate">{user.phone}</span>
                   </div>
 
                   <button
                     onClick={() => { setCurrentView('profile'); setProfileDropdown(false); }}
-                    className="w-full px-4 py-2 text-left text-gray-300 hover:bg-[#1d273a] hover:text-white flex items-center gap-2"
+                    className="w-full text-left px-3 py-2 text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors flex items-center gap-2"
                   >
-                    <UserIcon className="w-3.5 h-3.5" />
-                    My Profile
+                    <UserIcon className="w-4 h-4 text-slate-400" />
+                    My Account Profile
                   </button>
 
                   <button
                     onClick={() => { setCurrentView('deposit'); setProfileDropdown(false); }}
-                    className="w-full px-4 py-2 text-left text-gray-300 hover:bg-[#1d273a] hover:text-white flex items-center gap-2"
+                    className="w-full text-left px-3 py-2 text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors flex items-center gap-2"
                   >
-                    <Wallet className="w-3.5 h-3.5" />
-                    Deposit M-Pesa / USDT
+                    <ArrowDownCircle className="w-4 h-4 text-emerald-400" />
+                    Deposit Funds
+                  </button>
+
+                  <button
+                    onClick={() => { setCurrentView('withdrawal'); setProfileDropdown(false); }}
+                    className="w-full text-left px-3 py-2 text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors flex items-center gap-2"
+                  >
+                    <ArrowUpCircle className="w-4 h-4 text-orange-400" />
+                    Withdraw Funds
                   </button>
 
                   {user.role === 'admin' && (
                     <button
                       onClick={() => { setCurrentView('admin'); setProfileDropdown(false); }}
-                      className="w-full px-4 py-2 text-left text-purple-300 hover:bg-purple-900/30 flex items-center gap-2 font-semibold"
+                      className="w-full text-left px-3 py-2 text-xs font-bold text-purple-400 hover:bg-purple-950/40 rounded-lg transition-colors flex items-center gap-2"
                     >
-                      <ShieldAlert className="w-3.5 h-3.5" />
-                      Admin Control Panel
+                      <ShieldCheck className="w-4 h-4" />
+                      Admin Console
                     </button>
                   )}
 
-                  <div className="border-t border-[#233148] mt-1 pt-1">
+                  <div className="border-t border-slate-800 mt-1 pt-1">
                     <button
                       onClick={() => { logout(); setProfileDropdown(false); }}
-                      className="w-full px-4 py-2 text-left text-red-400 hover:bg-red-950/30 flex items-center gap-2 font-semibold"
+                      className="w-full text-left px-3 py-2 text-xs font-bold text-rose-400 hover:bg-rose-950/40 rounded-lg transition-colors flex items-center gap-2"
                     >
-                      <LogOut className="w-3.5 h-3.5" />
+                      <LogOut className="w-4 h-4" />
                       Log Out
                     </button>
                   </div>
                 </div>
               )}
             </div>
-          </>
+          </div>
         ) : (
           <div className="flex items-center gap-2">
             <button
               onClick={openLogin}
-              className="text-gray-300 hover:text-white font-bold text-xs px-3 py-1.5 rounded-lg border border-[#212d45] hover:border-gray-500 transition-all"
+              className="px-3.5 py-2 text-xs font-extrabold text-slate-300 hover:text-white bg-slate-900 border border-slate-800 rounded-xl transition-all font-['Outfit']"
             >
               LOG IN
             </button>
             <button
               onClick={openRegister}
-              className="bg-[#22c55e] hover:bg-[#16a34a] text-black font-extrabold text-xs px-4 py-1.5 rounded-lg transition-all shadow-md shadow-green-950/50"
+              className="px-3.5 py-2 text-xs font-extrabold text-slate-950 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 rounded-xl shadow-md shadow-emerald-950/50 transition-all font-['Outfit'] active:scale-95"
             >
               REGISTER
             </button>
           </div>
         )}
       </div>
+
+      {/* Mobile Drawer Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden fixed inset-x-0 top-[57px] bg-slate-950/95 border-b border-slate-800 p-4 shadow-2xl z-40 backdrop-blur-xl animate-in slide-in-from-top-2 duration-200">
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={() => { setCurrentView('game'); setMobileMenuOpen(false); }}
+              className={`p-3 text-left text-xs font-extrabold rounded-xl font-['Outfit'] ${
+                currentView === 'game' ? 'bg-emerald-500 text-slate-950' : 'text-slate-300 bg-slate-900'
+              }`}
+            >
+              AVIATOR GAME
+            </button>
+            {user && (
+              <>
+                <button
+                  onClick={() => { setCurrentView('deposit'); setMobileMenuOpen(false); }}
+                  className="p-3 text-left text-xs font-bold text-slate-300 bg-slate-900 rounded-xl flex items-center justify-between"
+                >
+                  <span>DEPOSIT</span>
+                  <ArrowDownCircle className="w-4 h-4 text-emerald-400" />
+                </button>
+                <button
+                  onClick={() => { setCurrentView('withdrawal'); setMobileMenuOpen(false); }}
+                  className="p-3 text-left text-xs font-bold text-slate-300 bg-slate-900 rounded-xl flex items-center justify-between"
+                >
+                  <span>WITHDRAWAL</span>
+                  <ArrowUpCircle className="w-4 h-4 text-orange-400" />
+                </button>
+                <button
+                  onClick={() => { setCurrentView('profile'); setMobileMenuOpen(false); }}
+                  className="p-3 text-left text-xs font-bold text-slate-300 bg-slate-900 rounded-xl flex items-center justify-between"
+                >
+                  <span>MY PROFILE</span>
+                  <UserIcon className="w-4 h-4 text-slate-400" />
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 };
