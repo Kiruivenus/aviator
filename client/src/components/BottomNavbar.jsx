@@ -14,7 +14,7 @@ export const BottomNavbar = ({ currentView, setCurrentView }) => {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#0b0d17]/95 backdrop-blur-xl border-t border-slate-800/80 shadow-2xl px-2 py-1.5 sm:px-6">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#0b0d17]/95 backdrop-blur-xl border-t border-slate-800/80 shadow-2xl px-2 py-1.5 sm:px-6 md:hidden">
       <div className="max-w-md mx-auto flex items-center justify-around relative">
         {/* 1. WALLET */}
         <button

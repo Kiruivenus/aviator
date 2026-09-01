@@ -80,6 +80,14 @@ export const Navbar = ({ currentView, setCurrentView }) => {
           >
             PROFILE
           </button>
+          <button
+            onClick={() => handleNavClick('chat')}
+            className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all font-['Outfit'] min-h-[36px] ${
+              currentView === 'chat' ? 'bg-cyan-950 text-cyan-300 border border-cyan-800' : 'text-cyan-400 hover:text-cyan-200'
+            }`}
+          >
+            CHAT / RAIN
+          </button>
           {user?.role === 'admin' && (
             <button
               onClick={() => handleNavClick('admin')}
