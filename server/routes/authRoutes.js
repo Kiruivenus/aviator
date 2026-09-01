@@ -111,7 +111,7 @@ router.post('/register', async (req, res) => {
       await newUser.save();
       console.log(`[MongoDB] Successfully registered user: ${formattedPhone} (ID: ${newUser._id})`);
 
-      const token = jwt.sign({ id: newUser._id.toString(), role: newUser.role }, JWT_SECRET, { expiresIn: '7d' });
+      const token = jwt.sign({ id: newUser._id.toString(), role: newUser.role }, JWT_SECRET, { expiresIn: '24h' });
 
       // Cache user in memory for instant sync
       inMemoryUsers.set(formattedPhone, newUser);
@@ -152,7 +152,7 @@ router.post('/register', async (req, res) => {
     inMemoryUsers.set(formattedPhone, mockUser);
     inMemoryUsers.set(mockId, mockUser);
 
-    const token = jwt.sign({ id: mockId, role: 'user' }, JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ id: mockId, role: 'user' }, JWT_SECRET, { expiresIn: '24h' });
 
     res.status(201).json({
       message: 'Registration successful!',
@@ -210,7 +210,7 @@ router.post('/login', async (req, res) => {
       if (user) {
         const isMatch = await bcrypt.compare(password, user.password);
         if (isMatch) {
-          const token = jwt.sign({ id: user._id.toString(), role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+          const token = jwt.sign({ id: user._id.toString(), role: user.role }, JWT_SECRET, { expiresIn: '24h' });
           
           // Cache in memory for quick socket / engine lookup
           inMemoryUsers.set(user.phone, user);
@@ -246,7 +246,7 @@ router.post('/login', async (req, res) => {
     if (mockUser) {
       const isMatch = await bcrypt.compare(password, mockUser.password);
       if (isMatch) {
-        const token = jwt.sign({ id: mockUser.id || mockUser._id, role: mockUser.role }, JWT_SECRET, { expiresIn: '7d' });
+        const token = jwt.sign({ id: mockUser.id || mockUser._id, role: mockUser.role }, JWT_SECRET, { expiresIn: '24h' });
         return res.json({
           message: 'Login successful',
           token,
