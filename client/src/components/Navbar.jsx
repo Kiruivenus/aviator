@@ -56,10 +56,10 @@ export const Navbar = ({ currentView, setCurrentView }) => {
             WITHDRAW
           </button>
 
-          {/* AVIATOR (Featured Center Button with Red Airplane Logo Image!) */}
+          {/* AVIATOR (Featured Center Button with User's Red Airplane Logo Image!) */}
           <button
             onClick={() => handleNavClick('game')}
-            className={`px-4 py-1 text-xs font-black rounded-xl transition-all font-['Outfit'] min-h-[36px] flex items-center gap-2 ${
+            className={`px-3.5 py-1 text-xs font-black rounded-xl transition-all font-['Outfit'] min-h-[36px] flex items-center gap-1.5 ${
               currentView === 'game' 
                 ? 'bg-rose-600 text-white shadow-lg shadow-rose-950/80 ring-2 ring-rose-500/50' 
                 : 'bg-rose-950/60 border border-rose-600/40 text-rose-300 hover:bg-rose-900/80 hover:text-white'
@@ -67,8 +67,8 @@ export const Navbar = ({ currentView, setCurrentView }) => {
           >
             <img 
               src="/aviator_plane.jpg" 
-              alt="Aviator Plane" 
-              className="w-6 h-6 object-contain filter drop-shadow brightness-125 hover:scale-110 transition-transform" 
+              alt="Aviator" 
+              className="w-6 h-6 object-contain rounded-md" 
             />
             <span>AVIATOR</span>
           </button>
@@ -226,13 +226,13 @@ export const Navbar = ({ currentView, setCurrentView }) => {
               currentView === 'game' ? 'bg-rose-600 text-white font-black' : 'text-rose-400 hover:bg-slate-900'
             }`}
           >
-            <img src="/aviator_plane.png" alt="Aviator" className="w-5 h-5 object-contain" />
+            <img src="/aviator_plane.jpg" alt="Aviator" className="w-5 h-5 object-contain" />
             <span>AVIATOR</span>
           </button>
           <button
             onClick={() => handleNavClick('deposit')}
             className={`w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs font-['Outfit'] min-h-[40px] ${
-              currentView === 'deposit' ? 'bg-emerald-500 text-slate-950 font-black' : 'text-slate-300 hover:bg-slate-900'
+              currentView === 'deposit' ? 'bg-[#4d7c0f] text-white font-black' : 'text-slate-300 hover:bg-slate-900'
             }`}
           >
             DEPOSIT
@@ -240,7 +240,7 @@ export const Navbar = ({ currentView, setCurrentView }) => {
           <button
             onClick={() => handleNavClick('withdrawal')}
             className={`w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs font-['Outfit'] min-h-[40px] ${
-              currentView === 'withdrawal' ? 'bg-emerald-500 text-slate-950 font-black' : 'text-slate-300 hover:bg-slate-900'
+              currentView === 'withdrawal' ? 'bg-[#4d7c0f] text-white font-black' : 'text-slate-300 hover:bg-slate-900'
             }`}
           >
             WITHDRAW
@@ -264,7 +264,7 @@ export const Navbar = ({ currentView, setCurrentView }) => {
           <button
             onClick={() => handleNavClick('profile')}
             className={`w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs font-['Outfit'] min-h-[40px] ${
-              currentView === 'profile' ? 'bg-emerald-500 text-slate-950 font-black' : 'text-slate-300 hover:bg-slate-900'
+              currentView === 'profile' ? 'bg-[#4d7c0f] text-white font-black' : 'text-slate-300 hover:bg-slate-900'
             }`}
           >
             PROFILE
