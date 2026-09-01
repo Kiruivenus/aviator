@@ -1,36 +1,61 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { CloudRain, Send, Sparkles, CheckCircle2, MessageSquare, Users, Award, Clock } from 'lucide-react';
+import { Info, X, Pin, ChevronDown, Heart, Smile, Send, CloudRain, Sparkles, CheckCircle2, Award, Clock } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export const ChatRainPage = () => {
   const { user, openLogin, updateUserBalance } = useContext(AuthContext);
 
   const [messages, setMessages] = useState([
-    { id: 1, user: 'System Engine', text: '🌧️ RAIN DROP EVENT: KES 1,000 total distributed to active online players!', time: '13:30', system: true },
-    { id: 2, user: 'Patrick K.', text: 'Cashed out 5.80x on the last flight! 🔥', time: '13:32' },
-    { id: 3, user: 'Alex M.', text: 'Waiting for next flight takeoff 🚀', time: '13:35' },
-    { id: 4, user: 'System Engine', text: '⚡ Player Brian claimed KES 50 Rain Drop bonus!', time: '13:38', system: true },
-    { id: 5, user: 'Sarah W.', text: 'MetricWin Aviator speed is super smooth today 👏', time: '13:40' }
+    {
+      id: 1,
+      user: '2***4',
+      time: '14:05:41',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
+      text: 'Usindanganywe hapa na watu kujeni niwasaidie saai before kesho 0781457250 need 100 people who are serious wtii'
+    },
+    {
+      id: 2,
+      user: '2***0',
+      time: '14:05:42',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
+      text: 'opfu Amenisaidia saai kurudisha yote yenye ilikua imekuliwa 0739558068'
+    },
+    {
+      id: 3,
+      user: '2***4',
+      time: '14:05:42',
+      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80',
+      text: 'vzcp Usindanganywe hapa na watu kujeni niwasaidie saai before kesho whts ap 0786891033 welcome all'
+    },
+    {
+      id: 4,
+      user: '2***3',
+      time: '14:05:45',
+      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80',
+      text: 'Cashed out KES 12,500 at 8.40x multiplier! 🔥🔥🔥'
+    }
   ]);
 
   const [inputMsg, setInputMsg] = useState('');
+  const [pinnedOpen, setPinnedOpen] = useState(true);
+  const [onlineCount, setOnlineCount] = useState(7310);
   const [claimed, setClaimed] = useState(false);
   const [claimLoading, setClaimLoading] = useState(false);
-  const [countdown, setCountdown] = useState(225); // 03:45 in seconds
+  const [countdown, setCountdown] = useState(225);
 
   const [rainHistory, setRainHistory] = useState([
-    { id: 1, player: 'P***k', amount: 50, time: '13:38' },
-    { id: 2, player: 'A***x', amount: 50, time: '13:35' },
-    { id: 3, player: 'S***h', amount: 50, time: '13:30' },
-    { id: 4, player: 'D***o', amount: 50, time: '13:25' }
+    { id: 1, player: 'P***k', amount: 50, time: '14:04' },
+    { id: 2, player: 'A***x', amount: 50, time: '14:01' },
+    { id: 3, player: 'S***h', amount: 50, time: '13:58' }
   ]);
 
-  // Rain countdown ticker
+  // Online count ticker
   useEffect(() => {
     const timer = setInterval(() => {
+      setOnlineCount((prev) => prev + (Math.floor(Math.random() * 7) - 3));
       setCountdown((prev) => (prev > 0 ? prev - 1 : 300));
-    }, 1000);
+    }, 2000);
     return () => clearInterval(timer);
   }, []);
 
@@ -49,9 +74,10 @@ export const ChatRainPage = () => {
       ...prev,
       {
         id: Date.now(),
-        user: user.fullName || 'Player',
-        text: inputMsg.trim(),
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        user: (user.fullName || 'User').slice(0, 1) + '***' + (user.fullName || 'User').slice(-1),
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80',
+        text: inputMsg.trim()
       }
     ]);
     setInputMsg('');
@@ -80,50 +106,9 @@ export const ChatRainPage = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-6">
-      {/* 1. Header Banner */}
-      <div className="bg-[#101520] border border-slate-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 shadow-xl">
-        <div>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-cyan-950/80 border border-cyan-800 text-cyan-400 flex items-center justify-center shrink-0">
-              <CloudRain className="w-6 h-6" />
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-white font-['Outfit']">
-              COMMUNITY CHAT & RAIN DROPS
-            </h1>
-          </div>
-          <p className="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed max-w-2xl">
-            Connect in real-time with fellow players and claim free KES Rain Drop bonuses distributed automatically in the chat feed!
-          </p>
-        </div>
-
-        {/* Live Metrics Pills */}
-        <div className="grid grid-cols-3 gap-3 w-full lg:w-auto">
-          <div className="bg-[#090b10] border border-slate-800 p-3 rounded-2xl text-center">
-            <span className="text-[10px] font-extrabold text-slate-400 uppercase font-['Outfit'] block">ONLINE</span>
-            <span className="text-base font-black text-emerald-400 font-mono flex items-center justify-center gap-1">
-              <Users className="w-3.5 h-3.5" /> 2,468
-            </span>
-          </div>
-
-          <div className="bg-[#090b10] border border-slate-800 p-3 rounded-2xl text-center">
-            <span className="text-[10px] font-extrabold text-slate-400 uppercase font-['Outfit'] block">NEXT RAIN</span>
-            <span className="text-base font-black text-cyan-400 font-mono flex items-center justify-center gap-1">
-              <Clock className="w-3.5 h-3.5" /> {formatCountdown(countdown)}
-            </span>
-          </div>
-
-          <div className="bg-[#090b10] border border-slate-800 p-3 rounded-2xl text-center">
-            <span className="text-[10px] font-extrabold text-slate-400 uppercase font-['Outfit'] block">TOTAL RAIN</span>
-            <span className="text-base font-black text-purple-400 font-mono flex items-center justify-center gap-1">
-              <Award className="w-3.5 h-3.5" /> 125K+
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. Active Rain Bonus Feature Banner */}
-      <div className="bg-gradient-to-r from-cyan-950/80 via-[#101520] to-teal-950/80 border border-cyan-500/40 rounded-2xl sm:rounded-3xl p-6 flex flex-col sm:flex-row items-center justify-between gap-5 shadow-xl">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+      {/* Top Banner: Rain Drops Active Event */}
+      <div className="bg-gradient-to-r from-cyan-950/80 via-[#101520] to-teal-950/80 border border-cyan-500/40 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-5 shadow-xl">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 flex items-center justify-center shrink-0">
             <Sparkles className="w-6 h-6 animate-pulse" />
@@ -134,11 +119,11 @@ export const ChatRainPage = () => {
                 ACTIVE RAIN DROP EVENT
               </span>
               <span className="px-2 py-0.5 rounded-full bg-cyan-500 text-slate-950 text-[10px] font-black uppercase">
-                FREE BONUS
+                FREE KES 50
               </span>
             </div>
             <p className="text-sm font-bold text-white mt-0.5">
-              Claim KES 50 free credit added instantly to your wallet balance.
+              Next Rain Drop in <span className="font-mono text-cyan-300">{formatCountdown(countdown)}</span>
             </p>
           </div>
         </div>
@@ -154,70 +139,117 @@ export const ChatRainPage = () => {
             disabled={claimLoading}
             className="w-full sm:w-auto px-7 py-3.5 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-950 font-black text-sm rounded-2xl transition-all shadow-lg shadow-cyan-950/50 font-['Outfit'] tracking-wider uppercase shrink-0 active:scale-95 min-h-[48px]"
           >
-            {claimLoading ? 'CLAIMING BONUS...' : 'CLAIM KES 50 RAIN BONUS'}
+            {claimLoading ? 'CLAIMING...' : 'CLAIM KES 50 RAIN BONUS'}
           </button>
         )}
       </div>
 
-      {/* 3. Main Content Grid (Left Chat Feed + Right Rain Stats) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left 7 Columns: Live Chat Feed */}
-        <div className="lg:col-span-7 bg-[#101520] border border-slate-800 rounded-2xl sm:rounded-3xl p-6 flex flex-col justify-between space-y-4 shadow-xl min-h-[500px]">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-            <div className="flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-emerald-400" />
-              <h2 className="text-lg font-extrabold text-white font-['Outfit']">
-                LIVE COMMUNITY CHAT
-              </h2>
+      {/* Main Grid: Left Chat Panel (Matching Screenshot 100%) + Right Rain History */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        {/* Left Column: Chat Container (7 cols on desktop) */}
+        <div className="lg:col-span-7 bg-[#141822] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col min-h-[580px]">
+          
+          {/* 1. Header Bar */}
+          <div className="bg-[#181d27] border-b border-slate-800/80 px-4 py-3 flex items-center justify-between">
+            <div className="w-8 h-8 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-400 flex items-center justify-center cursor-pointer">
+              <Info className="w-4 h-4" />
             </div>
-            <span className="text-xs font-mono text-slate-400">{messages.length} Messages</span>
+
+            <div className="text-sm font-extrabold text-slate-300 font-['Outfit'] flex items-center gap-1.5">
+              <span>Online:</span>
+              <span className="text-[#34c759] font-mono text-base font-black">{onlineCount.toLocaleString()}</span>
+            </div>
+
+            <div className="w-8 h-8 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-400 flex items-center justify-center cursor-pointer">
+              <X className="w-4 h-4" />
+            </div>
           </div>
 
-          {/* Messages Scroll Area */}
-          <div className="flex-1 space-y-3 max-h-[380px] overflow-y-auto pr-2 no-scrollbar">
+          {/* 2. Pinned Messages Bar */}
+          <div className="bg-[#11141d] border-b border-slate-800/80 px-4 py-2.5 flex items-center justify-between text-xs font-semibold select-none cursor-pointer">
+            <div className="flex items-center gap-2 text-slate-300 font-['Outfit']">
+              <Pin className="w-4 h-4 text-slate-400" />
+              <span>Pinned Messages</span>
+              <span className="text-[#ff9500] font-black">(1)</span>
+            </div>
+            <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${pinnedOpen ? 'rotate-180' : ''}`} onClick={() => setPinnedOpen(!pinnedOpen)} />
+          </div>
+
+          {/* Pinned Message Content Banner */}
+          {pinnedOpen && (
+            <div className="bg-[#18202d] px-4 py-2.5 text-xs text-amber-300 border-b border-slate-800 font-medium flex items-center gap-2">
+              <CloudRain className="w-4 h-4 text-amber-400 shrink-0" />
+              <span>🌧️ System Rain Drop: KES 50 bonuses distributed every 5 mins! Keep chatting to claim.</span>
+            </div>
+          )}
+
+          {/* 3. Messages Feed */}
+          <div className="flex-1 p-4 space-y-4 overflow-y-auto max-h-[380px] no-scrollbar relative">
             {messages.map((m) => (
-              <div
-                key={m.id}
-                className={`p-3.5 rounded-2xl text-xs space-y-1 transition-all ${
-                  m.system
-                    ? 'bg-cyan-950/40 border border-cyan-800/40 text-cyan-200'
-                    : 'bg-[#090b10] border border-slate-800/80 text-slate-200'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <span className={`font-black font-['Outfit'] text-xs ${m.system ? 'text-cyan-400' : 'text-emerald-400'}`}>
-                    {m.user}
-                  </span>
-                  <span className="text-[10px] text-slate-500 font-mono">{m.time}</span>
+              <div key={m.id} className="flex items-start gap-3 group">
+                {/* Profile Avatar */}
+                <div className="w-9 h-9 rounded-full bg-slate-800 overflow-hidden shrink-0 border border-slate-700 shadow-md">
+                  <img src={m.avatar} alt={m.user} className="w-full h-full object-cover" />
                 </div>
-                <p className="text-xs sm:text-sm leading-relaxed text-slate-200">{m.text}</p>
+
+                {/* Message Bubble */}
+                <div className="flex-1 bg-[#1c222e] border border-slate-800/60 rounded-2xl p-3 space-y-1 shadow-md">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[#34c759] font-black font-mono text-xs">{m.user}</span>
+                    <span className="text-[10px] text-slate-500 font-mono">{m.time}</span>
+                  </div>
+                  <p className="text-xs text-slate-200 leading-relaxed font-sans">{m.text}</p>
+                </div>
+
+                {/* Heart Reaction Icon */}
+                <button className="pt-2 text-slate-600 hover:text-rose-500 transition-colors">
+                  <Heart className="w-4 h-4" />
+                </button>
               </div>
             ))}
+
+            {/* Floating "New messages" Pill Button */}
+            <div className="sticky bottom-2 flex justify-center">
+              <button className="bg-[#34c759] hover:bg-[#2fb350] text-slate-950 px-4 py-1.5 rounded-full text-xs font-black flex items-center gap-1.5 shadow-xl font-['Outfit'] transition-transform active:scale-95">
+                <span>New messages</span>
+                <ChevronDown className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
-          {/* Input Form */}
-          <form onSubmit={handleSendMessage} className="flex items-center gap-2.5 pt-2 border-t border-slate-800">
+          {/* 4. Bottom Input Bar */}
+          <form onSubmit={handleSendMessage} className="bg-[#121620] border-t border-slate-800/80 p-3 space-y-2">
             <input
               type="text"
-              placeholder="Type message to community..."
+              placeholder="Your message..."
               value={inputMsg}
               onChange={(e) => setInputMsg(e.target.value)}
-              className="flex-1 bg-[#090b10] border border-slate-800 rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 min-h-[46px]"
+              className="w-full bg-transparent px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none font-sans"
             />
-            <button
-              type="submit"
-              className="bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-5 py-3 rounded-2xl font-black text-xs min-h-[46px] flex items-center justify-center gap-2 font-['Outfit'] uppercase transition-transform active:scale-95"
-            >
-              <Send className="w-4 h-4" />
-              <span className="hidden sm:inline">SEND</span>
-            </button>
+
+            <div className="flex items-center justify-between pt-1 border-t border-slate-800/40">
+              <button type="button" className="text-slate-400 hover:text-slate-200">
+                <Smile className="w-5 h-5" />
+              </button>
+
+              <span className="text-[10px] text-slate-500 font-mono font-bold">
+                AA 160
+              </span>
+
+              <button
+                type="submit"
+                className="w-9 h-9 rounded-full bg-[#1e2533] hover:bg-[#34c759] text-slate-400 hover:text-slate-950 flex items-center justify-center transition-all shadow-md active:scale-95"
+              >
+                <Send className="w-4 h-4" />
+              </button>
+            </div>
           </form>
         </div>
 
-        {/* Right 5 Columns: Rain Drop History & Rules */}
+        {/* Right Column: Rain Drop History & Rules (5 cols on desktop) */}
         <div className="lg:col-span-5 space-y-6">
-          {/* Rain Claims History Table */}
-          <div className="bg-[#101520] border border-slate-800 rounded-2xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
+          <div className="bg-[#141822] border border-slate-800 rounded-3xl p-6 space-y-4 shadow-xl">
             <div className="border-b border-slate-800 pb-3 flex items-center justify-between">
               <h3 className="text-base font-extrabold text-white font-['Outfit'] flex items-center gap-2">
                 <Award className="w-4 h-4 text-purple-400" />
@@ -228,7 +260,7 @@ export const ChatRainPage = () => {
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-[#090b10] text-slate-400 uppercase font-extrabold border-b border-slate-800 font-['Outfit']">
+                <thead className="bg-slate-900 text-slate-400 uppercase font-extrabold border-b border-slate-800 font-['Outfit']">
                   <tr>
                     <th className="p-2.5">Player</th>
                     <th className="p-2.5">Amount</th>
@@ -239,7 +271,7 @@ export const ChatRainPage = () => {
                   {rainHistory.map((item) => (
                     <tr key={item.id} className="hover:bg-slate-900/60">
                       <td className="p-2.5 font-mono font-bold text-white">{item.player}</td>
-                      <td className="p-2.5 font-mono font-bold text-cyan-400">+KES {item.amount}</td>
+                      <td className="p-2.5 font-mono font-bold text-[#34c759]">+KES {item.amount}</td>
                       <td className="p-2.5 text-right font-mono text-slate-400">{item.time}</td>
                     </tr>
                   ))}
@@ -248,18 +280,18 @@ export const ChatRainPage = () => {
             </div>
           </div>
 
-          {/* Rain Rules Info Box */}
-          <div className="bg-[#101520] border border-slate-800 rounded-2xl sm:rounded-3xl p-6 space-y-3 text-xs text-slate-400 leading-relaxed shadow-xl">
+          <div className="bg-[#141822] border border-slate-800 rounded-3xl p-6 space-y-3 text-xs text-slate-400 leading-relaxed shadow-xl">
             <h4 className="text-sm font-extrabold text-white font-['Outfit'] uppercase tracking-wider">
               HOW RAIN DROPS WORK
             </h4>
             <ul className="space-y-2 list-disc list-inside text-slate-300">
               <li>Rain drops are free balance rewards randomly released in the chat feed.</li>
-              <li>Active players online can click <strong className="text-cyan-300">CLAIM</strong> to receive instant credit.</li>
+              <li>Active players online can click <strong className="text-[#34c759]">CLAIM</strong> to receive instant credit.</li>
               <li>Bonus funds are automatically credited to your main balance for gameplay or cashout.</li>
             </ul>
           </div>
         </div>
+
       </div>
     </div>
   );
