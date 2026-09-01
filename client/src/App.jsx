@@ -13,12 +13,13 @@ import { ProfilePage } from './pages/ProfilePage';
 import { DepositPage } from './pages/DepositPage';
 import { WithdrawalPage } from './pages/WithdrawalPage';
 import { ChatRainPage } from './pages/ChatRainPage';
+import { PredictionPage } from './pages/PredictionPage';
 import { AdminDashboard } from './pages/AdminDashboard';
 
 const MainApp = () => {
   const { user } = useContext(AuthContext);
 
-  const [currentView, setCurrentView] = useState('game'); // 'game', 'deposit', 'withdrawal', 'profile', 'chat', 'admin'
+  const [currentView, setCurrentView] = useState('game'); // 'game', 'deposit', 'withdrawal', 'profile', 'chat', 'prediction', 'admin'
   const [socket, setSocket] = useState(null);
 
   // Real-time game engine state
@@ -125,8 +126,6 @@ const MainApp = () => {
           <MultiplierHistory history={gameState.history} />
 
           {/* Core Game Body Layout */}
-          {/* Desktop Layout: Left Active Players Sidebar + Right Flight Canvas & Bet Controls */}
-          {/* Smartphone Layout: Stacked (Flight Canvas -> Bet Controls -> Active Players Below) */}
           <div className="flex-1 flex flex-col lg:flex-row bg-[#05070c] items-start">
             
             {/* Desktop-only Left Sidebar (Hidden on mobile) */}
@@ -168,6 +167,7 @@ const MainApp = () => {
       {currentView === 'withdrawal' && <WithdrawalPage />}
       {currentView === 'profile' && <ProfilePage setCurrentView={setCurrentView} />}
       {currentView === 'chat' && <ChatRainPage />}
+      {currentView === 'prediction' && <PredictionPage />}
       {currentView === 'admin' && (
         user?.role === 'admin' ? (
           <AdminDashboard />

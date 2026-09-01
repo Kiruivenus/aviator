@@ -315,6 +315,15 @@ const seedBotBets = () => {
 
 export const getGameState = () => gameState;
 
+export const getNextPredictionSignal = () => {
+  return {
+    roundId: gameState.roundId,
+    status: gameState.status,
+    crashPoint: gameState.crashPoint,
+    countdown: gameState.countdown
+  };
+};
+
 export const placeUserBet = async ({ userId, userName, userPhone, amount, autoCashout }) => {
   if (gameState.status !== 'waiting') {
     throw new Error('Bets can only be placed during the countdown phase before flight takeoff.');

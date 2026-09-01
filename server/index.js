@@ -12,6 +12,7 @@ import betRoutes from './routes/betRoutes.js';
 import depositRoutes from './routes/depositRoutes.js';
 import withdrawalRoutes from './routes/withdrawalRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import predictionRoutes from './routes/predictionRoutes.js';
 
 dotenv.config();
 
@@ -42,6 +43,7 @@ app.use('/api/bets', betRoutes);
 app.use('/api/deposit', depositRoutes);
 app.use('/api/withdrawal', withdrawalRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/prediction', predictionRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

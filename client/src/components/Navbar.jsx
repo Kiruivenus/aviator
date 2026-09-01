@@ -88,6 +88,14 @@ export const Navbar = ({ currentView, setCurrentView }) => {
           >
             CHAT / RAIN
           </button>
+          <button
+            onClick={() => handleNavClick('prediction')}
+            className={`px-3.5 py-1.5 text-xs font-black rounded-lg transition-all font-['Outfit'] min-h-[36px] ${
+              currentView === 'prediction' ? 'bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 shadow-md' : 'text-cyan-400 hover:text-cyan-200'
+            }`}
+          >
+            PREDICTOR
+          </button>
           {user?.role === 'admin' && (
             <button
               onClick={() => handleNavClick('admin')}
