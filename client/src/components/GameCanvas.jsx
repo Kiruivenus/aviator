@@ -1,19 +1,18 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 
 export const GameCanvas = ({ status, multiplier, countdown, crashPoint }) => {
   const canvasRef = useRef(null);
-  
-  // Smooth 60FPS interpolation refs
+
+  // Smooth 60FPS animation refs (no React state re-renders inside requestAnimationFrame)
   const targetMultiplierRef = useRef(multiplier);
   const currentMultiplierRef = useRef(multiplier);
-  const [displayMultiplier, setDisplayMultiplier] = useState(multiplier);
 
-  // Keep targetRef updated with incoming socket ticks
+  // Sync target multiplier with incoming props
   useEffect(() => {
     targetMultiplierRef.current = multiplier;
   }, [multiplier]);
 
-  // Smooth 60FPS frame loop for climbing multiplier & canvas trajectory
+  // Canvas 60FPS render loop
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -26,36 +25,33 @@ export const GameCanvas = ({ status, multiplier, countdown, crashPoint }) => {
     if (status !== 'running') {
       currentMultiplierRef.current = multiplier;
       targetMultiplierRef.current = multiplier;
-      setDisplayMultiplier(multiplier);
     }
 
     const render = () => {
       ctx.clearRect(0, 0, width, height);
 
-      // Smooth interpolation calculation for 60FPS climbing number
+      // Smooth 60FPS lerp calculation without triggering React re-renders
       if (status === 'running') {
         const diff = targetMultiplierRef.current - currentMultiplierRef.current;
         if (Math.abs(diff) > 0.001) {
-          currentMultiplierRef.current += diff * 0.18; // Smooth 60FPS lerp step
+          currentMultiplierRef.current += diff * 0.18;
         } else {
           currentMultiplierRef.current = targetMultiplierRef.current;
         }
-        setDisplayMultiplier(currentMultiplierRef.current);
       } else {
         currentMultiplierRef.current = multiplier;
-        setDisplayMultiplier(multiplier);
       }
 
       const activeMult = currentMultiplierRef.current;
 
-      // Solid, clean dark surface background
+      // 1. Solid, clean dark surface background
       const bgGradient = ctx.createLinearGradient(0, 0, 0, height);
       bgGradient.addColorStop(0, '#0d111a');
       bgGradient.addColorStop(1, '#070910');
       ctx.fillStyle = bgGradient;
       ctx.fillRect(0, 0, width, height);
 
-      // Subtle background grid
+      // 2. Subtle background grid
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.025)';
       ctx.lineWidth = 1;
       const gridSize = 40;
@@ -72,7 +68,7 @@ export const GameCanvas = ({ status, multiplier, countdown, crashPoint }) => {
         ctx.stroke();
       }
 
-      // Flight Curve Trajectory using activeMult
+      // 3. Flight Curve Trajectory
       if (status === 'running' || status === 'crashed') {
         const progress = Math.min(1, (activeMult - 1) / Math.max(3, (crashPoint || 5) - 1));
 
@@ -143,6 +139,27 @@ export const GameCanvas = ({ status, multiplier, countdown, crashPoint }) => {
 
           ctx.restore();
         }
+
+        // 4. Render Center Multiplier Text directly on canvas (Zero React re-renders)
+        ctx.save();
+        if (status === 'running') {
+          ctx.font = 'bold 76px monospace';
+          ctx.fillStyle = '#ffffff';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+          ctx.shadowBlur = 20;
+          ctx.fillText(activeMult.toFixed(2), width / 2, height / 2);
+        } else if (status === 'crashed') {
+          ctx.font = 'bold 64px monospace';
+          ctx.fillStyle = '#ef4444';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+          ctx.shadowBlur = 20;
+          ctx.fillText(activeMult.toFixed(2), width / 2, height / 2);
+        }
+        ctx.restore();
       }
 
       animationFrameId = requestAnimationFrame(render);
@@ -169,7 +186,7 @@ export const GameCanvas = ({ status, multiplier, countdown, crashPoint }) => {
       {/* HTML5 Canvas */}
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full z-0" />
 
-      {/* Screen Overlay Content */}
+      {/* Screen Overlay Content (Waiting Countdown) */}
       <div className="relative z-10 text-center flex flex-col items-center justify-center px-4">
         {status === 'waiting' && (
           <div className="flex flex-col items-center gap-3">
@@ -211,24 +228,13 @@ export const GameCanvas = ({ status, multiplier, countdown, crashPoint }) => {
           </div>
         )}
 
-        {status === 'running' && (
-          <div className="flex flex-col items-center">
-            <h1 className="text-6xl sm:text-7xl md:text-8xl font-bold text-white tracking-tight font-mono">
-              {displayMultiplier.toFixed(2)}
-            </h1>
-          </div>
-        )}
-
         {status === 'crashed' && (
-          <div className="flex flex-col items-center">
-            <div className="bg-rose-950/80 border border-rose-600/50 px-6 py-1.5 rounded-full mb-3">
+          <div className="flex flex-col items-center -mt-20">
+            <div className="bg-rose-950/80 border border-rose-600/50 px-6 py-1.5 rounded-full shadow-xl">
               <span className="text-rose-400 font-bold text-xs sm:text-sm tracking-widest uppercase font-['Outfit']">
                 FLEW AWAY!
               </span>
             </div>
-            <h1 className="text-6xl sm:text-7xl font-bold text-rose-500 tracking-tight font-mono">
-              {multiplier.toFixed(2)}
-            </h1>
           </div>
         )}
       </div>

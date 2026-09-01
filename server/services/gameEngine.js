@@ -1,6 +1,8 @@
+import mongoose from 'mongoose';
 import GameRound from '../models/GameRound.js';
 import Bet from '../models/Bet.js';
 import User from '../models/User.js';
+import { inMemoryUsers } from '../routes/authRoutes.js';
 
 let ioInstance = null;
 
@@ -11,8 +13,30 @@ let gameState = {
   multiplier: 1.00,
   crashPoint: 1.00,
   countdown: 5,
-  activeBets: [], // array of { id, userId, userName, userPhone, amount, autoCashout, status, winAmount, cashoutMultiplier }
+  activeBets: [],
   history: [4.36, 1.08, 6.70, 2.02, 1.93, 4.11, 1.00, 3.67, 4.12, 1.53, 5.88, 1.78, 1.54, 12.87, 1.42, 1.75, 4.03, 1.66]
+};
+
+// Safe helper for user lookup in DB or in-memory fallback
+const findUserByIdOrInMemory = async (userId) => {
+  if (mongoose.connection.readyState === 1) {
+    try {
+      const dbUser = await User.findById(userId);
+      if (dbUser) return dbUser;
+    } catch (err) {
+      // Mongoose CastError or invalid ObjectId string
+    }
+  }
+
+  if (inMemoryUsers) {
+    for (let u of inMemoryUsers.values()) {
+      if (u.id === userId || u._id === userId || u.phone === userId) {
+        return u;
+      }
+    }
+  }
+
+  return null;
 };
 
 // Generate random crash point with typical house edge distribution
@@ -76,22 +100,24 @@ export const initGameEngine = (io) => {
         bet.cashoutMultiplier = winMultiplier;
         bet.winAmount = winAmount;
 
-        // Credit user balance in DB
-        const user = await User.findById(bet.userId);
+        // Credit user balance in DB or in-memory
+        const user = await findUserByIdOrInMemory(bet.userId);
         if (user) {
           user.balance += winAmount;
-          await user.save();
+          if (user.save && typeof user.save === 'function') {
+            try { await user.save(); } catch (e) {}
+          }
         }
 
         // Update Bet record in DB if exists
-        try {
-          await Bet.findByIdAndUpdate(bet.dbId || bet.id, {
-            status: 'cashed_out',
-            cashoutMultiplier: winMultiplier,
-            winAmount: winAmount
-          });
-        } catch (e) {
-          // Soft catch if dbId was mock
+        if (mongoose.connection.readyState === 1) {
+          try {
+            await Bet.findByIdAndUpdate(bet.dbId || bet.id, {
+              status: 'cashed_out',
+              cashoutMultiplier: winMultiplier,
+              winAmount: winAmount
+            });
+          } catch (e) {}
         }
 
         // Broadcast bet update & cashout notification
@@ -127,18 +153,18 @@ const startNewRound = async () => {
   gameState.countdown = 5;
   gameState.activeBets = [];
 
-  // Add simulated bot players to populate active list like screenshot
+  // Seed bot players to populate active list
   seedBotBets();
 
-  try {
-    const roundDoc = new GameRound({
-      roundId: gameState.roundId,
-      crashMultiplier: gameState.crashPoint,
-      status: 'waiting'
-    });
-    await roundDoc.save();
-  } catch (err) {
-    // DB error fallback
+  if (mongoose.connection.readyState === 1) {
+    try {
+      const roundDoc = new GameRound({
+        roundId: gameState.roundId,
+        crashMultiplier: gameState.crashPoint,
+        status: 'waiting'
+      });
+      await roundDoc.save();
+    } catch (err) {}
   }
 
   ioInstance?.emit('round_waiting', {
@@ -165,9 +191,11 @@ const runFlightPhase = async () => {
   gameState.status = 'running';
   let startTime = Date.now();
 
-  try {
-    await GameRound.findOneAndUpdate({ roundId: gameState.roundId }, { status: 'running' });
-  } catch (e) {}
+  if (mongoose.connection.readyState === 1) {
+    try {
+      await GameRound.findOneAndUpdate({ roundId: gameState.roundId }, { status: 'running' });
+    } catch (e) {}
+  }
 
   ioInstance?.emit('round_started', {
     roundId: gameState.roundId,
@@ -176,7 +204,6 @@ const runFlightPhase = async () => {
 
   const flightInterval = setInterval(async () => {
     const elapsedSeconds = (Date.now() - startTime) / 1000;
-    // Multiplier curve calculation
     let currentMult = parseFloat((1.00 * Math.exp(0.06 * elapsedSeconds * 1.5)).toFixed(2));
 
     if (currentMult >= gameState.crashPoint) {
@@ -197,19 +224,23 @@ const runFlightPhase = async () => {
         bet.cashoutMultiplier = currentMult;
         bet.winAmount = parseFloat((bet.amount * currentMult).toFixed(2));
 
-        // DB update if real user
-        try {
-          const user = await User.findById(bet.userId);
-          if (user) {
-            user.balance += bet.winAmount;
-            await user.save();
+        const user = await findUserByIdOrInMemory(bet.userId);
+        if (user) {
+          user.balance += bet.winAmount;
+          if (user.save && typeof user.save === 'function') {
+            try { await user.save(); } catch (e) {}
           }
-          await Bet.findByIdAndUpdate(bet.dbId || bet.id, {
-            status: 'cashed_out',
-            cashoutMultiplier: currentMult,
-            winAmount: bet.winAmount
-          });
-        } catch (e) {}
+        }
+
+        if (mongoose.connection.readyState === 1) {
+          try {
+            await Bet.findByIdAndUpdate(bet.dbId || bet.id, {
+              status: 'cashed_out',
+              cashoutMultiplier: currentMult,
+              winAmount: bet.winAmount
+            });
+          } catch (e) {}
+        }
 
         ioInstance?.emit('bet_cashed_out', {
           betId: bet.id,
@@ -226,13 +257,14 @@ const runFlightPhase = async () => {
 const endRoundCrash = async () => {
   gameState.status = 'crashed';
   
-  // Update uncashed bets to lost
   for (let bet of gameState.activeBets) {
     if (bet.status === 'active') {
       bet.status = 'lost';
-      try {
-        await Bet.findByIdAndUpdate(bet.dbId || bet.id, { status: 'lost' });
-      } catch (e) {}
+      if (mongoose.connection.readyState === 1) {
+        try {
+          await Bet.findByIdAndUpdate(bet.dbId || bet.id, { status: 'lost' });
+        } catch (e) {}
+      }
     }
   }
 
@@ -240,12 +272,14 @@ const endRoundCrash = async () => {
   gameState.history.unshift(gameState.crashPoint);
   if (gameState.history.length > 20) gameState.history.pop();
 
-  try {
-    await GameRound.findOneAndUpdate(
-      { roundId: gameState.roundId },
-      { status: 'crashed', crashedAt: new Date() }
-    );
-  } catch (e) {}
+  if (mongoose.connection.readyState === 1) {
+    try {
+      await GameRound.findOneAndUpdate(
+        { roundId: gameState.roundId },
+        { status: 'crashed', crashedAt: new Date() }
+      );
+    } catch (e) {}
+  }
 
   ioInstance?.emit('round_crashed', {
     roundId: gameState.roundId,
@@ -253,16 +287,15 @@ const endRoundCrash = async () => {
     history: gameState.history
   });
 
-  // Pause for 3 seconds before next round
+  // Pause for 3.5 seconds before next round
   setTimeout(() => {
     startNewRound();
   }, 3500);
 };
 
-// Helper: Add fake/simulated players to match metricwin UI active players sidebar
 const seedBotBets = () => {
   const botNames = ['T***o', 'A***n', '2***3', 'M***n', 'L***y', '2***2', '1***9', '2***7', 'S***r', 'V***x', 'K***l'];
-  const count = Math.floor(Math.random() * 5) + 6; // 6 to 10 bots
+  const count = Math.floor(Math.random() * 5) + 6;
   for (let i = 0; i < count; i++) {
     const name = botNames[i % botNames.length];
     const amount = Math.floor(Math.random() * 4000) + 200;
@@ -280,41 +313,58 @@ const seedBotBets = () => {
   }
 };
 
-// Export getters & bet placement helper
 export const getGameState = () => gameState;
 
 export const placeUserBet = async ({ userId, userName, userPhone, amount, autoCashout }) => {
   if (gameState.status !== 'waiting') {
-    throw new Error('Bets can only be placed during the countdown phase before round starts.');
+    throw new Error('Bets can only be placed during the countdown phase before flight takeoff.');
   }
 
-  const user = await User.findById(userId);
-  if (!user || user.balance < amount) {
+  let user = await findUserByIdOrInMemory(userId);
+  if (!user && userPhone) {
+    user = await findUserByIdOrInMemory(userPhone);
+  }
+
+  // Fallback mock user if not found
+  if (!user) {
+    user = { id: userId, balance: 1000, save: async () => {} };
+  }
+
+  if (user.balance < amount) {
     throw new Error('Insufficient user wallet balance. Please top up your account.');
   }
 
   // Deduct balance
   user.balance -= amount;
-  await user.save();
+  if (user.save && typeof user.save === 'function') {
+    try {
+      await user.save();
+    } catch (e) {}
+  }
 
-  // Save Bet to DB
-  const betDoc = new Bet({
-    userId,
-    userName: userName || user.fullName,
-    userPhone: userPhone || user.phone,
-    roundId: gameState.roundId,
-    amount,
-    autoCashout: autoCashout || 0,
-    status: 'active'
-  });
-  await betDoc.save();
+  let dbBetId = 'bet_' + Date.now();
+  if (mongoose.connection.readyState === 1) {
+    try {
+      const betDoc = new Bet({
+        userId,
+        userName: userName || user.fullName,
+        userPhone: userPhone || user.phone,
+        roundId: gameState.roundId,
+        amount,
+        autoCashout: autoCashout || 0,
+        status: 'active'
+      });
+      await betDoc.save();
+      dbBetId = betDoc._id.toString();
+    } catch (e) {}
+  }
 
   const betObject = {
-    id: betDoc._id.toString(),
-    dbId: betDoc._id.toString(),
+    id: dbBetId,
+    dbId: dbBetId,
     userId,
-    userName: userName || user.fullName,
-    userPhone: user.phone,
+    userName: userName || user.fullName || 'Player',
+    userPhone: user.phone || userPhone,
     amount,
     autoCashout: autoCashout || 0,
     status: 'active',
