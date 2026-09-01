@@ -107,43 +107,6 @@ export const ChatRainPage = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-      {/* Top Banner: Rain Drops Active Event */}
-      <div className="bg-gradient-to-r from-cyan-950/80 via-[#101520] to-teal-950/80 border border-cyan-500/40 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-5 shadow-xl">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 flex items-center justify-center shrink-0">
-            <Sparkles className="w-6 h-6 animate-pulse" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-black text-cyan-300 font-['Outfit'] tracking-wider uppercase">
-                ACTIVE RAIN DROP EVENT
-              </span>
-              <span className="px-2 py-0.5 rounded-full bg-cyan-500 text-slate-950 text-[10px] font-black uppercase">
-                FREE KES 50
-              </span>
-            </div>
-            <p className="text-sm font-bold text-white mt-0.5">
-              Next Rain Drop in <span className="font-mono text-cyan-300">{formatCountdown(countdown)}</span>
-            </p>
-          </div>
-        </div>
-
-        {claimed ? (
-          <div className="px-6 py-3.5 bg-emerald-950 border border-emerald-500 text-emerald-300 font-black text-sm rounded-2xl flex items-center gap-2 font-['Outfit'] shrink-0 shadow-lg">
-            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-            <span>KES 50 CLAIMED!</span>
-          </div>
-        ) : (
-          <button
-            onClick={handleClaimRain}
-            disabled={claimLoading}
-            className="w-full sm:w-auto px-7 py-3.5 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-950 font-black text-sm rounded-2xl transition-all shadow-lg shadow-cyan-950/50 font-['Outfit'] tracking-wider uppercase shrink-0 active:scale-95 min-h-[48px]"
-          >
-            {claimLoading ? 'CLAIMING...' : 'CLAIM KES 50 RAIN BONUS'}
-          </button>
-        )}
-      </div>
-
       {/* Main Grid: Left Chat Panel (Matching Screenshot 100%) + Right Rain History */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
