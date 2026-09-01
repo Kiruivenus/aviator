@@ -133,8 +133,8 @@ export const Navbar = ({ currentView, setCurrentView }) => {
               <span className="hidden sm:inline">DEPOSIT</span>
             </button>
 
-            {/* Profile Dropdown Menu */}
-            <div className="relative">
+            {/* Profile Dropdown Menu (Hidden on smartphone) */}
+            <div className="relative hidden md:block">
               <button
                 onClick={() => setProfileDropdown(!profileDropdown)}
                 className="flex items-center gap-1.5 p-1.5 rounded-xl bg-slate-950 border border-slate-800 hover:bg-slate-900 transition-colors min-h-[40px]"
