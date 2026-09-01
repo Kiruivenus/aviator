@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { Plus, ArrowUpCircle, User, MessageSquare, Play } from 'lucide-react';
+import { Plus, ArrowUpCircle, User, MessageSquare } from 'lucide-react';
 
 export const BottomNavbar = ({ currentView, setCurrentView }) => {
   const { user, openLogin } = useContext(AuthContext);
@@ -41,16 +41,20 @@ export const BottomNavbar = ({ currentView, setCurrentView }) => {
           <span className="text-[9px] font-extrabold font-['Outfit'] tracking-wider uppercase">WITHDRAW</span>
         </button>
 
-        {/* 3. CENTER RAISED AVIATOR BUTTON (Renamed from PLAY GAME and positioned in the middle!) */}
+        {/* 3. CENTER RAISED AVIATOR BUTTON WITH RED PLANE IMAGE */}
         <div className="relative -mt-6 flex flex-col items-center justify-center">
           <button
             onClick={() => handleAction('game')}
-            className="w-14 h-14 rounded-full bg-gradient-to-tr from-rose-600 via-rose-500 to-pink-500 text-white flex items-center justify-center font-black shadow-lg shadow-rose-600/50 ring-4 ring-[#0b0d17] transition-transform hover:scale-105 active:scale-95"
+            className="w-14 h-14 rounded-full bg-[#0d0f18] border-2 border-rose-600 text-white flex items-center justify-center font-black shadow-lg shadow-rose-950/80 ring-4 ring-[#0b0d17] transition-transform hover:scale-105 active:scale-95 p-2 overflow-hidden"
             aria-label="Launch Aviator Game"
           >
-            <Play className="w-6 h-6 text-white fill-white ml-0.5" />
+            <img 
+              src="/aviator_plane.png" 
+              alt="Aviator" 
+              className="w-full h-full object-contain filter drop-shadow brightness-125 scale-110" 
+            />
           </button>
-          <span className="text-[9px] font-black font-['Outfit'] tracking-widest text-rose-400 uppercase mt-1">
+          <span className="text-[9px] font-black font-['Outfit'] tracking-widest text-rose-500 uppercase mt-1">
             AVIATOR
           </span>
         </div>
@@ -67,7 +71,7 @@ export const BottomNavbar = ({ currentView, setCurrentView }) => {
           <span className="text-[9px] font-extrabold font-['Outfit'] tracking-wider uppercase text-cyan-400">CHAT/RAIN</span>
         </button>
 
-        {/* 5. PROFILE (Moved to corner!) */}
+        {/* 5. PROFILE */}
         <button
           onClick={() => handleAction('profile')}
           className={`flex flex-col items-center justify-center gap-1 transition-all min-w-[56px] py-1 ${

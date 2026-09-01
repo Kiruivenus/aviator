@@ -36,7 +36,7 @@ export const Navbar = ({ currentView, setCurrentView }) => {
           </div>
         </div>
 
-        {/* Center Navigation Links (AVIATOR in middle, PROFILE in corner) */}
+        {/* Center Navigation Links (AVIATOR Button with Red Airplane Logo Image in Center) */}
         <nav className="hidden md:flex items-center justify-center gap-1.5 mx-auto bg-slate-950/80 p-1.5 rounded-2xl border border-slate-800/80 shadow-inner">
           <button
             onClick={() => handleNavClick('deposit')}
@@ -56,16 +56,21 @@ export const Navbar = ({ currentView, setCurrentView }) => {
             WITHDRAW
           </button>
 
-          {/* AVIATOR (Renamed from PLAY GAME and positioned in the middle!) */}
+          {/* AVIATOR (Featured Center Button with Red Airplane Logo Image!) */}
           <button
             onClick={() => handleNavClick('game')}
-            className={`px-4 py-1.5 text-xs font-black rounded-xl transition-all font-['Outfit'] min-h-[36px] ${
+            className={`px-4 py-1 text-xs font-black rounded-xl transition-all font-['Outfit'] min-h-[36px] flex items-center gap-2 ${
               currentView === 'game' 
-                ? 'bg-rose-600 text-white shadow-lg shadow-rose-950/80' 
+                ? 'bg-rose-600 text-white shadow-lg shadow-rose-950/80 ring-2 ring-rose-500/50' 
                 : 'bg-rose-950/60 border border-rose-600/40 text-rose-300 hover:bg-rose-900/80 hover:text-white'
             }`}
           >
-            AVIATOR
+            <img 
+              src="/aviator_plane.png" 
+              alt="Aviator Plane" 
+              className="w-6 h-6 object-contain filter drop-shadow brightness-125 hover:scale-110 transition-transform" 
+            />
+            <span>AVIATOR</span>
           </button>
 
           <button
@@ -217,11 +222,12 @@ export const Navbar = ({ currentView, setCurrentView }) => {
         <div className="md:hidden border-t border-slate-800 bg-[#080b11] px-4 py-4 space-y-2 animate-in slide-in-from-top-4 duration-200">
           <button
             onClick={() => handleNavClick('game')}
-            className={`w-full text-left px-4 py-2.5 rounded-xl font-extrabold text-xs font-['Outfit'] min-h-[40px] ${
+            className={`w-full text-left px-4 py-2.5 rounded-xl font-extrabold text-xs font-['Outfit'] flex items-center gap-2 min-h-[40px] ${
               currentView === 'game' ? 'bg-rose-600 text-white font-black' : 'text-rose-400 hover:bg-slate-900'
             }`}
           >
-            AVIATOR
+            <img src="/aviator_plane.png" alt="Aviator" className="w-5 h-5 object-contain" />
+            <span>AVIATOR</span>
           </button>
           <button
             onClick={() => handleNavClick('deposit')}
