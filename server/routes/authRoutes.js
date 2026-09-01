@@ -1,11 +1,15 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 import User from '../models/User.js';
 import { verifyToken } from '../middleware/auth.js';
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'aviator_secret_key_2026_super_secure';
+
+// In-memory fallback user store when MongoDB is offline
+const inMemoryUsers = new Map();
 
 // Helper to format phone
 const cleanPhone = (p) => {
@@ -31,40 +35,75 @@ router.post('/register', async (req, res) => {
 
     const formattedPhone = cleanPhone(phone);
 
-    const existingUser = await User.findOne({ phone: formattedPhone });
-    if (existingUser) {
+    // If MongoDB is connected, use Mongoose
+    if (mongoose.connection.readyState === 1) {
+      const existingUser = await User.findOne({ phone: formattedPhone });
+      if (existingUser) {
+        return res.status(400).json({ error: 'An account with this phone number already exists.' });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUser = new User({
+        fullName: fullName.trim(),
+        phone: formattedPhone,
+        password: hashedPassword,
+        role: 'user',
+        balance: 1000
+      });
+
+      await newUser.save();
+
+      const token = jwt.sign({ id: newUser._id, role: newUser.role }, JWT_SECRET, { expiresIn: '7d' });
+
+      return res.status(201).json({
+        message: 'Registration successful!',
+        token,
+        user: {
+          id: newUser._id,
+          fullName: newUser.fullName,
+          phone: newUser.phone,
+          role: newUser.role,
+          balance: newUser.balance
+        }
+      });
+    }
+
+    // In-memory fallback if MongoDB is not running locally
+    if (inMemoryUsers.has(formattedPhone)) {
       return res.status(400).json({ error: 'An account with this phone number already exists.' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = new User({
+    const mockId = 'usr_' + Math.random().toString(36).substring(2, 9);
+    const mockUser = {
+      _id: mockId,
+      id: mockId,
       fullName: fullName.trim(),
       phone: formattedPhone,
       password: hashedPassword,
       role: 'user',
-      balance: 1000 // Give initial KES 1000 welcome bonus balance for immediate testing
-    });
+      balance: 1000
+    };
 
-    await newUser.save();
+    inMemoryUsers.set(formattedPhone, mockUser);
 
-    const token = jwt.sign({ id: newUser._id, role: newUser.role }, JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ id: mockId, role: 'user' }, JWT_SECRET, { expiresIn: '7d' });
 
     res.status(201).json({
-      message: 'Registration successful! Welcome bonus KES 1,000 added.',
+      message: 'Registration successful!',
       token,
       user: {
-        id: newUser._id,
-        fullName: newUser.fullName,
-        phone: newUser.phone,
-        role: newUser.role,
-        balance: newUser.balance
+        id: mockUser.id,
+        fullName: mockUser.fullName,
+        phone: mockUser.phone,
+        role: mockUser.role,
+        balance: mockUser.balance
       }
     });
 
   } catch (error) {
     console.error('Registration error:', error.message);
-    res.status(500).json({ error: 'Server error during registration.' });
+    res.status(500).json({ error: 'Failed to process registration request.' });
   }
 });
 
@@ -80,33 +119,61 @@ router.post('/login', async (req, res) => {
 
     const formattedPhone = cleanPhone(phone);
 
-    const user = await User.findOne({ phone: formattedPhone });
-    if (!user) {
+    // If MongoDB is connected, use Mongoose
+    if (mongoose.connection.readyState === 1) {
+      const user = await User.findOne({ phone: formattedPhone });
+      if (!user) {
+        return res.status(400).json({ error: 'Invalid phone number or password.' });
+      }
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ error: 'Invalid phone number or password.' });
+      }
+
+      const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+
+      return res.json({
+        message: 'Login successful',
+        token,
+        user: {
+          id: user._id,
+          fullName: user.fullName,
+          phone: user.phone,
+          role: user.role,
+          balance: user.balance
+        }
+      });
+    }
+
+    // In-memory fallback if MongoDB is not running locally
+    const mockUser = inMemoryUsers.get(formattedPhone);
+    if (!mockUser) {
       return res.status(400).json({ error: 'Invalid phone number or password.' });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, mockUser.password);
     if (!isMatch) {
       return res.status(400).json({ error: 'Invalid phone number or password.' });
     }
 
-    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ id: mockUser.id, role: mockUser.role }, JWT_SECRET, { expiresIn: '7d' });
 
     res.json({
       message: 'Login successful',
       token,
       user: {
-        id: user._id,
-        fullName: user.fullName,
-        phone: user.phone,
-        role: user.role,
-        balance: user.balance
+        id: mockUser.id,
+        fullName: mockUser.fullName,
+        phone: mockUser.phone,
+        role: mockUser.role,
+        balance: mockUser.balance
       }
     });
 
   } catch (error) {
     console.error('Login error:', error.message);
-    res.status(500).json({ error: 'Server error during login.' });
+    res.status(500).json({ error: 'Failed to process login request.' });
   }
 });
 
@@ -114,16 +181,18 @@ router.post('/login', async (req, res) => {
 // @desc    Get logged in user profile
 router.get('/me', verifyToken, async (req, res) => {
   try {
-    res.json({
-      user: {
-        id: req.user._id,
-        fullName: req.user.fullName,
-        phone: req.user.phone,
-        role: req.user.role,
-        balance: req.user.balance,
-        createdAt: req.user.createdAt
-      }
-    });
+    if (req.user) {
+      return res.json({
+        user: {
+          id: req.user._id || req.user.id,
+          fullName: req.user.fullName,
+          phone: req.user.phone,
+          role: req.user.role,
+          balance: req.user.balance
+        }
+      });
+    }
+    res.status(401).json({ error: 'Not authenticated' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch profile.' });
   }
@@ -134,27 +203,39 @@ router.get('/me', verifyToken, async (req, res) => {
 router.put('/profile', verifyToken, async (req, res) => {
   try {
     const { fullName, newPassword } = req.body;
-    const user = await User.findById(req.user._id);
+    if (mongoose.connection.readyState === 1) {
+      const user = await User.findById(req.user._id);
+      if (fullName) user.fullName = fullName.trim();
+      if (newPassword) user.password = await bcrypt.hash(newPassword, 10);
+      await user.save();
 
-    if (fullName) {
-      user.fullName = fullName.trim();
+      return res.json({
+        message: 'Profile updated successfully',
+        user: {
+          id: user._id,
+          fullName: user.fullName,
+          phone: user.phone,
+          role: user.role,
+          balance: user.balance
+        }
+      });
     }
-    if (newPassword) {
-      user.password = await bcrypt.hash(newPassword, 10);
+
+    // In-memory fallback
+    if (req.user) {
+      if (fullName) req.user.fullName = fullName.trim();
+      if (newPassword) req.user.password = await bcrypt.hash(newPassword, 10);
+      return res.json({
+        message: 'Profile updated successfully',
+        user: {
+          id: req.user.id,
+          fullName: req.user.fullName,
+          phone: req.user.phone,
+          role: req.user.role,
+          balance: req.user.balance
+        }
+      });
     }
-
-    await user.save();
-
-    res.json({
-      message: 'Profile updated successfully',
-      user: {
-        id: user._id,
-        fullName: user.fullName,
-        phone: user.phone,
-        role: user.role,
-        balance: user.balance
-      }
-    });
   } catch (error) {
     res.status(500).json({ error: 'Failed to update profile.' });
   }
