@@ -55,12 +55,14 @@ export const AuthModal = () => {
 
         {/* Top Brand Header */}
         <div className="flex items-center gap-3.5 mb-7 pt-1">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-red-600 via-pink-600 to-rose-700 flex items-center justify-center text-white font-black text-xl shadow-md shadow-rose-900/30">
-            M
-          </div>
+          <img 
+            src="/aviatorx_logo.jpg" 
+            alt="AviatorX" 
+            className="w-11 h-11 rounded-2xl object-cover border border-rose-500/40 shadow-lg shadow-rose-950/60" 
+          />
           <div>
             <h2 className="text-xl font-extrabold text-white tracking-wider font-['Outfit'] leading-none">
-              METRIC<span className="text-emerald-400">WIN</span>
+              AVIATOR<span className="text-rose-500 font-black">X</span>
             </h2>
             <span className="text-[10px] text-slate-400 font-semibold tracking-wider uppercase">AUTHENTICATION PORTAL</span>
           </div>

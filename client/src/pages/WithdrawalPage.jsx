@@ -116,7 +116,7 @@ export const WithdrawalPage = () => {
                 Withdrawals
               </h2>
               <p className="text-xs sm:text-sm text-slate-400 mt-1 font-medium">
-                Withdraw money from your MetricWin wallet
+                Withdraw money from your AviatorX wallet
               </p>
             </div>
 
