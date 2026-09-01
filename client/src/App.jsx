@@ -137,7 +137,7 @@ const MainApp = () => {
             {/* Flight Canvas & Twin Bet Controls */}
             <div className="flex-1 flex flex-col w-full h-full bg-[#05070c]">
               {/* HTML5 Canvas Flight Simulation */}
-              <div className="relative min-h-[260px] sm:min-h-[360px] flex-1">
+              <div className="relative min-h-[220px] sm:min-h-[270px] flex-1">
                 <GameCanvas
                   status={gameState.status}
                   multiplier={gameState.multiplier}

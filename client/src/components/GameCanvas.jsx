@@ -132,7 +132,7 @@ export const GameCanvas = ({ status, multiplier, countdown, crashPoint }) => {
   }, [status, multiplier, countdown, crashPoint]);
 
   return (
-    <div className="relative w-full h-full min-h-[300px] sm:min-h-[380px] bg-[#090b10] flex items-center justify-center overflow-hidden select-none">
+    <div className="relative w-full h-full min-h-[220px] sm:min-h-[270px] bg-[#090b10] flex items-center justify-center overflow-hidden select-none">
       {/* HTML5 Canvas */}
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full z-0" />
 
