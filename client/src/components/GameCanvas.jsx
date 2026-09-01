@@ -1,8 +1,19 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 
 export const GameCanvas = ({ status, multiplier, countdown, crashPoint }) => {
   const canvasRef = useRef(null);
+  
+  // Smooth 60FPS interpolation refs
+  const targetMultiplierRef = useRef(multiplier);
+  const currentMultiplierRef = useRef(multiplier);
+  const [displayMultiplier, setDisplayMultiplier] = useState(multiplier);
 
+  // Keep targetRef updated with incoming socket ticks
+  useEffect(() => {
+    targetMultiplierRef.current = multiplier;
+  }, [multiplier]);
+
+  // Smooth 60FPS frame loop for climbing multiplier & canvas trajectory
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -12,8 +23,30 @@ export const GameCanvas = ({ status, multiplier, countdown, crashPoint }) => {
     let width = (canvas.width = canvas.parentElement.clientWidth);
     let height = (canvas.height = canvas.parentElement.clientHeight);
 
+    if (status !== 'running') {
+      currentMultiplierRef.current = multiplier;
+      targetMultiplierRef.current = multiplier;
+      setDisplayMultiplier(multiplier);
+    }
+
     const render = () => {
       ctx.clearRect(0, 0, width, height);
+
+      // Smooth interpolation calculation for 60FPS climbing number
+      if (status === 'running') {
+        const diff = targetMultiplierRef.current - currentMultiplierRef.current;
+        if (Math.abs(diff) > 0.001) {
+          currentMultiplierRef.current += diff * 0.18; // Smooth 60FPS lerp step
+        } else {
+          currentMultiplierRef.current = targetMultiplierRef.current;
+        }
+        setDisplayMultiplier(currentMultiplierRef.current);
+      } else {
+        currentMultiplierRef.current = multiplier;
+        setDisplayMultiplier(multiplier);
+      }
+
+      const activeMult = currentMultiplierRef.current;
 
       // Solid, clean dark surface background
       const bgGradient = ctx.createLinearGradient(0, 0, 0, height);
@@ -39,9 +72,9 @@ export const GameCanvas = ({ status, multiplier, countdown, crashPoint }) => {
         ctx.stroke();
       }
 
-      // Flight Curve Trajectory
+      // Flight Curve Trajectory using activeMult
       if (status === 'running' || status === 'crashed') {
-        const progress = Math.min(1, (multiplier - 1) / Math.max(3, (crashPoint || 5) - 1));
+        const progress = Math.min(1, (activeMult - 1) / Math.max(3, (crashPoint || 5) - 1));
 
         const startX = width * 0.08;
         const startY = height * 0.85;
@@ -181,7 +214,7 @@ export const GameCanvas = ({ status, multiplier, countdown, crashPoint }) => {
         {status === 'running' && (
           <div className="flex flex-col items-center">
             <h1 className="text-6xl sm:text-7xl md:text-8xl font-bold text-white tracking-tight font-mono">
-              {multiplier.toFixed(2)}
+              {displayMultiplier.toFixed(2)}
             </h1>
           </div>
         )}
