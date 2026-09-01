@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import api from '../api/client';
-import { User, Wallet, Gift, Smartphone, CheckCircle2, AlertCircle, ChevronRight, ChevronDown } from 'lucide-react';
+import { User, Wallet, Gift, Smartphone, CheckCircle2, AlertCircle, ChevronRight, ChevronDown, X, Loader2 } from 'lucide-react';
 
 export const DepositPage = () => {
   const { user, updateUserBalance } = useContext(AuthContext);
@@ -13,8 +13,20 @@ export const DepositPage = () => {
   const [transactionsOpen, setTransactionsOpen] = useState(true);
   const [transactions, setTransactions] = useState([]);
 
+  // STK Push confirmation modal & polling state
+  const [stkModalOpen, setStkModalOpen] = useState(false);
+  const [stkStatus, setStkStatus] = useState('pending'); // 'pending', 'completed', 'failed'
+  const [activeTxId, setActiveTxId] = useState(null);
+  const [stkAmount, setStkAmount] = useState(0);
+  const [stkPhone, setStkPhone] = useState('');
+  
+  const pollingRef = useRef(null);
+
   useEffect(() => {
     fetchTransactions();
+    return () => {
+      if (pollingRef.current) clearInterval(pollingRef.current);
+    };
   }, []);
 
   const fetchTransactions = async () => {
@@ -52,6 +64,40 @@ export const DepositPage = () => {
     setAmount((prev) => (prev || 0) + val);
   };
 
+  const startPollingStatus = (txId) => {
+    if (pollingRef.current) clearInterval(pollingRef.current);
+    
+    let attempts = 0;
+    pollingRef.current = setInterval(async () => {
+      attempts++;
+      try {
+        const res = await api.get(`/deposit/status/${txId}`);
+        const currentStatus = res.data.status;
+        
+        if (currentStatus === 'completed') {
+          setStkStatus('completed');
+          if (res.data.newBalance !== undefined) {
+            updateUserBalance(res.data.newBalance);
+          }
+          fetchTransactions();
+          clearInterval(pollingRef.current);
+        } else if (currentStatus === 'failed') {
+          setStkStatus('failed');
+          clearInterval(pollingRef.current);
+        }
+      } catch (err) {
+        console.error('Polling STK error:', err);
+      }
+
+      if (attempts >= 45) { // Timeout after 45 polls (~60s)
+        clearInterval(pollingRef.current);
+        if (stkStatus === 'pending') {
+          setStkStatus('failed');
+        }
+      }
+    }, 1500);
+  };
+
   const handleMpesaDeposit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -65,16 +111,14 @@ export const DepositPage = () => {
         amount: amount
       });
 
-      setMessage({
-        type: 'success',
-        text: res.data.message || 'STK Push sent! Please enter your M-Pesa PIN on your mobile phone.'
-      });
+      const txId = res.data.transactionId || res.data.checkoutRequestId;
+      setActiveTxId(txId);
+      setStkAmount(amount);
+      setStkPhone(cleanPhone);
+      setStkStatus('pending');
+      setStkModalOpen(true);
 
-      if (res.data.newBalance !== undefined) {
-        updateUserBalance(res.data.newBalance);
-      }
-
-      fetchTransactions();
+      startPollingStatus(txId);
 
     } catch (err) {
       setMessage({
@@ -84,6 +128,11 @@ export const DepositPage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const closeStkModal = () => {
+    setStkModalOpen(false);
+    if (pollingRef.current) clearInterval(pollingRef.current);
   };
 
   return (
@@ -199,7 +248,7 @@ export const DepositPage = () => {
               <div>
                 <span className="text-xs font-bold text-slate-400 block font-['Outfit']">Balance</span>
                 <span className="text-lg sm:text-xl font-black text-white font-mono">
-                  KES {user?.balance ? user.balance.toLocaleString() : '0'}
+                  KES {user?.balance !== undefined ? user.balance.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '0.00'}
                 </span>
               </div>
             </div>
@@ -212,7 +261,7 @@ export const DepositPage = () => {
               <div>
                 <span className="text-xs font-bold text-slate-400 block font-['Outfit']">Bonus</span>
                 <span className="text-lg sm:text-xl font-black text-white font-mono">
-                  KES {user?.bonus ? user.bonus.toLocaleString() : '0'}
+                  KES {user?.bonus ? user.bonus.toLocaleString() : '0.00'}
                 </span>
               </div>
             </div>
@@ -260,7 +309,7 @@ export const DepositPage = () => {
                     </thead>
                     <tbody className="divide-y divide-slate-800/50">
                       {transactions.map((tx) => (
-                        <tr key={tx._id} className="hover:bg-slate-900/60">
+                        <tr key={tx._id || tx.id} className="hover:bg-slate-900/60">
                           <td className="p-2.5 text-slate-400 font-mono">{new Date(tx.createdAt).toLocaleDateString()}</td>
                           <td className="p-2.5 font-bold text-white uppercase font-['Outfit']">{tx.txType}</td>
                           <td className={`p-2.5 font-mono font-bold ${tx.txType === 'Deposit' ? 'text-emerald-400' : 'text-amber-400'}`}>
@@ -278,6 +327,93 @@ export const DepositPage = () => {
         </div>
 
       </div>
+
+      {/* M-PESA STK PUSH CONFIRMATION POPUP MODAL */}
+      {stkModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-[#141824] border border-slate-800 rounded-3xl max-w-md w-full p-6 sm:p-8 text-center relative shadow-2xl space-y-5">
+            
+            {/* Close button */}
+            <button
+              onClick={closeStkModal}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-xl bg-slate-900 border border-slate-800 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            {/* Status Icon Graphic */}
+            <div className="flex justify-center pt-2">
+              {stkStatus === 'pending' && (
+                <div className="relative flex items-center justify-center">
+                  <div className="w-20 h-20 rounded-full bg-emerald-500/20 animate-ping absolute"></div>
+                  <div className="w-20 h-20 rounded-full bg-emerald-950 border-2 border-emerald-500 flex items-center justify-center text-emerald-400 shadow-lg z-10">
+                    <Smartphone className="w-9 h-9 animate-bounce" />
+                  </div>
+                </div>
+              )}
+
+              {stkStatus === 'completed' && (
+                <div className="w-20 h-20 rounded-full bg-emerald-950 border-2 border-emerald-400 flex items-center justify-center text-emerald-400 shadow-xl">
+                  <CheckCircle2 className="w-10 h-10" />
+                </div>
+              )}
+
+              {stkStatus === 'failed' && (
+                <div className="w-20 h-20 rounded-full bg-rose-950 border-2 border-rose-500 flex items-center justify-center text-rose-400 shadow-xl">
+                  <AlertCircle className="w-10 h-10" />
+                </div>
+              )}
+            </div>
+
+            {/* Title & Descriptions */}
+            <div className="space-y-2">
+              <h3 className="text-xl font-black text-white font-['Outfit'] tracking-wide">
+                {stkStatus === 'pending' && 'STK Push Sent to Phone'}
+                {stkStatus === 'completed' && 'Deposit Confirmed! 🎉'}
+                {stkStatus === 'failed' && 'STK Push Cancelled'}
+              </h3>
+              <p className="text-xs text-slate-300 font-medium">
+                {stkStatus === 'pending' && `Check your mobile phone (${stkPhone}) and enter your 4-digit M-Pesa PIN to complete the deposit.`}
+                {stkStatus === 'completed' && `KES ${stkAmount.toLocaleString()} has been added to your AviatorX account balance.`}
+                {stkStatus === 'failed' && 'The STK push request timed out or was cancelled on your phone. Please try again.'}
+              </p>
+            </div>
+
+            {/* Details Box */}
+            <div className="bg-[#0b0e17] border border-slate-800 rounded-2xl p-4 flex justify-between items-center text-left">
+              <div>
+                <span className="text-[10px] text-slate-400 uppercase font-bold block">Amount</span>
+                <span className="text-base font-extrabold text-white font-mono">KES {stkAmount.toLocaleString()}</span>
+              </div>
+              <div className="text-right">
+                <span className="text-[10px] text-slate-400 uppercase font-bold block">Status</span>
+                <span className={`text-xs font-black uppercase font-mono ${
+                  stkStatus === 'pending' ? 'text-amber-400 animate-pulse' : stkStatus === 'completed' ? 'text-emerald-400' : 'text-rose-400'
+                }`}>
+                  {stkStatus}
+                </span>
+              </div>
+            </div>
+
+            {/* Spinner or Close Action Button */}
+            {stkStatus === 'pending' ? (
+              <div className="flex items-center justify-center gap-2 text-xs font-extrabold text-emerald-400 font-mono py-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Waiting for M-Pesa PIN confirmation...</span>
+              </div>
+            ) : (
+              <button
+                onClick={closeStkModal}
+                className="w-full bg-[#4d7c0f] hover:bg-[#598516] text-white font-black text-sm py-3.5 rounded-2xl font-['Outfit'] uppercase tracking-wider transition-all shadow-lg"
+              >
+                Close & Continue Playing
+              </button>
+            )}
+
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

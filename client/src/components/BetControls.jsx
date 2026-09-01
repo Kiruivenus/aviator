@@ -50,13 +50,56 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
     }
   };
 
+  const handleCancelBet = async () => {
+    if (!myActiveBet) return;
+    setLoading(true);
+    try {
+      const res = await api.post('/bets/cancel', {
+        betId: myActiveBet.id || myActiveBet._id,
+      });
+      const data = res.data;
+      const refundAmount = myActiveBet.amount || 0;
+      setMyActiveBet(null);
+      if (data.newBalance !== undefined) {
+        updateUserBalance(data.newBalance);
+      } else if (user) {
+        updateUserBalance((user.balance || 0) + refundAmount);
+      }
+    } catch (err) {
+      if (socket) {
+        socket.emit('cancel_bet', {
+          userId: user.id || user._id,
+          betId: myActiveBet.id || myActiveBet._id,
+        });
+      }
+      setMyActiveBet(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCashOut = () => {
-    if (!myActiveBet || !socket) return;
-    socket.emit('cash_out', {
-      userId: user.id || user._id,
-      betId: myActiveBet.id || myActiveBet._id,
-    });
+    if (!myActiveBet || myActiveBet.status !== 'active' || gameState.status !== 'running') return;
+
+    const winMultiplier = gameState.multiplier;
+    const winAmount = parseFloat((myActiveBet.amount * winMultiplier).toFixed(2));
+
+    // Sharp local instant update
+    setMyActiveBet((prev) => (prev ? { ...prev, status: 'cashed_out', winAmount, cashoutMultiplier: winMultiplier } : null));
+
+    // Direct immediate user balance addition
+    if (user) {
+      updateUserBalance((user.balance || 0) + winAmount);
+    }
+
     confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
+
+    if (socket) {
+      socket.emit('cash_out', {
+        userId: user.id || user._id,
+        betId: myActiveBet.id || myActiveBet._id,
+      });
+    }
   };
 
   useEffect(() => {
@@ -180,10 +223,14 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
               <span className="text-xs font-black text-emerald-300 font-mono">+{myActiveBet.winAmount.toFixed(2)} KES</span>
             </div>
           ) : (
-            <div className="w-full h-full bg-[#1c202d] border-2 border-emerald-500/60 rounded-xl flex flex-col items-center justify-center p-2 text-center min-h-[64px]">
-              <span className="text-xs font-black text-emerald-400 font-['Outfit']">BET ACCEPTED</span>
-              <span className="text-[10px] text-slate-300 font-bold font-mono">{amount.toFixed(2)} KES</span>
-            </div>
+            <button
+              onClick={handleCancelBet}
+              disabled={loading}
+              className="w-full h-full bg-rose-600 hover:bg-rose-700 border-2 border-rose-400/50 text-white rounded-xl p-2 flex flex-col items-center justify-center font-black shadow-md shadow-rose-950/50 transition-transform active:scale-95 min-h-[64px]"
+            >
+              <span className="text-base font-black font-['Outfit'] leading-none">CANCEL</span>
+              <span className="text-[11px] font-bold font-mono mt-0.5 text-rose-100">{myActiveBet?.amount?.toFixed(2)} KES</span>
+            </button>
           )}
         </div>
       </div>

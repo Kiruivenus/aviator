@@ -28,7 +28,7 @@ const MainApp = () => {
     status: 'waiting', // waiting, running, crashed
     multiplier: 1.0,
     crashPoint: 1.0,
-    countdown: 5,
+    countdown: 10,
     activeBets: [],
     history: [4.36, 1.08, 6.7, 2.02, 1.93, 4.11, 12.87, 1.42, 1.75, 4.03, 1.66],
   });
@@ -82,6 +82,13 @@ const MainApp = () => {
       setGameState((prev) => ({
         ...prev,
         activeBets: data.activeBets,
+      }));
+    });
+
+    newSocket.on('bet_cancelled', (data) => {
+      setGameState((prev) => ({
+        ...prev,
+        activeBets: data.activeBets || prev.activeBets.filter((b) => b.id !== data.betId),
       }));
     });
 

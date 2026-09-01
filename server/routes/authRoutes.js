@@ -48,7 +48,7 @@ router.post('/register', async (req, res) => {
         phone: formattedPhone,
         password: hashedPassword,
         role: 'user',
-        balance: 1000
+        balance: 0
       });
 
       await newUser.save();
@@ -82,7 +82,7 @@ router.post('/register', async (req, res) => {
       phone: formattedPhone,
       password: hashedPassword,
       role: 'user',
-      balance: 1000
+      balance: 0
     };
 
     inMemoryUsers.set(formattedPhone, mockUser);

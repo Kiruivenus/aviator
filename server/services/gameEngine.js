@@ -12,7 +12,7 @@ let gameState = {
   status: 'waiting', // waiting, running, crashed
   multiplier: 1.00,
   crashPoint: 1.00,
-  countdown: 5,
+  countdown: 10,
   activeBets: [],
   history: [4.36, 1.08, 6.70, 2.02, 1.93, 4.11, 1.00, 3.67, 4.12, 1.53, 5.88, 1.78, 1.54, 12.87, 1.42, 1.75, 4.03, 1.66]
 };
@@ -141,6 +141,20 @@ export const initGameEngine = (io) => {
         socket.emit('cash_out_error', { message: 'Internal error processing cashout.' });
       }
     });
+
+    // Handle Bet Cancel Request (Before flight takeoff)
+    socket.on('cancel_bet', async (data) => {
+      try {
+        const { userId, betId } = data;
+        const result = await cancelUserBet({ userId, betId });
+        socket.emit('cancel_bet_success', {
+          betId,
+          newBalance: result.newBalance
+        });
+      } catch (err) {
+        socket.emit('cancel_bet_error', { message: err.message });
+      }
+    });
   });
 };
 
@@ -150,7 +164,7 @@ const startNewRound = async () => {
   gameState.status = 'waiting';
   gameState.multiplier = 1.00;
   gameState.crashPoint = generateCrashPoint();
-  gameState.countdown = 5;
+  gameState.countdown = 10;
   gameState.activeBets = [];
 
   // Seed bot players to populate active list
@@ -336,7 +350,7 @@ export const placeUserBet = async ({ userId, userName, userPhone, amount, autoCa
 
   // Fallback mock user if not found
   if (!user) {
-    user = { id: userId, balance: 1000, save: async () => {} };
+    user = { id: userId, balance: 0, save: async () => {} };
   }
 
   if (user.balance < amount) {
@@ -391,5 +405,54 @@ export const placeUserBet = async ({ userId, userName, userPhone, amount, autoCa
   return {
     bet: betObject,
     newBalance: user.balance
+  };
+};
+
+export const cancelUserBet = async ({ userId, betId }) => {
+  if (gameState.status !== 'waiting') {
+    throw new Error('Bets can only be cancelled during the countdown phase before flight takeoff.');
+  }
+
+  const betIndex = gameState.activeBets.findIndex(
+    (b) => (betId && b.id === betId) || (b.userId === userId && b.status === 'active')
+  );
+
+  if (betIndex === -1) {
+    throw new Error('Active bet not found to cancel.');
+  }
+
+  const bet = gameState.activeBets[betIndex];
+
+  // Remove from active bets array
+  gameState.activeBets.splice(betIndex, 1);
+
+  // Refund user balance
+  let user = await findUserByIdOrInMemory(userId);
+  if (user) {
+    user.balance += bet.amount;
+    if (user.save && typeof user.save === 'function') {
+      try { await user.save(); } catch (e) {}
+    }
+  }
+
+  // Update DB record if exists
+  if (mongoose.connection.readyState === 1) {
+    try {
+      await Bet.findByIdAndUpdate(bet.dbId || bet.id, { status: 'cancelled' });
+    } catch (e) {}
+  }
+
+  // Broadcast socket updates
+  ioInstance?.emit('bet_cancelled', {
+    betId: bet.id,
+    userId: userId,
+    activeBets: gameState.activeBets,
+    newBalance: user ? user.balance : undefined
+  });
+
+  return {
+    success: true,
+    cancelledBetId: bet.id,
+    newBalance: user ? user.balance : 0
   };
 };

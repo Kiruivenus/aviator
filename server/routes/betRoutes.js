@@ -1,7 +1,7 @@
 import express from 'express';
 import { verifyToken } from '../middleware/auth.js';
 import Bet from '../models/Bet.js';
-import { placeUserBet, getGameState } from '../services/gameEngine.js';
+import { placeUserBet, cancelUserBet, getGameState } from '../services/gameEngine.js';
 
 const router = express.Router();
 
@@ -30,6 +30,25 @@ router.post('/place', verifyToken, async (req, res) => {
       newBalance: result.newBalance
     });
 
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// @route   POST /api/bets/cancel
+// @desc    Cancel a bet during countdown before takeoff
+router.post('/cancel', verifyToken, async (req, res) => {
+  try {
+    const { betId } = req.body;
+    const result = await cancelUserBet({
+      userId: req.user._id,
+      betId
+    });
+
+    res.json({
+      message: 'Bet cancelled successfully and funds refunded!',
+      newBalance: result.newBalance
+    });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
