@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import confetti from 'canvas-confetti';
+import api from '../api/client';
 
 const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
   const { user, openLogin, updateUserBalance } = useContext(AuthContext);
@@ -32,26 +33,17 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess }) => {
     setErrorMessage('');
 
     try {
-      const res = await fetch('http://localhost:5000/api/bets/place', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('aviator_token')}`,
-        },
-        body: JSON.stringify({
-          amount,
-          autoCashout: autoCashoutEnabled ? autoCashout : 0,
-        }),
+      const res = await api.post('/bets/place', {
+        amount,
+        autoCashout: autoCashoutEnabled ? autoCashout : 0,
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to place bet');
-
+      const data = res.data;
       setMyActiveBet(data.bet);
       updateUserBalance(data.newBalance);
       if (onPlaceBetSuccess) onPlaceBetSuccess(data.bet);
     } catch (err) {
-      setErrorMessage(err.message);
+      setErrorMessage(err.response?.data?.error || err.message);
       setTimeout(() => setErrorMessage(''), 3500);
     } finally {
       setLoading(false);
