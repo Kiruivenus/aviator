@@ -4,7 +4,7 @@ import api from '../api/client';
 import { User, Wallet, History, Save, ArrowDownCircle, ArrowUpCircle, Gamepad2, ShieldCheck, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export const ProfilePage = ({ setCurrentView }) => {
-  const { user, updateUserBalance } = useContext(AuthContext);
+  const { user, setUser, updateUserBalance } = useContext(AuthContext);
 
   const [fullName, setFullName] = useState(user?.fullName || '');
   const [newPassword, setNewPassword] = useState('');
@@ -15,6 +15,12 @@ export const ProfilePage = ({ setCurrentView }) => {
   const [betsHistory, setBetsHistory] = useState([]);
   const [depositsHistory, setDepositsHistory] = useState([]);
   const [withdrawalsHistory, setWithdrawalsHistory] = useState([]);
+
+  useEffect(() => {
+    if (user?.fullName) {
+      setFullName(user.fullName);
+    }
+  }, [user]);
 
   useEffect(() => {
     loadUserHistory();
@@ -49,6 +55,9 @@ export const ProfilePage = ({ setCurrentView }) => {
 
       setMessage({ type: 'success', text: 'Profile updated successfully!' });
       setNewPassword('');
+      if (res.data.user) {
+        setUser((prev) => ({ ...prev, ...res.data.user }));
+      }
     } catch (err) {
       setMessage({ type: 'error', text: err.response?.data?.error || 'Failed to update profile.' });
     } finally {
