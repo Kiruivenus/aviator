@@ -16,7 +16,7 @@ export const Navbar = ({ currentView, setCurrentView }) => {
   };
 
   return (
-    <header className="w-full bg-[#080b11]/90 backdrop-blur-md border-b border-slate-800/80 px-3 sm:px-6 py-2.5 flex items-center justify-between sticky top-0 z-50 shadow-md shadow-black/40">
+    <header className="w-full bg-[#080b11]/95 backdrop-blur-xl border-b border-slate-800/80 px-3 sm:px-6 py-2.5 flex items-center justify-between sticky top-0 z-50 shadow-2xl">
       {/* Left: Brand Logo & Navigation */}
       <div className="flex items-center gap-3">
         {/* Mobile Menu Toggle Button */}

@@ -116,7 +116,7 @@ const MainApp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#080b11] text-slate-100 flex flex-col font-['Inter'] select-none overflow-x-hidden pb-16 md:pb-0">
+    <div className="min-h-screen bg-[#080b11] text-slate-100 flex flex-col font-['Inter'] select-none overflow-x-clip pb-16 md:pb-0 relative">
       {/* Top Header Navbar */}
       <Navbar currentView={currentView} setCurrentView={setCurrentView} />
 
