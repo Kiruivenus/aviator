@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import { io } from 'socket.io-client';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
+import { BottomNavbar } from './components/BottomNavbar';
+import { ChatRainModal } from './components/ChatRainModal';
 import { MultiplierHistory } from './components/MultiplierHistory';
 import { ActivePlayers } from './components/ActivePlayers';
 import { GameCanvas } from './components/GameCanvas';
@@ -19,6 +21,7 @@ const MainApp = () => {
 
   const [currentView, setCurrentView] = useState('game'); // 'game', 'deposit', 'withdrawal', 'profile', 'admin'
   const [mobileTab, setMobileTab] = useState('game'); // 'game' or 'players'
+  const [chatRainOpen, setChatRainOpen] = useState(false);
   const [socket, setSocket] = useState(null);
 
   // Real-time game engine state
@@ -114,7 +117,7 @@ const MainApp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#080b11] text-slate-100 flex flex-col font-['Inter'] select-none overflow-x-hidden">
+    <div className="min-h-screen bg-[#080b11] text-slate-100 flex flex-col font-['Inter'] select-none overflow-x-hidden pb-16 md:pb-0">
       {/* Top Header Navbar */}
       <Navbar currentView={currentView} setCurrentView={setCurrentView} />
 
@@ -192,6 +195,19 @@ const MainApp = () => {
           </div>
         )
       )}
+
+      {/* Fixed Bottom Navigation Bar */}
+      <BottomNavbar
+        currentView={currentView}
+        setCurrentView={setCurrentView}
+        openChatRain={() => setChatRainOpen(true)}
+      />
+
+      {/* Live Chat & Rain Drop Modal */}
+      <ChatRainModal
+        isOpen={chatRainOpen}
+        onClose={() => setChatRainOpen(false)}
+      />
 
       {/* Global Auth Modal */}
       <AuthModal />
