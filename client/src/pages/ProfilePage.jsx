@@ -57,17 +57,17 @@ export const ProfilePage = ({ setCurrentView }) => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-6 sm:space-y-8">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-6 sm:space-y-8 select-none">
       {/* Top Profile Header Card */}
       <div className="bg-[#101622] border border-slate-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
         <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-slate-950 font-black text-2xl sm:text-3xl shadow-lg shadow-emerald-950/50 shrink-0 font-['Outfit']">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-[#4d7c0f] flex items-center justify-center text-white font-black text-2xl sm:text-3xl shadow-lg shrink-0 font-['Outfit']">
             {user?.fullName ? user.fullName.charAt(0).toUpperCase() : 'P'}
           </div>
           <div className="space-y-1">
             <h1 className="text-xl sm:text-2xl font-black text-white font-['Outfit'] flex items-center gap-2">
               {user?.fullName || 'Player Account'}
-              <span className="text-[10px] sm:text-xs px-2.5 py-0.5 rounded-md font-extrabold bg-slate-900 text-emerald-400 border border-slate-800 uppercase font-['Outfit']">
+              <span className="text-[10px] sm:text-xs px-2.5 py-0.5 rounded-md font-extrabold bg-slate-900 text-[#4d7c0f] border border-slate-800 uppercase font-['Outfit']">
                 {user?.role || 'USER'}
               </span>
             </h1>
@@ -78,14 +78,14 @@ export const ProfilePage = ({ setCurrentView }) => {
         <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-5 w-full sm:w-auto flex items-center justify-between sm:justify-end gap-5">
           <div>
             <div className="text-[10px] sm:text-xs font-extrabold text-slate-400 tracking-wider font-['Outfit'] mb-1">AVAILABLE BALANCE</div>
-            <div className="text-xl sm:text-2xl font-black text-emerald-400 font-mono">
+            <div className="text-xl sm:text-2xl font-black text-[#4d7c0f] font-mono">
               KES {user?.balance ? user.balance.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '0.00'}
             </div>
           </div>
           <div className="flex flex-col gap-2">
             <button
               onClick={() => setCurrentView('deposit')}
-              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all font-['Outfit'] min-h-[36px]"
+              className="bg-[#4d7c0f] hover:bg-[#598516] text-white px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all font-['Outfit'] min-h-[36px]"
             >
               DEPOSIT
             </button>
@@ -103,14 +103,14 @@ export const ProfilePage = ({ setCurrentView }) => {
       <div className="bg-[#101622] border border-slate-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 space-y-6 sm:space-y-8 shadow-xl">
         <div className="border-b border-slate-800 pb-4">
           <h2 className="text-lg sm:text-xl font-extrabold text-white font-['Outfit'] flex items-center gap-2.5">
-            <User className="w-5 h-5 text-emerald-400 shrink-0" />
+            <User className="w-5 h-5 text-[#4d7c0f] shrink-0" />
             ACCOUNT DETAILS & SECURITY
           </h2>
         </div>
 
         {message.text && (
           <div className={`p-4 rounded-2xl text-xs sm:text-sm flex items-center gap-3 border ${
-            message.type === 'success' ? 'bg-emerald-950/80 border-emerald-800 text-emerald-300' : 'bg-rose-950/80 border-rose-800 text-rose-300'
+            message.type === 'success' ? 'bg-[#122b13] border-[#4d7c0f] text-[#4d7c0f]' : 'bg-rose-950/80 border-rose-800 text-rose-300'
           }`}>
             {message.type === 'success' ? <CheckCircle2 className="w-5 h-5 shrink-0" /> : <AlertCircle className="w-5 h-5 shrink-0" />}
             <span className="font-semibold">{message.text}</span>
@@ -127,7 +127,7 @@ export const ProfilePage = ({ setCurrentView }) => {
               required
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700/80 rounded-2xl px-4 py-3.5 text-sm sm:text-base text-white font-medium focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all min-h-[50px]"
+              className="w-full bg-slate-950 border border-slate-700/80 rounded-2xl px-4 py-3.5 text-sm sm:text-base text-white font-medium focus:outline-none focus:border-[#4d7c0f] focus:ring-1 focus:ring-[#4d7c0f] transition-all min-h-[50px]"
             />
           </div>
 
@@ -152,14 +152,14 @@ export const ProfilePage = ({ setCurrentView }) => {
               placeholder="Leave blank to keep current password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700/80 rounded-2xl px-4 py-3.5 text-sm sm:text-base text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all min-h-[50px]"
+              className="w-full bg-slate-950 border border-slate-700/80 rounded-2xl px-4 py-3.5 text-sm sm:text-base text-white focus:outline-none focus:border-[#4d7c0f] focus:ring-1 focus:ring-[#4d7c0f] transition-all min-h-[50px]"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-sm sm:text-base py-4 rounded-2xl transition-all shadow-md shadow-emerald-950/40 flex items-center justify-center gap-2 font-['Outfit'] tracking-wider uppercase min-h-[52px]"
+            className="w-full mt-2 bg-[#4d7c0f] hover:bg-[#598516] text-white font-black text-sm sm:text-base py-4 rounded-2xl transition-all shadow-md flex items-center justify-center gap-2 font-['Outfit'] tracking-wider uppercase min-h-[52px]"
           >
             <Save className="w-4 h-4" />
             <span>{loading ? 'SAVING...' : 'SAVE CHANGES'}</span>
@@ -173,7 +173,7 @@ export const ProfilePage = ({ setCurrentView }) => {
           <button
             onClick={() => setActiveHistoryTab('bets')}
             className={`px-4 py-2.5 text-xs sm:text-sm font-extrabold rounded-xl transition-all font-['Outfit'] flex items-center gap-2 min-h-[42px] ${
-              activeHistoryTab === 'bets' ? 'bg-emerald-500 text-slate-950' : 'text-slate-400 hover:text-white bg-slate-950 border border-slate-800'
+              activeHistoryTab === 'bets' ? 'bg-[#4d7c0f] text-white' : 'text-slate-400 hover:text-white bg-slate-950 border border-slate-800'
             }`}
           >
             <Gamepad2 className="w-4 h-4" />
@@ -183,7 +183,7 @@ export const ProfilePage = ({ setCurrentView }) => {
           <button
             onClick={() => setActiveHistoryTab('deposits')}
             className={`px-4 py-2.5 text-xs sm:text-sm font-extrabold rounded-xl transition-all font-['Outfit'] flex items-center gap-2 min-h-[42px] ${
-              activeHistoryTab === 'deposits' ? 'bg-teal-500 text-slate-950' : 'text-slate-400 hover:text-white bg-slate-950 border border-slate-800'
+              activeHistoryTab === 'deposits' ? 'bg-[#4d7c0f] text-white' : 'text-slate-400 hover:text-white bg-slate-950 border border-slate-800'
             }`}
           >
             <ArrowDownCircle className="w-4 h-4" />
@@ -193,7 +193,7 @@ export const ProfilePage = ({ setCurrentView }) => {
           <button
             onClick={() => setActiveHistoryTab('withdrawals')}
             className={`px-4 py-2.5 text-xs sm:text-sm font-extrabold rounded-xl transition-all font-['Outfit'] flex items-center gap-2 min-h-[42px] ${
-              activeHistoryTab === 'withdrawals' ? 'bg-amber-500 text-slate-950' : 'text-slate-400 hover:text-white bg-slate-950 border border-slate-800'
+              activeHistoryTab === 'withdrawals' ? 'bg-amber-600 text-white' : 'text-slate-400 hover:text-white bg-slate-950 border border-slate-800'
             }`}
           >
             <ArrowUpCircle className="w-4 h-4" />
@@ -226,7 +226,7 @@ export const ProfilePage = ({ setCurrentView }) => {
                       <td className="p-3 font-mono font-bold text-sky-400">{b.cashoutMultiplier ? `${b.cashoutMultiplier.toFixed(2)}x` : '-'}</td>
                       <td className="p-3 text-right font-mono font-bold">
                         {b.winAmount > 0 ? (
-                          <span className="text-emerald-400">+KES {b.winAmount.toLocaleString()}</span>
+                          <span className="text-[#4d7c0f]">+KES {b.winAmount.toLocaleString()}</span>
                         ) : (
                           <span className="text-rose-400">-KES {b.amount.toLocaleString()}</span>
                         )}
@@ -258,8 +258,8 @@ export const ProfilePage = ({ setCurrentView }) => {
                     <tr key={d._id} className="hover:bg-slate-900/60 transition-colors">
                       <td className="p-3 text-slate-400 font-mono">{new Date(d.createdAt).toLocaleString()}</td>
                       <td className="p-3 font-bold uppercase font-['Outfit']">{d.method}</td>
-                      <td className="p-3 font-mono font-bold text-emerald-400">KES {d.amount.toLocaleString()}</td>
-                      <td className="p-3 text-right font-bold uppercase font-['Outfit'] text-emerald-400">{d.status}</td>
+                      <td className="p-3 font-mono font-bold text-[#4d7c0f]">KES {d.amount.toLocaleString()}</td>
+                      <td className="p-3 text-right font-bold uppercase font-['Outfit'] text-[#4d7c0f]">{d.status}</td>
                     </tr>
                   ))
                 )}

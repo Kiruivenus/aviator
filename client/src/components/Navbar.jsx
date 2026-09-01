@@ -30,7 +30,7 @@ export const Navbar = ({ currentView, setCurrentView }) => {
           </div>
           <div className="flex flex-col">
             <span className="font-extrabold text-base sm:text-lg tracking-wider text-white font-['Outfit'] leading-none">
-              METRIC<span className="text-emerald-400">WIN</span>
+              METRIC<span className="text-[#4d7c0f]">WIN</span>
             </span>
             <span className="text-[9px] font-bold text-slate-400 tracking-widest uppercase">AVIATOR PRO</span>
           </div>
@@ -66,7 +66,7 @@ export const Navbar = ({ currentView, setCurrentView }) => {
             }`}
           >
             <img 
-              src="/aviator_plane.png" 
+              src="/aviator_plane.jpg" 
               alt="Aviator Plane" 
               className="w-6 h-6 object-contain filter drop-shadow brightness-125 hover:scale-110 transition-transform" 
             />
@@ -118,7 +118,7 @@ export const Navbar = ({ currentView, setCurrentView }) => {
           {!user ? (
             <button
               onClick={openLogin}
-              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-4 py-2 rounded-xl text-xs font-extrabold shadow-lg shadow-emerald-950/50 transition-all font-['Outfit'] uppercase tracking-wider active:scale-95 min-h-[38px]"
+              className="bg-[#4d7c0f] hover:bg-[#598516] text-white px-4 py-2 rounded-xl text-xs font-extrabold shadow-lg shadow-green-950/50 transition-all font-['Outfit'] uppercase tracking-wider active:scale-95 min-h-[38px]"
             >
               LOGIN / REGISTER
             </button>
@@ -126,12 +126,12 @@ export const Navbar = ({ currentView, setCurrentView }) => {
             <div className="flex items-center gap-2">
               {/* Wallet Balance Badge */}
               <div className="bg-[#0f121d] border border-slate-800 rounded-xl px-3 py-1.5 flex items-center gap-2 shadow-inner">
-                <div className="w-5 h-5 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                <div className="w-5 h-5 rounded-lg bg-[#4d7c0f]/20 text-[#4d7c0f] flex items-center justify-center shrink-0">
                   <ArrowDownCircle className="w-3.5 h-3.5" />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-[9px] font-bold text-slate-400 uppercase leading-none">BALANCE</span>
-                  <span className="text-xs sm:text-sm font-extrabold text-emerald-400 font-mono leading-tight">
+                  <span className="text-xs sm:text-sm font-extrabold text-[#4d7c0f] font-mono leading-tight">
                     KES {user.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
@@ -140,7 +140,7 @@ export const Navbar = ({ currentView, setCurrentView }) => {
               {/* Deposit CTA Button */}
               <button
                 onClick={() => handleNavClick('deposit')}
-                className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 px-3.5 py-2 rounded-xl text-xs font-extrabold shadow-md shadow-emerald-950/40 transition-all font-['Outfit'] flex items-center gap-1.5 active:scale-95 min-h-[40px]"
+                className="bg-[#4d7c0f] hover:bg-[#598516] text-white px-3.5 py-2 rounded-xl text-xs font-extrabold shadow-md transition-all font-['Outfit'] flex items-center gap-1.5 active:scale-95 min-h-[40px]"
               >
                 <ArrowDownCircle className="w-4 h-4" />
                 <span className="hidden sm:inline">DEPOSIT</span>

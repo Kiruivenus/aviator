@@ -49,7 +49,7 @@ export const BottomNavbar = ({ currentView, setCurrentView }) => {
             aria-label="Launch Aviator Game"
           >
             <img 
-              src="/aviator_plane.png" 
+              src="/aviator_plane.jpg" 
               alt="Aviator" 
               className="w-full h-full object-contain filter drop-shadow brightness-125 scale-110" 
             />
