@@ -9,7 +9,7 @@ const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'aviator_secret_key_2026_super_secure';
 
 // In-memory fallback user store when MongoDB is offline
-const inMemoryUsers = new Map();
+export const inMemoryUsers = new Map();
 
 // Helper to format phone
 const cleanPhone = (p) => {

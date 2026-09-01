@@ -7,6 +7,14 @@ export const Navbar = ({ currentView, setCurrentView }) => {
   const [profileDropdown, setProfileDropdown] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const handleNavClick = (viewName) => {
+    if (!user && (viewName === 'deposit' || viewName === 'withdrawal' || viewName === 'profile' || viewName === 'admin')) {
+      openLogin();
+      return;
+    }
+    setCurrentView(viewName);
+  };
+
   return (
     <header className="w-full bg-[#080b11]/90 backdrop-blur-md border-b border-slate-800/80 px-3 sm:px-6 py-2.5 flex items-center justify-between sticky top-0 z-50 shadow-md shadow-black/40">
       {/* Left: Brand Logo & Navigation */}
@@ -39,7 +47,7 @@ export const Navbar = ({ currentView, setCurrentView }) => {
         {/* Desktop Navigation Links */}
         <nav className="hidden md:flex items-center gap-1.5 ml-4 bg-slate-950/80 p-1 rounded-xl border border-slate-800">
           <button
-            onClick={() => setCurrentView('game')}
+            onClick={() => handleNavClick('game')}
             className={`px-3.5 py-1.5 text-xs font-extrabold rounded-lg transition-all font-['Outfit'] min-h-[36px] ${
               currentView === 'game' 
                 ? 'bg-emerald-500 text-slate-950 shadow-sm' 
@@ -48,25 +56,39 @@ export const Navbar = ({ currentView, setCurrentView }) => {
           >
             AVIATOR GAME
           </button>
-          {user && (
-            <>
-              <button
-                onClick={() => setCurrentView('deposit')}
-                className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all font-['Outfit'] min-h-[36px] ${
-                  currentView === 'deposit' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                DEPOSIT
-              </button>
-              <button
-                onClick={() => setCurrentView('withdrawal')}
-                className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all font-['Outfit'] min-h-[36px] ${
-                  currentView === 'withdrawal' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                WITHDRAWAL
-              </button>
-            </>
+          <button
+            onClick={() => handleNavClick('deposit')}
+            className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all font-['Outfit'] min-h-[36px] ${
+              currentView === 'deposit' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            DEPOSIT
+          </button>
+          <button
+            onClick={() => handleNavClick('withdrawal')}
+            className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all font-['Outfit'] min-h-[36px] ${
+              currentView === 'withdrawal' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            WITHDRAWAL
+          </button>
+          <button
+            onClick={() => handleNavClick('profile')}
+            className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all font-['Outfit'] min-h-[36px] ${
+              currentView === 'profile' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            PROFILE
+          </button>
+          {user?.role === 'admin' && (
+            <button
+              onClick={() => handleNavClick('admin')}
+              className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all font-['Outfit'] min-h-[36px] ${
+                currentView === 'admin' ? 'bg-purple-900/80 text-purple-200' : 'text-purple-400 hover:text-purple-200'
+              }`}
+            >
+              ADMIN
+            </button>
           )}
         </nav>
       </div>
@@ -88,7 +110,7 @@ export const Navbar = ({ currentView, setCurrentView }) => {
 
             {/* Deposit CTA Button */}
             <button
-              onClick={() => setCurrentView('deposit')}
+              onClick={() => handleNavClick('deposit')}
               className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 px-3.5 py-2 rounded-xl text-xs font-extrabold shadow-md shadow-emerald-950/40 transition-all font-['Outfit'] flex items-center gap-1.5 active:scale-95 min-h-[40px]"
             >
               <ArrowDownCircle className="w-4 h-4" />
@@ -187,7 +209,7 @@ export const Navbar = ({ currentView, setCurrentView }) => {
         <div className="md:hidden fixed inset-x-0 top-[57px] bg-slate-950/95 border-b border-slate-800 p-4 shadow-2xl z-40 backdrop-blur-xl animate-in slide-in-from-top-2 duration-200">
           <div className="flex flex-col gap-2">
             <button
-              onClick={() => { setCurrentView('game'); setMobileMenuOpen(false); }}
+              onClick={() => { handleNavClick('game'); setMobileMenuOpen(false); }}
               className={`p-3 text-left text-xs font-extrabold rounded-xl font-['Outfit'] flex items-center gap-2 min-h-[44px] ${
                 currentView === 'game' ? 'bg-emerald-500 text-slate-950' : 'text-slate-300 bg-slate-900'
               }`}
@@ -195,39 +217,41 @@ export const Navbar = ({ currentView, setCurrentView }) => {
               <Gamepad2 className="w-4 h-4" />
               <span>AVIATOR GAME</span>
             </button>
-            {user && (
-              <>
-                <button
-                  onClick={() => { setCurrentView('deposit'); setMobileMenuOpen(false); }}
-                  className="p-3 text-left text-xs font-bold text-slate-300 bg-slate-900 rounded-xl flex items-center justify-between min-h-[44px]"
-                >
-                  <span>DEPOSIT FUNDS</span>
-                  <ArrowDownCircle className="w-4 h-4 text-emerald-400" />
-                </button>
-                <button
-                  onClick={() => { setCurrentView('withdrawal'); setMobileMenuOpen(false); }}
-                  className="p-3 text-left text-xs font-bold text-slate-300 bg-slate-900 rounded-xl flex items-center justify-between min-h-[44px]"
-                >
-                  <span>WITHDRAW FUNDS</span>
-                  <ArrowUpCircle className="w-4 h-4 text-amber-400" />
-                </button>
-                <button
-                  onClick={() => { setCurrentView('profile'); setMobileMenuOpen(false); }}
-                  className="p-3 text-left text-xs font-bold text-slate-300 bg-slate-900 rounded-xl flex items-center justify-between min-h-[44px]"
-                >
-                  <span>MY ACCOUNT PROFILE</span>
-                  <UserIcon className="w-4 h-4 text-slate-400" />
-                </button>
-                {user.role === 'admin' && (
-                  <button
-                    onClick={() => { setCurrentView('admin'); setMobileMenuOpen(false); }}
-                    className="p-3 text-left text-xs font-bold text-purple-400 bg-slate-900 rounded-xl flex items-center justify-between min-h-[44px]"
-                  >
-                    <span>ADMIN CONSOLE</span>
-                    <ShieldCheck className="w-4 h-4 text-purple-400" />
-                  </button>
-                )}
-              </>
+            <button
+              onClick={() => { handleNavClick('deposit'); setMobileMenuOpen(false); }}
+              className={`p-3 text-left text-xs font-bold rounded-xl flex items-center justify-between min-h-[44px] ${
+                currentView === 'deposit' ? 'bg-emerald-500 text-slate-950 font-extrabold' : 'text-slate-300 bg-slate-900'
+              }`}
+            >
+              <span>DEPOSIT FUNDS</span>
+              <ArrowDownCircle className="w-4 h-4 text-emerald-400" />
+            </button>
+            <button
+              onClick={() => { handleNavClick('withdrawal'); setMobileMenuOpen(false); }}
+              className={`p-3 text-left text-xs font-bold rounded-xl flex items-center justify-between min-h-[44px] ${
+                currentView === 'withdrawal' ? 'bg-emerald-500 text-slate-950 font-extrabold' : 'text-slate-300 bg-slate-900'
+              }`}
+            >
+              <span>WITHDRAW FUNDS</span>
+              <ArrowUpCircle className="w-4 h-4 text-amber-400" />
+            </button>
+            <button
+              onClick={() => { handleNavClick('profile'); setMobileMenuOpen(false); }}
+              className={`p-3 text-left text-xs font-bold rounded-xl flex items-center justify-between min-h-[44px] ${
+                currentView === 'profile' ? 'bg-emerald-500 text-slate-950 font-extrabold' : 'text-slate-300 bg-slate-900'
+              }`}
+            >
+              <span>MY ACCOUNT PROFILE</span>
+              <UserIcon className="w-4 h-4 text-slate-400" />
+            </button>
+            {user?.role === 'admin' && (
+              <button
+                onClick={() => { handleNavClick('admin'); setMobileMenuOpen(false); }}
+                className="p-3 text-left text-xs font-bold text-purple-400 bg-slate-900 rounded-xl flex items-center justify-between min-h-[44px]"
+              >
+                <span>ADMIN CONSOLE</span>
+                <ShieldCheck className="w-4 h-4 text-purple-400" />
+              </button>
             )}
           </div>
         </div>
