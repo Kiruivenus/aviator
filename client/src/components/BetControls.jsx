@@ -201,30 +201,8 @@ const SingleBetPanel = ({ panelId, gameState, socket, onPlaceBetSuccess, openCha
 };
 
 export const BetControls = ({ gameState, socket, onPlaceBetSuccess, openChatRain }) => {
-  const [controlTab, setControlTab] = useState('stake'); // 'stake' or 'chat'
-
   return (
-    <div className="w-full bg-[#080b11] border-t border-slate-800/80 p-3 sm:p-5 flex flex-col space-y-4">
-      {/* Top Segmented Header: STAKE SELECTOR vs AI CHAT SUPPORT */}
-      <div className="grid grid-cols-2 gap-2 p-1.5 bg-[#0e111b] border border-slate-800/80 rounded-2xl max-w-2xl mx-auto w-full">
-        <button
-          onClick={() => setControlTab('stake')}
-          className={`py-3 text-xs font-black rounded-xl transition-all font-['Outfit'] tracking-wider uppercase min-h-[42px] ${
-            controlTab === 'stake' ? 'bg-[#161a29] text-white border border-slate-700/60 shadow-md' : 'text-slate-400 hover:text-white'
-          }`}
-        >
-          STAKE SELECTOR
-        </button>
-        <button
-          onClick={() => { setControlTab('chat'); if (openChatRain) openChatRain(); }}
-          className={`py-3 text-xs font-black rounded-xl transition-all font-['Outfit'] tracking-wider uppercase min-h-[42px] ${
-            controlTab === 'chat' ? 'bg-[#161a29] text-cyan-400 border border-cyan-800/60 shadow-md' : 'text-cyan-400/80 hover:text-cyan-300'
-          }`}
-        >
-          AI CHAT SUPPORT
-        </button>
-      </div>
-
+    <div className="w-full bg-[#080b11] border-t border-slate-800/80 p-3 sm:p-5 flex flex-col">
       {/* Twin Bet Panels */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <SingleBetPanel
