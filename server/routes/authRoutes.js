@@ -23,6 +23,23 @@ export const cleanPhone = (p) => {
   return phone;
 };
 
+// Generate phone variations array for matching all representations (07..., 254..., +254...)
+const getPhoneVariations = (rawPhone) => {
+  const formatted = cleanPhone(rawPhone);
+  const variations = new Set();
+  if (formatted) {
+    variations.add(formatted);
+    variations.add('+' + formatted);
+    if (formatted.startsWith('254') && formatted.length === 12) {
+      variations.add('0' + formatted.slice(3));
+    }
+  }
+  if (rawPhone) {
+    variations.add(rawPhone.toString().trim());
+  }
+  return Array.from(variations);
+};
+
 // Seed default Admin & Demo users into inMemoryUsers cache at start
 const seedInMemoryUsers = async () => {
   try {
@@ -62,7 +79,7 @@ const seedInMemoryUsers = async () => {
 seedInMemoryUsers();
 
 // @route   POST /api/auth/register
-// @desc    Register a new user with fullName, phone, password
+// @desc    Register a new user with fullName, phone, password into MongoDB
 router.post('/register', async (req, res) => {
   try {
     const { fullName, phone, password } = req.body;
@@ -72,15 +89,17 @@ router.post('/register', async (req, res) => {
     }
 
     const formattedPhone = cleanPhone(phone);
+    const phoneVariations = getPhoneVariations(phone);
 
-    // If MongoDB is connected, use Mongoose
-    if (mongoose.connection.readyState === 1) {
-      const existingUser = await User.findOne({ phone: formattedPhone });
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // 1. Try storing in MongoDB (Primary Database)
+    try {
+      const existingUser = await User.findOne({ phone: { $in: phoneVariations } });
       if (existingUser) {
         return res.status(400).json({ error: 'An account with this phone number already exists.' });
       }
 
-      const hashedPassword = await bcrypt.hash(password, 10);
       const newUser = new User({
         fullName: fullName.trim(),
         phone: formattedPhone,
@@ -90,10 +109,11 @@ router.post('/register', async (req, res) => {
       });
 
       await newUser.save();
+      console.log(`[MongoDB] Successfully registered user: ${formattedPhone} (ID: ${newUser._id})`);
 
       const token = jwt.sign({ id: newUser._id.toString(), role: newUser.role }, JWT_SECRET, { expiresIn: '7d' });
 
-      // Cache user in memory too for instant sync
+      // Cache user in memory for instant sync
       inMemoryUsers.set(formattedPhone, newUser);
       inMemoryUsers.set(newUser._id.toString(), newUser);
 
@@ -108,14 +128,16 @@ router.post('/register', async (req, res) => {
           balance: newUser.balance
         }
       });
+
+    } catch (dbErr) {
+      console.warn('[MongoDB Registration Warning] Falling back to in-memory store:', dbErr.message);
     }
 
-    // In-memory fallback if MongoDB is not running locally
+    // 2. In-memory fallback if MongoDB connection fails
     if (inMemoryUsers.has(formattedPhone)) {
       return res.status(400).json({ error: 'An account with this phone number already exists.' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
     const mockId = 'usr_' + Math.random().toString(36).substring(2, 9);
     const mockUser = {
       _id: mockId,
@@ -151,7 +173,7 @@ router.post('/register', async (req, res) => {
 });
 
 // @route   POST /api/auth/login
-// @desc    Login user with phone number and password
+// @desc    Login user with phone number and password from MongoDB
 router.post('/login', async (req, res) => {
   try {
     const { phone, password } = req.body;
@@ -161,13 +183,14 @@ router.post('/login', async (req, res) => {
     }
 
     const formattedPhone = cleanPhone(phone);
+    const phoneVariations = getPhoneVariations(phone);
     const adminEnvPhone = cleanPhone(process.env.ADMIN_PHONE || '254700000000');
 
-    // 1. If MongoDB is connected, find in MongoDB
-    if (mongoose.connection.readyState === 1) {
-      let user = await User.findOne({ phone: formattedPhone });
-      
-      // If logging in with env Admin phone and DB has no admin record yet
+    // 1. Try finding user in MongoDB (Primary Database)
+    try {
+      let user = await User.findOne({ phone: { $in: phoneVariations } });
+
+      // If logging in with env Admin phone and DB doesn't have record yet
       if (!user && (formattedPhone === adminEnvPhone || phone === process.env.ADMIN_PHONE)) {
         const adminPass = process.env.ADMIN_PASSWORD || 'Admin@123';
         if (password === adminPass) {
@@ -180,6 +203,7 @@ router.post('/login', async (req, res) => {
             balance: 100000
           });
           await user.save();
+          console.log(`[MongoDB] Created missing admin account on login: ${adminEnvPhone}`);
         }
       }
 
@@ -187,6 +211,8 @@ router.post('/login', async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (isMatch) {
           const token = jwt.sign({ id: user._id.toString(), role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+          
+          // Cache in memory for quick socket / engine lookup
           inMemoryUsers.set(user.phone, user);
           inMemoryUsers.set(user._id.toString(), user);
 
@@ -201,14 +227,18 @@ router.post('/login', async (req, res) => {
               balance: user.balance
             }
           });
+        } else {
+          return res.status(400).json({ error: 'Invalid phone number or password.' });
         }
       }
+    } catch (dbErr) {
+      console.warn('[MongoDB Login Warning] Falling back to in-memory check:', dbErr.message);
     }
 
-    // 2. In-memory fallback search by formatted phone or raw phone
+    // 2. Fallback check in inMemoryUsers map
     let mockUser = inMemoryUsers.get(formattedPhone) || inMemoryUsers.get(phone);
-    
-    // Check if logging in as Admin when in-memory
+
+    // Check if logging in as Admin in-memory
     if (!mockUser && (formattedPhone === adminEnvPhone || phone === process.env.ADMIN_PHONE)) {
       mockUser = inMemoryUsers.get(adminEnvPhone) || inMemoryUsers.get('admin_root_id');
     }
@@ -261,13 +291,13 @@ router.get('/me', verifyToken, async (req, res) => {
 });
 
 // @route   PUT /api/auth/profile
-// @desc    Update user profile details
+// @desc    Update user profile details in MongoDB
 router.put('/profile', verifyToken, async (req, res) => {
   try {
     const { fullName, newPassword } = req.body;
     let updatedUser = req.user;
 
-    if (mongoose.connection.readyState === 1 && req.user._id) {
+    if (req.user._id) {
       try {
         const dbUser = await User.findById(req.user._id);
         if (dbUser) {
@@ -285,7 +315,6 @@ router.put('/profile', verifyToken, async (req, res) => {
     // Update in-memory map
     if (updatedUser.phone) inMemoryUsers.set(updatedUser.phone, updatedUser);
     if (updatedUser._id) inMemoryUsers.set(updatedUser._id.toString(), updatedUser);
-    if (updatedUser.id) inMemoryUsers.set(updatedUser.id.toString(), updatedUser);
 
     return res.json({
       message: 'Profile updated successfully',

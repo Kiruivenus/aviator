@@ -15,8 +15,8 @@ export const verifyToken = async (req, res, next) => {
     const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, JWT_SECRET);
 
-    // 1. If MongoDB is connected, find user in Mongoose DB
-    if (mongoose.connection.readyState === 1) {
+    // 1. Try finding user in MongoDB (Primary Database)
+    if (decoded.id && mongoose.Types.ObjectId.isValid(decoded.id)) {
       try {
         const user = await User.findById(decoded.id).select('-password');
         if (user) {
