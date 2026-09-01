@@ -3,7 +3,6 @@ import { io } from 'socket.io-client';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
 import { BottomNavbar } from './components/BottomNavbar';
-import { ChatRainModal } from './components/ChatRainModal';
 import { MultiplierHistory } from './components/MultiplierHistory';
 import { ActivePlayers } from './components/ActivePlayers';
 import { GameCanvas } from './components/GameCanvas';
@@ -13,15 +12,15 @@ import { AuthModal } from './components/AuthModal';
 import { ProfilePage } from './pages/ProfilePage';
 import { DepositPage } from './pages/DepositPage';
 import { WithdrawalPage } from './pages/WithdrawalPage';
+import { ChatRainPage } from './pages/ChatRainPage';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { Gamepad2, Users } from 'lucide-react';
 
 const MainApp = () => {
   const { user } = useContext(AuthContext);
 
-  const [currentView, setCurrentView] = useState('game'); // 'game', 'deposit', 'withdrawal', 'profile', 'admin'
+  const [currentView, setCurrentView] = useState('game'); // 'game', 'deposit', 'withdrawal', 'profile', 'chat', 'admin'
   const [mobileTab, setMobileTab] = useState('game'); // 'game' or 'players'
-  const [chatRainOpen, setChatRainOpen] = useState(false);
   const [socket, setSocket] = useState(null);
 
   // Real-time game engine state
@@ -177,6 +176,7 @@ const MainApp = () => {
                 gameState={gameState}
                 socket={socket}
                 onPlaceBetSuccess={handlePlaceBetSuccess}
+                openChatRain={() => setCurrentView('chat')}
               />
             </div>
           </div>
@@ -186,6 +186,7 @@ const MainApp = () => {
       {currentView === 'deposit' && <DepositPage />}
       {currentView === 'withdrawal' && <WithdrawalPage />}
       {currentView === 'profile' && <ProfilePage setCurrentView={setCurrentView} />}
+      {currentView === 'chat' && <ChatRainPage />}
       {currentView === 'admin' && (
         user?.role === 'admin' ? (
           <AdminDashboard />
@@ -200,13 +201,6 @@ const MainApp = () => {
       <BottomNavbar
         currentView={currentView}
         setCurrentView={setCurrentView}
-        openChatRain={() => setChatRainOpen(true)}
-      />
-
-      {/* Live Chat & Rain Drop Modal */}
-      <ChatRainModal
-        isOpen={chatRainOpen}
-        onClose={() => setChatRainOpen(false)}
       />
 
       {/* Global Auth Modal */}

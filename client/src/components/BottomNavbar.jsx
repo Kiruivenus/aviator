@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { Wallet, Play, Plus, LayoutGrid, MessageSquare } from 'lucide-react';
 
-export const BottomNavbar = ({ currentView, setCurrentView, openChatRain }) => {
+export const BottomNavbar = ({ currentView, setCurrentView }) => {
   const { user, openLogin } = useContext(AuthContext);
 
   const handleAction = (viewName) => {
@@ -66,12 +66,14 @@ export const BottomNavbar = ({ currentView, setCurrentView, openChatRain }) => {
 
         {/* 5. CHAT/RAIN */}
         <button
-          onClick={openChatRain}
-          className="flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-200 transition-all min-w-[56px] py-1"
-          aria-label="Open Chat and Rain"
+          onClick={() => handleAction('chat')}
+          className={`flex flex-col items-center justify-center gap-1 transition-all min-w-[56px] py-1 ${
+            currentView === 'chat' ? 'text-cyan-400 font-extrabold' : 'text-slate-400 hover:text-slate-200'
+          }`}
+          aria-label="Open Chat and Rain page"
         >
-          <MessageSquare className="w-5 h-5 shrink-0 text-slate-400" />
-          <span className="text-[9px] font-extrabold font-['Outfit'] tracking-wider uppercase">CHAT/RAIN</span>
+          <MessageSquare className="w-5 h-5 shrink-0 text-cyan-400" />
+          <span className="text-[9px] font-extrabold font-['Outfit'] tracking-wider uppercase text-cyan-400">CHAT/RAIN</span>
         </button>
       </div>
     </div>
