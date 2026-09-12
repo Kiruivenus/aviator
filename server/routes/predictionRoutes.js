@@ -7,28 +7,28 @@ import { getGameState, getNextPredictionSignal } from '../services/gameEngine.js
 const router = express.Router();
 
 // @route   GET /api/prediction/next
-// @desc    Get the exact predicted crash multiplier for the upcoming round from DB / Game Engine
+// @desc    Fetch exact predicted crash multiplier stored in MongoDB & Game Engine before takeoff
 router.get('/next', async (req, res) => {
   try {
-    const signal = getNextPredictionSignal ? await getNextPredictionSignal() : null;
     const currentState = getGameState();
+    const currentRoundId = currentState.roundId;
 
-    let roundId = signal?.roundId || currentState.roundId || ('R_' + Date.now());
-    let nextMultiplier = signal?.nextMultiplier || currentState.crashPoint || 2.45;
+    let roundId = currentRoundId || ('R_' + Date.now());
+    let nextMultiplier = currentState.crashPoint || 2.45;
     let history = currentState.history || [];
 
-    // Try fetching latest prediction from MongoDB if available
-    if (mongoose.connection.readyState === 1) {
+    // Query MongoDB for the exact prediction matching the active/upcoming roundId
+    if (mongoose.connection.readyState === 1 && currentRoundId) {
       try {
-        const latestPred = await Prediction.findOne().sort({ createdAt: -1 });
-        if (latestPred) {
-          roundId = latestPred.roundId;
-          nextMultiplier = latestPred.nextMultiplier;
+        const predDoc = await Prediction.findOne({ roundId: currentRoundId });
+        if (predDoc) {
+          roundId = predDoc.roundId;
+          nextMultiplier = predDoc.nextMultiplier;
         } else {
-          const latestRound = await GameRound.findOne().sort({ createdAt: -1 });
-          if (latestRound) {
-            roundId = latestRound.roundId;
-            nextMultiplier = latestRound.crashMultiplier;
+          const roundDoc = await GameRound.findOne({ roundId: currentRoundId });
+          if (roundDoc) {
+            roundId = roundDoc.roundId;
+            nextMultiplier = roundDoc.crashMultiplier;
           }
         }
       } catch (e) {}
@@ -38,7 +38,8 @@ router.get('/next', async (req, res) => {
       success: true,
       roundId: roundId,
       status: currentState.status,
-      nextMultiplier: nextMultiplier, // Exact predicted crash number from DB / Game Engine!
+      nextMultiplier: nextMultiplier, // Exact crash number from MongoDB & Game Engine!
+      countdown: currentState.countdown,
       confidence: '99.8%',
       history: history,
       algorithm: 'Quantum AI NeuralPredict v4.2',
