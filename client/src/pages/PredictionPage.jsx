@@ -86,48 +86,17 @@ export const PredictionPage = ({ setCurrentView }) => {
     <div className="min-h-screen bg-[#0a0507] text-slate-100 font-mono p-4 sm:p-8 select-none">
       <div className="max-w-5xl mx-auto space-y-6">
 
-        {/* 1. Cyber Terminal Header */}
-        <div className="bg-[#140a0e] border border-rose-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-rose-600/10 rounded-full blur-3xl pointer-events-none" />
-          
-          <div className="space-y-2 z-10">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="px-3 py-1 rounded-full bg-rose-950 border border-rose-500/50 text-rose-400 text-xs font-black uppercase tracking-widest flex items-center gap-1.5 font-['Outfit']">
-                <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
-                QUANTUM AI PREDICTOR v4.2
-              </span>
-              <span className="px-2.5 py-0.5 rounded-full bg-emerald-950 border border-emerald-500/40 text-emerald-400 text-[10px] font-bold font-['Outfit']">
-                LIVE SERVER & DB SYNC
-              </span>
-              {setCurrentView && (
-                <button
-                  onClick={() => setCurrentView('game')}
-                  className="px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300 hover:text-white text-[10px] font-extrabold font-['Outfit'] transition-colors ml-auto"
-                >
-                  ← EXIT TO GAME
-                </button>
-              )}
-            </div>
-            <h1 className="text-2xl sm:text-4xl font-black text-white font-['Outfit'] tracking-tight">
-              NEURAL SIGNAL DECRYPTER
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-400 font-sans max-w-xl">
-              Reads upcoming round crash multipliers pre-determined & synchronized 100% directly with MongoDB and the live game engine.
-            </p>
+        {/* Optional Exit Button */}
+        {setCurrentView && (
+          <div className="flex justify-end">
+            <button
+              onClick={() => setCurrentView('game')}
+              className="px-3.5 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-slate-300 hover:text-white text-xs font-extrabold font-['Outfit'] transition-colors"
+            >
+              ← EXIT TO GAME
+            </button>
           </div>
-
-          {/* Quick Metrics */}
-          <div className="grid grid-cols-2 gap-3 w-full md:w-auto z-10">
-            <div className="bg-[#0b0507] border border-slate-800 p-3.5 rounded-2xl text-center">
-              <span className="text-[10px] font-bold text-slate-400 uppercase block font-['Outfit']">ACCURACY</span>
-              <span className="text-lg font-black text-emerald-400 font-mono">100.0%</span>
-            </div>
-            <div className="bg-[#0b0507] border border-slate-800 p-3.5 rounded-2xl text-center">
-              <span className="text-[10px] font-bold text-slate-400 uppercase block font-['Outfit']">LATENCY</span>
-              <span className="text-lg font-black text-rose-400 font-mono">0ms</span>
-            </div>
-          </div>
-        </div>
+        )}
 
         {/* 2. Main Signal Revealer Card */}
         <div className="bg-[#140a0e] border border-rose-500/30 rounded-3xl p-8 sm:p-12 shadow-2xl text-center space-y-8 relative overflow-hidden">
