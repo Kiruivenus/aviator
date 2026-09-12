@@ -123,9 +123,13 @@ const MainApp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#080b11] text-slate-100 flex flex-col font-['Inter'] select-none overflow-x-clip pb-16 md:pb-0 relative">
-      {/* Top Header Navbar */}
-      <Navbar currentView={currentView} setCurrentView={setCurrentView} />
+    <div className={`min-h-screen bg-[#080b11] text-slate-100 flex flex-col font-['Inter'] select-none overflow-x-clip relative ${
+      currentView === 'prediction' ? 'pb-0' : 'pb-16 md:pb-0'
+    }`}>
+      {/* Top Header Navbar (Hidden on Predictor Page) */}
+      {currentView !== 'prediction' && (
+        <Navbar currentView={currentView} setCurrentView={setCurrentView} />
+      )}
 
       {/* Main View Router */}
       {currentView === 'game' && (
@@ -175,7 +179,7 @@ const MainApp = () => {
       {currentView === 'withdrawal' && <WithdrawalPage />}
       {currentView === 'profile' && <ProfilePage setCurrentView={setCurrentView} />}
       {currentView === 'chat' && <ChatRainPage />}
-      {currentView === 'prediction' && <PredictionPage />}
+      {currentView === 'prediction' && <PredictionPage setCurrentView={setCurrentView} />}
       {currentView === 'admin' && (
         user?.role === 'admin' ? (
           <AdminDashboard />
@@ -186,11 +190,13 @@ const MainApp = () => {
         )
       )}
 
-      {/* Fixed Bottom Navigation Bar */}
-      <BottomNavbar
-        currentView={currentView}
-        setCurrentView={setCurrentView}
-      />
+      {/* Fixed Bottom Navigation Bar (Hidden on Predictor Page) */}
+      {currentView !== 'prediction' && (
+        <BottomNavbar
+          currentView={currentView}
+          setCurrentView={setCurrentView}
+        />
+      )}
 
       {/* Global Auth Modal */}
       <AuthModal />

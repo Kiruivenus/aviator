@@ -3,7 +3,7 @@ import { Radio, ShieldCheck, RefreshCw, Zap } from 'lucide-react';
 import { io } from 'socket.io-client';
 import api from '../api/client';
 
-export const PredictionPage = () => {
+export const PredictionPage = ({ setCurrentView }) => {
   const [loading, setLoading] = useState(false);
   const [signal, setSignal] = useState(null);
   const [revealed, setRevealed] = useState(false);
@@ -91,7 +91,7 @@ export const PredictionPage = () => {
           <div className="absolute top-0 right-0 w-64 h-64 bg-rose-600/10 rounded-full blur-3xl pointer-events-none" />
           
           <div className="space-y-2 z-10">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="px-3 py-1 rounded-full bg-rose-950 border border-rose-500/50 text-rose-400 text-xs font-black uppercase tracking-widest flex items-center gap-1.5 font-['Outfit']">
                 <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
                 QUANTUM AI PREDICTOR v4.2
@@ -99,6 +99,14 @@ export const PredictionPage = () => {
               <span className="px-2.5 py-0.5 rounded-full bg-emerald-950 border border-emerald-500/40 text-emerald-400 text-[10px] font-bold font-['Outfit']">
                 LIVE SERVER & DB SYNC
               </span>
+              {setCurrentView && (
+                <button
+                  onClick={() => setCurrentView('game')}
+                  className="px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300 hover:text-white text-[10px] font-extrabold font-['Outfit'] transition-colors ml-auto"
+                >
+                  ← EXIT TO GAME
+                </button>
+              )}
             </div>
             <h1 className="text-2xl sm:text-4xl font-black text-white font-['Outfit'] tracking-tight">
               NEURAL SIGNAL DECRYPTER
