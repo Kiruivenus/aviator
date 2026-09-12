@@ -86,17 +86,6 @@ export const PredictionPage = ({ setCurrentView }) => {
     <div className="min-h-screen bg-[#0a0507] text-slate-100 font-mono p-4 sm:p-8 select-none">
       <div className="max-w-5xl mx-auto space-y-6">
 
-        {/* Optional Exit Button */}
-        {setCurrentView && (
-          <div className="flex justify-end">
-            <button
-              onClick={() => setCurrentView('game')}
-              className="px-3.5 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-slate-300 hover:text-white text-xs font-extrabold font-['Outfit'] transition-colors"
-            >
-              ← EXIT TO GAME
-            </button>
-          </div>
-        )}
 
         {/* 2. Main Signal Revealer Card */}
         <div className="bg-[#140a0e] border border-rose-500/30 rounded-3xl p-8 sm:p-12 shadow-2xl text-center space-y-8 relative overflow-hidden">
