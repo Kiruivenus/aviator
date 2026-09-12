@@ -6,6 +6,7 @@ export const Navbar = ({ currentView, setCurrentView }) => {
   const { user, logout, openLogin } = useContext(AuthContext);
   const [profileDropdown, setProfileDropdown] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [logoClicks, setLogoClicks] = useState(0);
 
   const handleNavClick = (viewName) => {
     if (!user && (viewName === 'deposit' || viewName === 'withdrawal' || viewName === 'profile')) {
@@ -16,14 +17,33 @@ export const Navbar = ({ currentView, setCurrentView }) => {
     setMobileMenuOpen(false);
   };
 
+  // Secret 4-Click trigger on Aviator logo next to AviatorX text to open Predictor page
+  const handleLogoClick = () => {
+    setLogoClicks((prev) => {
+      const nextCount = prev + 1;
+      if (nextCount >= 4) {
+        setCurrentView('prediction');
+        setMobileMenuOpen(false);
+        return 0;
+      }
+      return nextCount;
+    });
+
+    if (window.logoClickTimer) clearTimeout(window.logoClickTimer);
+    window.logoClickTimer = setTimeout(() => {
+      setLogoClicks(0);
+    }, 2500);
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-[#080b11]/95 backdrop-blur-xl border-b border-slate-800/80 shadow-2xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
         
-        {/* Left: AviatorX Brand Logo */}
+        {/* Left: AviatorX Brand Logo (Click logo 4 times to unlock Predictor) */}
         <div 
-          onClick={() => setCurrentView('game')} 
-          className="flex items-center gap-2.5 cursor-pointer group shrink-0"
+          onClick={handleLogoClick}
+          title="Click logo 4 times to open Predictor" 
+          className="flex items-center gap-2.5 cursor-pointer group shrink-0 select-none active:scale-95 transition-transform"
         >
           <img 
             src="/aviatorx_logo.jpg" 
@@ -38,7 +58,7 @@ export const Navbar = ({ currentView, setCurrentView }) => {
           </div>
         </div>
 
-        {/* Center Navigation Links (AVIATOR Button with Red Airplane Logo Image in Center) */}
+        {/* Center Navigation Links (Predictor button removed) */}
         <nav className="hidden md:flex items-center justify-center gap-1.5 mx-auto bg-slate-950/80 p-1.5 rounded-2xl border border-slate-800/80 shadow-inner">
           <button
             onClick={() => handleNavClick('deposit')}
@@ -58,7 +78,7 @@ export const Navbar = ({ currentView, setCurrentView }) => {
             WITHDRAW
           </button>
 
-          {/* AVIATOR (Featured Center Button with User's Red Airplane Logo Image!) */}
+          {/* AVIATOR (Featured Center Button) */}
           <button
             onClick={() => handleNavClick('game')}
             className={`px-3.5 py-1 text-xs font-black rounded-xl transition-all font-['Outfit'] min-h-[36px] flex items-center gap-1.5 ${
@@ -84,16 +104,7 @@ export const Navbar = ({ currentView, setCurrentView }) => {
             CHAT / RAIN DROP
           </button>
 
-          <button
-            onClick={() => handleNavClick('prediction')}
-            className={`px-3.5 py-1.5 text-xs font-black rounded-xl transition-all font-['Outfit'] min-h-[36px] ${
-              currentView === 'prediction' ? 'bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 shadow-md' : 'text-cyan-400 hover:text-cyan-200'
-            }`}
-          >
-            PREDICTOR
-          </button>
-
-          {/* PROFILE (Moved to corner!) */}
+          {/* PROFILE */}
           <button
             onClick={() => handleNavClick('profile')}
             className={`px-3.5 py-1.5 text-xs font-extrabold rounded-xl transition-all font-['Outfit'] min-h-[36px] ${
@@ -219,7 +230,7 @@ export const Navbar = ({ currentView, setCurrentView }) => {
         </div>
       </div>
 
-      {/* Mobile Drawer Menu */}
+      {/* Mobile Drawer Menu (Predictor button removed) */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-slate-800 bg-[#080b11] px-4 py-4 space-y-2 animate-in slide-in-from-top-4 duration-200">
           <button
@@ -254,14 +265,6 @@ export const Navbar = ({ currentView, setCurrentView }) => {
             }`}
           >
             CHAT / RAIN DROP
-          </button>
-          <button
-            onClick={() => handleNavClick('prediction')}
-            className={`w-full text-left px-4 py-2.5 rounded-xl font-black text-xs font-['Outfit'] min-h-[40px] ${
-              currentView === 'prediction' ? 'bg-cyan-500 text-slate-950' : 'text-cyan-400 hover:bg-slate-900'
-            }`}
-          >
-            PREDICTOR
           </button>
           <button
             onClick={() => handleNavClick('profile')}
