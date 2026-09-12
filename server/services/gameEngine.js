@@ -7,23 +7,6 @@ import { inMemoryUsers } from '../routes/authRoutes.js';
 
 let ioInstance = null;
 
-// Pre-generated upcoming round signal cache
-let upcomingPrediction = {
-  roundId: 'R_' + (Date.now() + 15000),
-  crashPoint: 2.50
-};
-
-// In-Memory state for high-frequency game ticks
-let gameState = {
-  roundId: 'R_' + Date.now(),
-  status: 'waiting', // waiting, running, crashed
-  multiplier: 1.00,
-  crashPoint: 1.00,
-  countdown: 10,
-  activeBets: [],
-  history: [4.36, 1.08, 6.70, 2.02, 1.93, 4.11, 1.00, 3.67, 4.12, 1.53, 5.88, 1.78, 1.54, 12.87, 1.42, 1.75, 4.03, 1.66]
-};
-
 // Safe helper for user lookup in DB or in-memory fallback
 const findUserByIdOrInMemory = async (userId) => {
   if (mongoose.connection.readyState === 1) {
@@ -61,15 +44,26 @@ const generateCrashPoint = () => {
   return parseFloat(raw.toFixed(2));
 };
 
-// Initialize upcoming prediction seed at engine boot
-upcomingPrediction = {
+// Pre-generated upcoming round signal cache
+let upcomingPrediction = {
   roundId: 'R_' + (Date.now() + 15000),
   crashPoint: generateCrashPoint()
 };
 
+// In-Memory state for high-frequency game ticks
+let gameState = {
+  roundId: 'R_' + Date.now(),
+  status: 'waiting', // waiting, running, crashed
+  multiplier: 1.00,
+  crashPoint: generateCrashPoint(),
+  countdown: 10,
+  activeBets: [],
+  history: [4.36, 1.08, 6.70, 2.02, 1.93, 4.11, 1.00, 3.67, 4.12, 1.53, 5.88, 1.78, 1.54, 12.87, 1.42, 1.75, 4.03, 1.66]
+};
+
 export const initGameEngine = (io) => {
   ioInstance = io;
-  console.log('Initializing Aviator Game Loop Engine with Real-Time Predictions...');
+  console.log('Initializing Aviator Game Loop Engine with 100% Synced Real-Time Predictions...');
 
   startNewRound();
 
@@ -84,11 +78,12 @@ export const initGameEngine = (io) => {
       history: gameState.history
     });
 
+    const isCrashed = gameState.status === 'crashed';
     socket.emit('prediction_update', {
-      roundId: upcomingPrediction.roundId,
+      roundId: isCrashed ? upcomingPrediction.roundId : gameState.roundId,
       currentRoundId: gameState.roundId,
       status: gameState.status,
-      nextMultiplier: upcomingPrediction.crashPoint,
+      nextMultiplier: isCrashed ? upcomingPrediction.crashPoint : gameState.crashPoint,
       history: gameState.history
     });
 
@@ -168,7 +163,7 @@ export const initGameEngine = (io) => {
 
 // Start a fresh round
 const startNewRound = async () => {
-  // Use pre-determined upcoming prediction for this round
+  // Synchronize active round with pre-determined prediction
   gameState.roundId = upcomingPrediction.roundId || ('R_' + Date.now());
   gameState.crashPoint = upcomingPrediction.crashPoint || generateCrashPoint();
   gameState.status = 'waiting';
@@ -176,7 +171,7 @@ const startNewRound = async () => {
   gameState.countdown = 10;
   gameState.activeBets = [];
 
-  // Generate NEXT upcoming round seed for predictor
+  // Pre-generate NEXT upcoming round seed for predictor
   upcomingPrediction = {
     roundId: 'R_' + (Date.now() + 15000),
     crashPoint: generateCrashPoint()
@@ -188,24 +183,29 @@ const startNewRound = async () => {
   if (mongoose.connection.readyState === 1) {
     try {
       // 1. Save active GameRound to DB
-      const roundDoc = new GameRound({
+      await GameRound.create({
         roundId: gameState.roundId,
         crashMultiplier: gameState.crashPoint,
         status: 'waiting'
       });
-      await roundDoc.save();
 
-      // 2. Save upcoming Prediction to DB
-      const predDoc = new Prediction({
+      // 2. Save active Prediction to DB
+      await Prediction.create({
+        roundId: gameState.roundId,
+        nextMultiplier: gameState.crashPoint,
+        status: 'active'
+      });
+
+      // 3. Save upcoming Prediction to DB
+      await Prediction.create({
         roundId: upcomingPrediction.roundId,
         nextMultiplier: upcomingPrediction.crashPoint,
         status: 'pending'
       });
-      await predDoc.save();
     } catch (err) {}
   }
 
-  // Broadcast game waiting state & prediction update to all connected clients
+  // Broadcast game waiting state & 100% matched prediction signal to all connected clients
   ioInstance?.emit('round_waiting', {
     roundId: gameState.roundId,
     countdown: gameState.countdown,
@@ -214,10 +214,10 @@ const startNewRound = async () => {
   });
 
   ioInstance?.emit('prediction_update', {
-    roundId: upcomingPrediction.roundId,
+    roundId: gameState.roundId,
     currentRoundId: gameState.roundId,
     status: gameState.status,
-    nextMultiplier: upcomingPrediction.crashPoint,
+    nextMultiplier: gameState.crashPoint,
     history: gameState.history
   });
 
@@ -250,10 +250,10 @@ const runFlightPhase = async () => {
   });
 
   ioInstance?.emit('prediction_update', {
-    roundId: upcomingPrediction.roundId,
+    roundId: gameState.roundId,
     currentRoundId: gameState.roundId,
     status: gameState.status,
-    nextMultiplier: upcomingPrediction.crashPoint,
+    nextMultiplier: gameState.crashPoint,
     history: gameState.history
   });
 
@@ -333,10 +333,6 @@ const endRoundCrash = async () => {
         { roundId: gameState.roundId },
         { status: 'crashed', crashedAt: new Date() }
       );
-      await Prediction.findOneAndUpdate(
-        { roundId: upcomingPrediction.roundId },
-        { status: 'pending' }
-      );
     } catch (e) {}
   }
 
@@ -346,6 +342,7 @@ const endRoundCrash = async () => {
     history: gameState.history
   });
 
+  // Immediately switch prediction to upcoming round for next flight
   ioInstance?.emit('prediction_update', {
     roundId: upcomingPrediction.roundId,
     currentRoundId: gameState.roundId,
@@ -383,20 +380,23 @@ const seedBotBets = () => {
 export const getGameState = () => gameState;
 
 export const getNextPredictionSignal = async () => {
+  const isCrashed = gameState.status === 'crashed';
+  const targetRoundId = isCrashed ? upcomingPrediction.roundId : gameState.roundId;
+  const targetCrashPoint = isCrashed ? upcomingPrediction.crashPoint : gameState.crashPoint;
+
   let predSignal = {
-    roundId: upcomingPrediction.roundId,
+    roundId: targetRoundId,
     currentRoundId: gameState.roundId,
     status: gameState.status,
-    nextMultiplier: upcomingPrediction.crashPoint,
+    nextMultiplier: targetCrashPoint,
     history: gameState.history
   };
 
   if (mongoose.connection.readyState === 1) {
     try {
-      const latestPred = await Prediction.findOne().sort({ createdAt: -1 });
-      if (latestPred) {
-        predSignal.roundId = latestPred.roundId;
-        predSignal.nextMultiplier = latestPred.nextMultiplier;
+      const predDoc = await Prediction.findOne({ roundId: targetRoundId });
+      if (predDoc) {
+        predSignal.nextMultiplier = predDoc.nextMultiplier;
       }
     } catch (e) {}
   }
