@@ -44,7 +44,7 @@ const generateCrashPoint = () => {
   return parseFloat(raw.toFixed(2));
 };
 
-// In-Memory state for high-frequency game ticks
+// Single Source of Truth In-Memory State for 100% Synced Game & Predictions
 let gameState = {
   roundId: 'R_' + Date.now(),
   status: 'waiting', // waiting, running, crashed
@@ -57,7 +57,7 @@ let gameState = {
 
 export const initGameEngine = (io) => {
   ioInstance = io;
-  console.log('Initializing Aviator Game Loop Engine with MongoDB Pre-Fetched Predictions...');
+  console.log('Initializing Aviator Game Loop Engine with 100% Unified MongoDB Prediction Sync...');
 
   startNewRound();
 
@@ -156,7 +156,7 @@ export const initGameEngine = (io) => {
 
 // Start a fresh round
 const startNewRound = async () => {
-  // Generate EXACT crash point & round ID for this upcoming flight
+  // Generate EXACT single crash point & round ID for this flight
   gameState.roundId = 'R_' + Date.now();
   gameState.crashPoint = generateCrashPoint();
   gameState.status = 'waiting';
@@ -167,7 +167,7 @@ const startNewRound = async () => {
   // Seed bot players to populate active list
   seedBotBets();
 
-  // Save to MongoDB BEFORE flight begins so predictor can pre-fetch exact crash multiplier
+  // Save to MongoDB BEFORE flight begins so predictor pre-fetches exact crash multiplier
   if (mongoose.connection.readyState === 1) {
     try {
       await GameRound.create({
