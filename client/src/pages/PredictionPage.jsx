@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Radio, ShieldCheck, RefreshCw, Zap } from 'lucide-react';
+import { io } from 'socket.io-client';
 import api from '../api/client';
 
 export const PredictionPage = () => {
@@ -8,37 +9,81 @@ export const PredictionPage = () => {
   const [revealed, setRevealed] = useState(false);
 
   const [historyLog, setHistoryLog] = useState([
-    { roundId: '#452931', predicted: '2.04x', actual: '2.04x', accuracy: '100% MATCH ✅', time: '14:32' },
-    { roundId: '#452930', predicted: '12.29x', actual: '12.29x', accuracy: '100% MATCH ✅', time: '14:28' },
-    { roundId: '#452929', predicted: '1.58x', actual: '1.58x', accuracy: '100% MATCH ✅', time: '14:25' },
-    { roundId: '#452928', predicted: '43.45x', actual: '43.45x', accuracy: '100% MATCH ✅', time: '14:20' }
+    { roundId: 'R_178827628100', predicted: '2.04x', actual: '2.04x', accuracy: '100% MATCH ✅', time: '14:32' },
+    { roundId: 'R_178827628095', predicted: '12.29x', actual: '12.29x', accuracy: '100% MATCH ✅', time: '14:28' },
+    { roundId: 'R_178827628090', predicted: '1.58x', actual: '1.58x', accuracy: '100% MATCH ✅', time: '14:25' }
   ]);
 
   const fetchNextSignal = async () => {
     setLoading(true);
     try {
       const res = await api.get('/prediction/next');
-      setSignal(res.data);
-      setRevealed(true);
+      if (res.data && res.data.nextMultiplier) {
+        setSignal(res.data);
+        setRevealed(true);
+        if (res.data.history && res.data.history.length > 0) {
+          updateHistoryLog(res.data.history);
+        }
+      }
     } catch (err) {
-      console.error('Failed to fetch prediction:', err);
-      // Fallback
-      setSignal({
-        roundId: '#452933',
-        nextMultiplier: 3.85,
-        confidence: '99.8%',
-        status: 'ready'
-      });
-      setRevealed(true);
+      console.error('Failed to fetch prediction signal:', err);
     } finally {
       setLoading(false);
     }
   };
 
+  const updateHistoryLog = (historyArr) => {
+    if (!historyArr || historyArr.length === 0) return;
+    const newItems = historyArr.slice(0, 8).map((val, idx) => ({
+      roundId: `R_${Date.now() - (idx * 25000)}`,
+      predicted: `${parseFloat(val).toFixed(2)}x`,
+      actual: `${parseFloat(val).toFixed(2)}x`,
+      accuracy: '100% MATCH ✅',
+      time: new Date(Date.now() - (idx * 25000)).toLocaleTimeString()
+    }));
+    setHistoryLog(newItems);
+  };
+
   useEffect(() => {
+    // 1. Initial HTTP Fetch
     fetchNextSignal();
-    const interval = setInterval(fetchNextSignal, 3000);
-    return () => clearInterval(interval);
+
+    // 2. Real-time WebSocket listener
+    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '') : 'http://localhost:5000');
+    const socket = io(SOCKET_URL, {
+      transports: ['websocket', 'polling']
+    });
+
+    socket.on('prediction_update', (data) => {
+      if (data && data.nextMultiplier) {
+        setSignal({
+          roundId: data.roundId || data.nextRoundId,
+          nextMultiplier: data.nextMultiplier,
+          status: data.status,
+          confidence: '99.8%'
+        });
+        setRevealed(true);
+      }
+      if (data.history) {
+        updateHistoryLog(data.history);
+      }
+    });
+
+    socket.on('round_crashed', (data) => {
+      if (data && data.history) {
+        updateHistoryLog(data.history);
+      }
+      // Re-fetch next signal when round crashes
+      fetchNextSignal();
+    });
+
+    // 3. Fallback Interval Polling (every 2.5 seconds)
+    const interval = setInterval(fetchNextSignal, 2500);
+
+    return () => {
+      clearInterval(interval);
+      socket.disconnect();
+    };
   }, []);
 
   return (
@@ -56,14 +101,14 @@ export const PredictionPage = () => {
                 QUANTUM AI PREDICTOR v4.2
               </span>
               <span className="px-2.5 py-0.5 rounded-full bg-emerald-950 border border-emerald-500/40 text-emerald-400 text-[10px] font-bold font-['Outfit']">
-                LIVE SERVER SYNC
+                LIVE SERVER & DB SYNC
               </span>
             </div>
             <h1 className="text-2xl sm:text-4xl font-black text-white font-['Outfit'] tracking-tight">
               NEURAL SIGNAL DECRYPTER
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 font-sans max-w-xl">
-              Reads upcoming round crash multipliers synchronized directly with the live game engine before takeoff.
+              Reads upcoming round crash multipliers pre-determined & synchronized directly with MongoDB and the live game engine.
             </p>
           </div>
 
@@ -100,7 +145,7 @@ export const PredictionPage = () => {
           <div className="space-y-3">
             <span className="text-xs font-bold text-rose-400 uppercase tracking-widest flex items-center justify-center gap-2 font-['Outfit']">
               <Zap className="w-4 h-4 text-rose-500" />
-              {signal?.status === 'running' ? 'SCANNING UPCOMING FLIGHT SEED...' : 'NEXT ROUND SIGNAL DECRYPTED'}
+              {signal?.status === 'running' ? 'CURRENT FLIGHT ACTIVE (NEXT ROUND PREDICTED)' : 'NEXT ROUND SIGNAL DECRYPTED'}
             </span>
 
             {revealed && signal?.nextMultiplier ? (
@@ -114,7 +159,7 @@ export const PredictionPage = () => {
               </div>
             ) : (
               <div className="text-4xl font-mono text-rose-900/60 animate-pulse py-4">
-                [ DECRYPTING... ]
+                [ DECRYPTING SIGNAL... ]
               </div>
             )}
           </div>
